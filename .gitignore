@@ -53,5 +53,9 @@ dkms.conf
 
 # CLion files
 *.cmake
-/CMakeFiles/
+/CMakeFiles/*
+/Testing/
+
+NVim
+/.backup/
 
