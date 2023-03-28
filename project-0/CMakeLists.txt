@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.24)
-project(CPE_464 C)
+cmake_minimum_required(VERSION 2.8)
+project(project_0 C)
 
 set(CMAKE_C_STANDARD 23)
 
