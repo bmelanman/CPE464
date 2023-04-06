@@ -3,8 +3,6 @@
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
   <component name="CidrRootsConfiguration">
     <excludeRoots>
-      <file path="$PROJECT_DIR$/ref_output" />
-      <file path="$PROJECT_DIR$/ref_pcap" />
       <file path="$PROJECT_DIR$/testing/diff" />
       <file path="$PROJECT_DIR$/testing/results" />
     </excludeRoots>

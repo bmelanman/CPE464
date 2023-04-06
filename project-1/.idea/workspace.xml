@@ -80,7 +80,7 @@
       <recent name="$PROJECT_DIR$/given files/trace_files_3_29_19" />
     </key>
   </component>
-  <component name="RunManager" selected="Makefile Target.all">
+  <component name="RunManager" selected="Makefile Target.clean">
     <configuration default="true" type="BIBTEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
       <texify-bibtex>
         <compiler />
@@ -137,6 +137,12 @@
       </makefile>
       <method v="2" />
     </configuration>
+    <configuration name="clean" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
+      <makefile filename="$PROJECT_DIR$/Makefile" target="clean" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
     <configuration default="true" type="MAKEINDEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
       <texify-makeindex>
         <program>MAKEINDEX</program>
@@ -166,10 +172,12 @@
     <list>
       <item itemvalue="CMake Application.trace" />
       <item itemvalue="Makefile Target.all" />
+      <item itemvalue="Makefile Target.clean" />
       <item itemvalue="Shell Script.P1 Test" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Makefile Target.clean" />
         <item itemvalue="Makefile Target.all" />
       </list>
     </recent_temporary>
