@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
+    <option name="autoReloadType" value="ALL" />
   </component>
-  <component name="CMakePresetLoader"><![CDATA[{
-  "useNewFormat": true
-}]]></component>
+  <component name="CMakePresetLoader">{
+  &quot;useNewFormat&quot;: true
+}</component>
   <component name="CMakeReloadState">
     <option name="reloaded" value="true" />
   </component>
   <component name="CMakeRunConfigurationManager">
     <generated>
+      <config projectName="project_1" targetName="trace" />
       <config projectName="project_1" targetName="checksum" />
-      <config projectName="project_1" targetName="project_1" />
     </generated>
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
@@ -21,7 +21,40 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="39bf8f42-fcb1-4656-a0a9-4f2d5e0986fa" name="Changes" comment="" />
+    <list default="true" id="39bf8f42-fcb1-4656-a0a9-4f2d5e0986fa" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ref_pcap/ArpTest.pcap" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ref_pcap/Http.pcap" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ref_pcap/IP_bad_checksum.pcap" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ref_pcap/PingTest.pcap" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ref_pcap/TCP_bad_checksum.pcap" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ref_pcap/UDPfile.pcap" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ref_pcap/largeMix.pcap" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ref_pcap/largeMix2.pcap" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ref_pcap/mix_withIPoptions.pcap" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ref_pcap/smallTCP.pcap" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/trace.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/given files/Packing your structs.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/given_files/Packing your structs.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/given files/grade_sheet_Spring_2023.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/given_files/grade_sheet_Spring_2023.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/given files/trace_prog_assignment_winter_2023_v6.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/given_files/trace_prog_assignment_winter_2023_v6.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/ArpTest.pcap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/Http.pcap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/IP_bad_checksum.pcap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/PingTest.pcap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/TCP_bad_checksum.pcap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/UDPfile.pcap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/checksum.c" beforeDir="false" afterPath="$PROJECT_DIR$/libs/checksum.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/largeMix.pcap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/largeMix2.pcap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/mix_withIPoptions.pcap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/smallTCP.pcap" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/trace_files_3_29_19.tgz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/trace.c" beforeDir="false" afterPath="$PROJECT_DIR$/trace.c" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -56,6 +89,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
@@ -63,38 +97,37 @@
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.build.tools.auto.reload": "ALL",
+    "settings.editor.selected.configurable": "build.tools",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/testing" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/given files/trace_files_3_29_19" />
     </key>
   </component>
-  <component name="RunManager" selected="CMake Application.project_1">
+  <component name="RunManager" selected="Shell Script.P1 Test">
     <configuration default="true" type="BIBTEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
       <texify-bibtex>
         <compiler />
         <compiler-path />
         <compiler-arguments />
         <envs />
-        <main-file />
-        <aux-dir />
+        <main-file>/</main-file>
+        <aux-dir>/</aux-dir>
       </texify-bibtex>
       <method v="2" />
     </configuration>
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="checksum" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="project_1" TARGET_NAME="checksum" CONFIG_NAME="Debug">
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="project_1" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="project_1" TARGET_NAME="project_1" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="project_1" RUN_TARGET_NAME="project_1">
+    <configuration name="trace" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="../ref_pcap/smallTCP.pcap" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="project_1" TARGET_NAME="trace" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="project_1" RUN_TARGET_NAME="trace">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -107,6 +140,27 @@
       </texify-external>
       <method v="2" />
     </configuration>
+    <configuration default="true" type="LATEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
+      <texify>
+        <compiler>PDFLATEX</compiler>
+        <compiler-path />
+        <sumatra-path />
+        <pdf-viewer>NONE</pdf-viewer>
+        <viewer-command />
+        <compiler-arguments />
+        <envs />
+        <main-file />
+        <output-path>{projectDir}/out</output-path>
+        <auxil-path>{projectDir}/auxil</auxil-path>
+        <compile-twice>false</compile-twice>
+        <output-format>PDF</output-format>
+        <latex-distribution>TEXLIVE</latex-distribution>
+        <has-been-run>false</has-been-run>
+        <bib-run-config>[]</bib-run-config>
+        <makeindex-run-config>[]</makeindex-run-config>
+      </texify>
+      <method v="2" />
+    </configuration>
     <configuration default="true" type="MAKEINDEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
       <texify-makeindex>
         <program>MAKEINDEX</program>
@@ -116,9 +170,26 @@
       </texify-makeindex>
       <method v="2" />
     </configuration>
+    <configuration name="P1 Test" type="ShConfigurationType">
+      <option name="SCRIPT_TEXT" value="" />
+      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
+      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/testing/p1_test.sh" />
+      <option name="SCRIPT_OPTIONS" value="" />
+      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
+      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$/testing" />
+      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
+      <option name="INTERPRETER_PATH" value="/bin/zsh" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="EXECUTE_IN_TERMINAL" value="true" />
+      <option name="EXECUTE_SCRIPT_FILE" value="true" />
+      <envs />
+      <method v="2">
+        <option name="RunConfigurationTask" enabled="true" run_configuration_name="trace" run_configuration_type="CMakeRunConfiguration" run_configuration_target="CMakeBuildProfile:Debug" />
+      </method>
+    </configuration>
     <list>
-      <item itemvalue="CMake Application.checksum" />
-      <item itemvalue="CMake Application.project_1" />
+      <item itemvalue="CMake Application.trace" />
+      <item itemvalue="Shell Script.P1 Test" />
     </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -129,7 +200,14 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1680018561928</updated>
-      <workItem from="1680018563333" duration="1169000" />
+      <workItem from="1680018563333" duration="13625000" />
+      <workItem from="1680123091634" duration="4352000" />
+      <workItem from="1680243432000" duration="37163000" />
+      <workItem from="1680583834829" duration="609000" />
+      <workItem from="1680621433193" duration="23710000" />
+      <workItem from="1680712126265" duration="6693000" />
+      <workItem from="1680742387553" duration="57000" />
+      <workItem from="1680744775378" duration="2383000" />
     </task>
     <servers />
   </component>
@@ -138,5 +216,25 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file:///Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/pcap.h</url>
+          <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/libs/checksum.c</url>
+          <line>53</line>
+          <option name="timeStamp" value="44" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="CMakeRunConfiguration">
+        <watch expression="*w" language="ObjectiveC" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>

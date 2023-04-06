@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
+  <component name="CidrRootsConfiguration">
+    <excludeRoots>
+      <file path="$PROJECT_DIR$/ref_output" />
+      <file path="$PROJECT_DIR$/ref_pcap" />
+      <file path="$PROJECT_DIR$/testing/diff" />
+      <file path="$PROJECT_DIR$/testing/results" />
+    </excludeRoots>
+  </component>
 </project>
