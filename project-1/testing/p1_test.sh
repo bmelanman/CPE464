@@ -18,7 +18,7 @@ NUM_DIFFS=0
 
 for FILE in "${TEST_FILES[@]}"; do
 
-    ../trace "../ref_pcap/$FILE" > "./results/$FILE.out"
+    ./trace "../ref_pcap/$FILE" > "./results/$FILE.out"
 
     diff "../ref_output/$FILE.out" "./results/$FILE.out" > "./diff/$FILE.diff"
 

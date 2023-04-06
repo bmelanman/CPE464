@@ -9,7 +9,7 @@ CFLAGS = -g -Wall -pedantic
 
 all:  trace
 
-trace: trace.c libs/checksum.c
+trace: ../trace.c libs/checksum.c
 	$(CC) $(CFLAGS) -o $@ trace.c $(LIBS)
 
 clean:
