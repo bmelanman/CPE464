@@ -1,13 +1,13 @@
 #!/bin/bash
 
-make trace
+make trace -C ../
 
 clear
 
 echo "-----"
 
-find ./diff -type f -delete || mkdir diff
-find ./results -type f -delete || mkdir results
+find ./diff -type f -delete > /dev/null || mkdir diff
+find ./results -type f -delete > /dev/null || mkdir results
 
 cd ../ref_pcap/ || exit 1
 TEST_FILES=(*.pcap)
@@ -18,7 +18,7 @@ NUM_DIFFS=0
 
 for FILE in "${TEST_FILES[@]}"; do
 
-    ./trace "../ref_pcap/$FILE" > "./results/$FILE.out"
+    ../trace "../ref_pcap/$FILE" > "./results/$FILE.out"
 
     diff "../ref_output/$FILE.out" "./results/$FILE.out" > "./diff/$FILE.diff"
 
