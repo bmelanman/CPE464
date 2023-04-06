@@ -571,7 +571,7 @@
 ---
 > 		Checksum: Incorrect (0xac76)
 2397a2464
-> 0x4acd
+> 0x5b1b
 2408c2475
 < 		Checksum: Correct (0xe62f)
 ---
@@ -955,7 +955,7 @@
 ---
 > 		Checksum: Incorrect (0x2490)
 3789a3904
-> 0x4801
+> 0x6c68
 3800c3915
 < 		Checksum: Correct (0x2038)
 ---
@@ -971,7 +971,7 @@
 ---
 > 		Checksum: Incorrect (0xffcd)
 3847a3964
-> 0x9bfb
+> 0x799a
 3858c3975
 < 		Checksum: Correct (0xff5e)
 ---

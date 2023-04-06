@@ -401,7 +401,7 @@
 ---
 > 		Checksum: Incorrect (0xe948)
 2171a2239
-> 0xe022
+> 0x9a46
 2182c2250
 < 		Checksum: Correct (0x1f63)
 ---
@@ -1001,13 +1001,13 @@
 ---
 > 		Checksum: Incorrect (0xad92)
 5155a5323
-> 0x9970
+> 0x3445
 5166c5334
 < 		Checksum: Correct (0x7038)
 ---
 > 		Checksum: Incorrect (0x7038)
 5184a5353
-> 0x30cb
+> 0xa59c
 5195c5364
 < 		Checksum: Correct (0xc5c9)
 ---
@@ -1073,7 +1073,7 @@
 ---
 > 		Checksum: Incorrect (0xf0fb)
 5503a5683
-> 0x8f30
+> 0x2ebe
 5514c5694
 < 		Checksum: Correct (0x4d32)
 ---

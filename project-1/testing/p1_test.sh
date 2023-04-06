@@ -1,11 +1,11 @@
-#!/bin/zsh
+#!/bin/bash
 
 clear
 
 echo "-----"
 
-find ./diff -type f -delete
-find ./results -type f -delete
+find ./diff -type f -delete || mkdir diff
+find ./results -type f -delete || mkdir results
 
 cd ../ref_pcap/ || exit 1
 TEST_FILES=(*.pcap)
