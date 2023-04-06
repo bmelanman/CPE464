@@ -1,22 +1,10 @@
 
 #include "trace.h"
 
-/* Connection Oriented (3 Phases):
- *      1. Setup - Path between users is set
- *      2. Use - Path is used for communication
- *      3. Teardown - The path is no longer in use, so it is destroyed
- *      *  Used by protocols like TCP
- * Connectionless (1 Phase):
- *      1. Use - The data is addressed and sent, much like mailing a letter
- *      *  Used by protocols like UDP
- */
-
 int main(int argc, char *argv[]) {
 
-    if (argc < 2) {
-        printf("Please provide an input *.pcap file!\n");
-        return 0;
-    }
+    char *buff = NULL, *debug = getenv("DEBUG");
+    FILE *fp;
 
     pcap_header_t *pcap_header = malloc(PCAP_HEADER_LEN);
     packet_header_t *pkt_header = malloc(PKT_HEADER_LEN);
@@ -24,43 +12,65 @@ int main(int argc, char *argv[]) {
     unsigned int packet_num = 1, packet_len;
     uint32_t eth_start;
 
-    FILE *fp = fopen(argv[1], "r");
+    /* Check for file input */
+    if (argc < 2) {
+        fprintf(stderr, "ERR: Please provide an input *.pcap file!\n");
+        return 1;
+    }
 
-    if (fp == NULL) {
+    /* Check for the correct file type */
+    strtok_r(strdup(argv[1]), ".", &buff);
+    if (strcmp(buff, "pcap") != 0) {
+        fprintf(stderr, "ERR: The given file MUST be a *.pcap file!\n");
+        return 1;
+    }
+
+    /* Make sure the file opens correctly */
+    if ((fp = fopen(argv[1], "r")) == NULL) {
         fprintf(stderr, "\nfopen(%s) failed, errno: %d\n", argv[1], errno);
         return 1;
     }
 
+    /* Read the PCAP header into a struct */
     fread(pcap_header, PCAP_HEADER_LEN, 1, fp);
 
+    /* Loop through each packet */
     while (1) {
 
+        /* Read the Ethernet header into a struct */
         fread(pkt_header, PKT_HEADER_LEN, 1, fp);
 
+        /* check for End Of File */
         if (feof(fp)) break;
 
+        /* Display info */
         packet_len = pkt_header->org_len;
-
-        if (packet_len < 1) break;
-
         printf("\nPacket number: %d  Frame Len: %d\n\n", packet_num, packet_len);
 
+        /* Keep track of packet size via the file pointer position */
         eth_start = ftell(fp);
 
-        get_eth_header(fp);
+        /* Process the rest of the header */
+        process_eth_h(fp);
 
+        /* Make sure the file pointer is at the end of the
+         * packet before moving on to the next packet */
         fseek(fp, eth_start + packet_len, SEEK_SET);
 
+        /* Next packet! */
         packet_num++;
 
-//        if (packet_num > 1) break;
+        /* Debug stuff */
+        if (debug != NULL) {
+            if (strcmp(debug, "1") == 0 && packet_num > 11) break;
+        }
     }
 
     return 0;
 }
 
-/* MAC TO STR: MAC Address to String
- * Converts a little-endian uint64_t address to a string with colon formatting
+/* mactostr: MAC Address to String
+ * Converts a little-endian uint64_t MAC address to a human-readable string
  * (ex: 151138023047680 -> 00:02:2d:90:75:89)
  * */
 char *mactostr(uint64_t mac_addr) {
@@ -70,12 +80,15 @@ char *mactostr(uint64_t mac_addr) {
     char buff[3] = "", *dst = malloc(18);
 
     for (i = 0; i < 6; i++) {
+        /* Get the current byte from the given address */
         _mac_addr = (mac_addr >> (i * 8)) & 0xff;
 
-//        snprintf(buff, 3, "%02llx", _mac_addr);
+        /* Concatenate the byte onto the final address */
+        /*snprintf(buff, 3, "%02llx", _mac_addr);*/
         snprintf(buff, 3, "%llx", _mac_addr);
         strncat(dst, buff, 3);
 
+        /* Add colons where appropriate */
         if (i < 5) {
             strncat(dst, ":", 2);
         }
@@ -84,8 +97,8 @@ char *mactostr(uint64_t mac_addr) {
     return dst;
 }
 
-/* IP TO STR: IP Address to String
- * Converts a little-endian uint64_t address to a string with colon formatting
+/* iptostr: IP Address to String
+ * Converts a little-endian uint64_t IP address to a human-readable string
  * (ex: 1711384768 -> 192.168.1.102)
  * */
 char *iptostr(uint64_t ip_addr) {
@@ -95,11 +108,14 @@ char *iptostr(uint64_t ip_addr) {
     char buff[4] = "", *dst = malloc(18);
 
     for (i = 0; i < 4; i++) {
+        /* Grab the next byte from the given address */
         _ip_addr = (ip_addr >> (i * 8)) & 0xff;
 
+        /* Concatenate the byte as a base-10 number onto the final address */
         snprintf(buff, 4, "%lld", _ip_addr);
         strncat(dst, buff, 3);
 
+        /* Add dots where appropriate */
         if (i < 3) {
             strncat(dst, ".", 2);
         }
@@ -108,75 +124,73 @@ char *iptostr(uint64_t ip_addr) {
     return dst;
 }
 
-char *get_type(uint8_t protocol, uint16_t code) {
+/* get_type: Get type from protocol
+ * Takes a given protocol type and returns the corresponding string
+ * (ex: 1711384768 -> 192.168.1.102)
+ * */
+char *get_type(uint8_t protocol, uint16_t type) {
 
-    char *type = malloc(21);
-
-    uint16_t decode = htons(code);
-
+    char *unknown_type;
+    
     switch (protocol) {
-        case PKT_HEADER:
-            printf("PKT: 0x%x \n", decode);
-            return "XXX";
-
         case ETH_HEADER:
-            if (decode == 0x0806) return "ARP";
-            else if (decode == 0x0800) return "IP";
-            break;
-
         case IPV4_HEADER:
-            if (decode == 0x2) return "Reply";
-            else if (decode == 0x600) return "TCP";
-            else if (decode == 0x1100) return "UDP";
-            else if (decode == 0x100) return "ICMP";
-            else
-                snprintf(type, 8, "Unknown");
-            break;
-
         case ARP_HEADER:
-            if (decode == 0x1) return "Request";
-            else if (decode == 0x2) return "Reply";
-            else if (decode == 0x600) return "TCP";
-            else if (decode == 0x1100) return "UDP";
-            else if (decode == 0x100) return "ICMP";
-            else
-                snprintf(type, 20, "%x", decode);
-            break;
+            switch (type) {
+                case 0x0100:
+                    return "Request";
+                case 0x0200:
+                case 0x0004:
+                    return "Reply";
+                case 0x0608:
+                    return "ARP";
+                case 0x0008:
+                    return "IP";
+                case 0x0006:
+                    return "TCP";
+                case 0x0011:
+                    return "UDP";
+                case 0x0001:
+                    return "ICMP";
+                default:
+                    return strdup("Unknown");
+            }
 
         case TCP_HEADER:
-            if (decode == 0x50) return " HTTP";
-            else
-                snprintf(type, 20, ": %d", decode);
-            break;
+            if (type == 0x5000) return " HTTP";
+            unknown_type = malloc(10);
+            snprintf(unknown_type, 8, ": %d", htons(type));
+            return unknown_type;
+
 
         case ICMP_HEADER:
-            if (decode == 0x800) return "Request";
-            else if (decode == 0x0 || decode == 0x400) return "Reply";
-            else
-                snprintf(type, 20, "%d", decode);
-            break;
-
-        case UDP_HEADER:
-            printf("UDP: 0x%x \n", decode);
-            break;
+            switch (type) {
+                case 0x0000:
+                    return "Reply";
+                case 0x0008:
+                    return "Request";
+                default:
+                    unknown_type = malloc(10);
+                    snprintf(unknown_type, 8, "%d", type);
+                    return unknown_type;
+            }
 
         default:
-            snprintf(type, 20, "%d", decode);
+            fprintf(stderr, "function 'get_type()' received an unknown protocol: %d", protocol);
+            exit(1);
     }
-
-    return type;
 }
 
-void get_eth_header(FILE *fp) {
-
-    uint16_t type;
+void process_eth_h(FILE *fp) {
 
     eth_header_t *eth_h = malloc(ETH_HEADER_LEN);
 
+    /* Read eth header from file */
     fread(eth_h, ETH_HEADER_LEN, 1, fp);
 
-    type = eth_h->type;
+    uint16_t type = eth_h->type;
 
+    /* Print template */
     printf(
             "\tEthernet Header\n"
             "\t\tDest MAC: %s\n"
@@ -187,23 +201,21 @@ void get_eth_header(FILE *fp) {
             get_type(ETH_HEADER, type)
     );
 
-    type = htons(type);
-
     switch (type) {
-        case 0x0806:
-            get_arp_header(fp);
+        case 0x0608:
+            process_arp_h(fp);
             break;
-        case 0x0800:
-            get_ip_header(fp);
+        case 0x0008:
+            process_ip_h(fp);
             break;
         default:
-//            printf("default main loop case: 0x%02x\n", type);
+            /*printf("default main loop case: 0x%02x\n", type);*/
             printf("default main loop case: 0x%x\n", type);
             break;
     }
 }
 
-void get_arp_header(FILE *fp) {
+void process_arp_h(FILE *fp) {
 
     arp_header_t *arp_h = malloc(ARP_HEADER_LEN);
 
@@ -222,7 +234,7 @@ void get_arp_header(FILE *fp) {
     );
 }
 
-void get_ip_header(FILE *fp) {
+void process_ip_h(FILE *fp) {
 
     char verify[10] = "Correct";
 
@@ -232,7 +244,7 @@ void get_ip_header(FILE *fp) {
     uint16_t header_len = (ip_header->Ver_IHL & 0xf) * 4;
     uint8_t protocol = ip_header->protocol;
 
-    // TODO: Fix checksum
+    /* TODO: Fix checksum */
     if (in_cksum((unsigned short *) ip_header, IPV4_HEADER_LEN)) {
         snprintf(verify, 10, "Incorrect");
     }
@@ -240,17 +252,17 @@ void get_ip_header(FILE *fp) {
     printf(
             "\tIP Header\n"
             "\t\tHeader Len: %d (bytes)\n"
-            //            "\t\tTOS: 0x%02x\n"
+            /*"\t\tTOS: 0x%02x\n"*/
             "\t\tTOS: 0x%x\n"
             "\t\tTTL: %d\n"
             "\t\tIP PDU Len: %d (bytes)\n"
             "\t\tProtocol: %s\n"
-            //            "\t\tChecksum: %s (0x%04x)\n"
+            /*"\t\tChecksum: %s (0x%04x)\n"*/
             "\t\tChecksum: %s (0x%x)\n"
             "\t\tSender IP: %s\n"
-            "\t\tDest IP: %s\n\n",
+            "\t\tDest IP: %s\n",
             header_len,
-            ip_header->DSCP_ECN >> 2,
+            ip_header->TOS,
             ip_header->TTL,
             htons(ip_header->len),
             get_type(IPV4_HEADER, protocol),
@@ -265,63 +277,23 @@ void get_ip_header(FILE *fp) {
 
     switch (protocol) {
         case 0x1:
-            get_icmp_header(fp);
+            printf("\n");
+            process_icmp_h(fp);
             break;
         case 0x6:
-            get_tcp_header(fp, ip_header);
+            printf("\n");
+            process_tcp_h(fp);
             break;
         case 0x11:
-            get_udp_header(fp);
+            printf("\n");
+            process_udp_h(fp);
             break;
         default:
-            fprintf(stderr, "IP Protocol Error: 0x%x\n", protocol);
+            break;
     }
 }
 
-unsigned short compute_tcp_checksum(ip_v4_header_t *ip_header, tcp_header_t *tcp_header) {
-
-    register unsigned long sum = 0;
-    uint16_t cksum = tcp_header->cksum;
-
-    unsigned short tcp_len = ntohs(ip_header->len) - ((ip_header->Ver_IHL & 0xf) << 2);
-    unsigned short *payload = (unsigned short *) tcp_header;
-
-    //add the pseudo header
-    //the source ip
-    sum += ip_header->src_addr >> 16;
-    sum += (ip_header->src_addr) & 0xFFFF;
-    //the dest ip
-    sum += ip_header->dst_addr >> 16;
-    sum += (ip_header->dst_addr) & 0xFFFF;
-    //protocol and reserved: 6
-    sum += htons(ip_header->protocol);
-    sum += htons(ip_header->Flags_Offset);
-    //the length
-    sum += htons(tcp_len);
-
-    //add the IP payload
-    //initialize checksum to 0
-    tcp_header->cksum = 0;
-    while (tcp_len > 1) {
-        sum += *payload++;
-        tcp_len -= 2;
-    }
-    //if any bytes left, pad the bytes and add
-    if (tcp_len > 0) {
-        //printf("+++++++++++padding, %dn", tcp_len);
-        sum += ((*payload) & 0xff);
-    }
-    //Fold 32-bit sum to 16 bits: add carrier to result
-    while (sum >> 16) {
-        sum = (sum & 0xffff) + (sum >> 16);
-    }
-    sum = ~sum;
-    //set computation result
-    tcp_header->cksum = cksum;
-    return (unsigned short) sum;
-}
-
-void get_tcp_header(FILE *fp, ip_v4_header_t *ip_header) {
+void process_tcp_h(FILE *fp) {
 
     char ack[21] = "<not valid>";
     char verify[21] = "Correct";
@@ -330,20 +302,16 @@ void get_tcp_header(FILE *fp, ip_v4_header_t *ip_header) {
 
     fread(tcp_header, TCP_HEADER_LEN, 1, fp);
 
-    // TODO: Fix checksum verification
-//    if (in_cksum((unsigned short *) tcp_header, TCP_HEADER_LEN)) {
-//        snprintf(verify, 20, "Incorrect");
-//    }
-    unsigned short t = compute_tcp_checksum(ip_header, tcp_header);
-    printf("0x%x\n", t);
-    if (t) {
+    /* TODO: Fix checksum */
+    if (in_cksum((unsigned short *) tcp_header, TCP_HEADER_LEN)) {
         snprintf(verify, 20, "Incorrect");
     }
 
     uint16_t flags = htons(tcp_header->flags);
     uint32_t ack_num = htonl(tcp_header->ack);
+    uint8_t ack_flag = flags & (0x01 << 4);
 
-    if ((flags & (0x01 << 4)) != 0) {
+    if (ack_flag) {
         snprintf(ack, 20, "%u", ack_num);
     }
 
@@ -358,13 +326,13 @@ void get_tcp_header(FILE *fp, ip_v4_header_t *ip_header) {
             "\t\tRST Flag: %s\n"
             "\t\tFIN Flag: %s\n"
             "\t\tWindow Size: %u\n"
-            // "\t\tChecksum: %s (0x%04x)\n",
+            /*"\t\tChecksum: %s (0x%04x)\n",*/
             "\t\tChecksum: %s (0x%x)\n",
             get_type(TCP_HEADER, tcp_header->src_port),
             get_type(TCP_HEADER, tcp_header->dst_port),
             htonl(tcp_header->seq),
             ack,
-            flags & (0x01 << 4) ? "Yes" : "No",
+            ack_flag ? "Yes" : "No",
             flags & (0x01 << 1) ? "Yes" : "No",
             flags & (0x01 << 2) ? "Yes" : "No",
             flags & (0x01 << 0) ? "Yes" : "No",
@@ -373,7 +341,7 @@ void get_tcp_header(FILE *fp, ip_v4_header_t *ip_header) {
     );
 }
 
-void get_icmp_header(FILE *fp) {
+void process_icmp_h(FILE *fp) {
 
     icmp_header_t *icmp_header = malloc(ICMP_HEADER_LEN);
 
@@ -387,7 +355,7 @@ void get_icmp_header(FILE *fp) {
 
 }
 
-void get_udp_header(FILE *fp) {
+void process_udp_h(FILE *fp) {
 
     udp_header_t *udp_header = malloc(UDP_HEADER_LEN);
 

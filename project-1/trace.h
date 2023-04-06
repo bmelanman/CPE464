@@ -7,7 +7,14 @@
 #include <string.h>
 #include <pcap/pcap.h>
 #include <errno.h>
+
 #include "libs/checksum.h"
+
+#define ETH_HEADER  1
+#define ARP_HEADER  2
+#define IPV4_HEADER 3
+#define TCP_HEADER  4
+#define ICMP_HEADER 5
 
 #define PCAP_HEADER_LEN sizeof(pcap_header_t    )
 #define PKT_HEADER_LEN  sizeof(packet_header_t  )
@@ -17,14 +24,6 @@
 #define TCP_HEADER_LEN  sizeof(ip_v4_header_t   )
 #define ICMP_HEADER_LEN sizeof(icmp_header_t    )
 #define UDP_HEADER_LEN  sizeof(udp_header_t     )
-
-#define PKT_HEADER  0
-#define ETH_HEADER  1
-#define ARP_HEADER  2
-#define IPV4_HEADER 3
-#define TCP_HEADER  4
-#define ICMP_HEADER 5
-#define UDP_HEADER  6
 
 // 24 bytes (192 bits)
 typedef struct __attribute__((packed)) pcap_header {    /* Offset */
@@ -68,7 +67,7 @@ typedef struct __attribute__((packed)) arp_header {     /* Offset */
 // 20 bytes (160 bits)
 typedef struct __attribute__((packed)) ip_v4_header {   /* Offset */
     uint8_t Ver_IHL;                                    /*    0/4 */
-    uint8_t DSCP_ECN;                                   /*   8/14 */
+    uint8_t TOS;                                        /*      8 */
     uint16_t len;                                       /*     16 */
     uint16_t ID;                                        /*     32 */
     uint16_t Flags_Offset;                              /*     48 */
@@ -93,10 +92,10 @@ typedef struct __attribute__((packed)) tcp_header {     /* Offset */
 
 // 4 bytes (32 bits)
 typedef struct __attribute__((packed)) icmp_header {    /* Offset */
-    uint8_t type: 4;                                    /*      0 */
-    uint8_t code: 4;                                    /*      4 */
-    uint8_t cksum;                                      /*      8 */
-    uint16_t data;                                      /*     16 */
+    uint8_t type;                                       /*      0 */
+    uint8_t code;                                       /*      8 */
+    uint16_t cksum;                                     /*     16 */
+    uint32_t data;                                      /*     32 */
 } icmp_header_t;
 
 // 8 bytes (64 bits)
@@ -111,18 +110,18 @@ char *mactostr(uint64_t mac_addr);
 
 char *iptostr(uint64_t ip_addr);
 
-char *get_type(uint8_t protocol, uint16_t code);
+char *get_type(uint8_t protocol, uint16_t type);
 
-void get_eth_header(FILE *fp);
+void process_eth_h(FILE *fp);
 
-void get_arp_header(FILE *fp);
+void process_arp_h(FILE *fp);
 
-void get_ip_header(FILE *fp);
+void process_ip_h(FILE *fp);
 
-void get_tcp_header(FILE *fp, ip_v4_header_t *ip_header);
+void process_tcp_h(FILE *fp);
 
-void get_icmp_header(FILE *fp);
+void process_icmp_h(FILE *fp);
 
-void get_udp_header(FILE *fp);
+void process_udp_h(FILE *fp);
 
 #endif //PROJECT_1_TRACE_H

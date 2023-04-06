@@ -36,6 +36,17 @@
 
 #include <sys/types.h>
 
+/* Used for TCP and IP
+ *
+ * Checking an IP Header:
+ *  - Don't remove checksum before passing the header
+ *  - If returns 0, good
+ *  - If non-zero, errors have occurred
+ *
+ * Checking a TCP Header:
+ *  - next time in class :/
+ */
+
 /*
  * in_cksum --
  *      Checksum routine for Internet Protocol family headers (C Version)
