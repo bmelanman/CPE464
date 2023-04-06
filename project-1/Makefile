@@ -13,4 +13,4 @@ trace: trace.c libs/checksum.c
 	$(CC) $(CFLAGS) -o $@ trace.c $(LIBS)
 
 clean:
-	rm -f trace
+	rm -rf trace *.dSYM

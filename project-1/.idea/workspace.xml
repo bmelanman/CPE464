@@ -21,7 +21,10 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="39bf8f42-fcb1-4656-a0a9-4f2d5e0986fa" name="Changes" comment="" />
+    <list default="true" id="39bf8f42-fcb1-4656-a0a9-4f2d5e0986fa" name="Changes" comment="updated">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trace.c" beforeDir="false" afterPath="$PROJECT_DIR$/trace.c" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -77,7 +80,7 @@
       <recent name="$PROJECT_DIR$/given files/trace_files_3_29_19" />
     </key>
   </component>
-  <component name="RunManager" selected="Shell Script.P1 Test">
+  <component name="RunManager" selected="Makefile Target.all">
     <configuration default="true" type="BIBTEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
       <texify-bibtex>
         <compiler />
@@ -128,6 +131,12 @@
       </texify>
       <method v="2" />
     </configuration>
+    <configuration name="all" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
+      <makefile filename="$PROJECT_DIR$/Makefile" target="all" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
     <configuration default="true" type="MAKEINDEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
       <texify-makeindex>
         <program>MAKEINDEX</program>
@@ -156,8 +165,14 @@
     </configuration>
     <list>
       <item itemvalue="CMake Application.trace" />
+      <item itemvalue="Makefile Target.all" />
       <item itemvalue="Shell Script.P1 Test" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Makefile Target.all" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -174,8 +189,16 @@
       <workItem from="1680621433193" duration="23710000" />
       <workItem from="1680712126265" duration="6693000" />
       <workItem from="1680742387553" duration="57000" />
-      <workItem from="1680744775378" duration="2511000" />
+      <workItem from="1680744775378" duration="2814000" />
     </task>
+    <task id="LOCAL-00001" summary="updated">
+      <created>1680799821406</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1680799821406</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -183,6 +206,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="updated" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
