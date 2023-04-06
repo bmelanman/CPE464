@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
 
         /* Debug stuff */
         if (debug != NULL) {
-            if (strcmp(debug, "1") == 0 && packet_num > 11) break;
+            if (strcmp(debug, "1") == 0 && packet_num > 2) break;
         }
     }
 
@@ -131,21 +131,15 @@ char *iptostr(uint64_t ip_addr) {
 char *get_type(uint8_t protocol, uint16_t type) {
 
     char *unknown_type;
-    
+
     switch (protocol) {
         case ETH_HEADER:
         case IPV4_HEADER:
-        case ARP_HEADER:
             switch (type) {
-                case 0x0100:
-                    return "Request";
-                case 0x0200:
-                case 0x0004:
-                    return "Reply";
-                case 0x0608:
-                    return "ARP";
                 case 0x0008:
                     return "IP";
+                case 0x0608:
+                    return "ARP";
                 case 0x0006:
                     return "TCP";
                 case 0x0011:
@@ -156,12 +150,21 @@ char *get_type(uint8_t protocol, uint16_t type) {
                     return strdup("Unknown");
             }
 
+        case ARP_HEADER:
+            switch (type) {
+                case 0x0100:
+                    return "Request";
+                case 0x0200:
+                    return "Reply";
+                default:
+                    return strdup("Unknown");
+            }
+
         case TCP_HEADER:
             if (type == 0x5000) return " HTTP";
             unknown_type = malloc(10);
             snprintf(unknown_type, 8, ": %d", htons(type));
             return unknown_type;
-
 
         case ICMP_HEADER:
             switch (type) {
@@ -275,17 +278,21 @@ void process_ip_h(FILE *fp) {
         fseek(fp, (long) (header_len - IPV4_HEADER_LEN), SEEK_CUR);
     }
 
+    pseudo_header_t *p_header = malloc(PSEUDO_HEADER_LEN);
+
     switch (protocol) {
         case 0x1:
-            printf("\n");
             process_icmp_h(fp);
             break;
         case 0x6:
-            printf("\n");
-            process_tcp_h(fp);
+            p_header->src_addr = ip_header->src_addr;
+            p_header->dst_addr = ip_header->dst_addr;
+            p_header->type = 0x0600;
+            p_header->tcp_len = ntohs(htons(ip_header->len) - header_len);
+
+            process_tcp_h(fp, p_header);
             break;
         case 0x11:
-            printf("\n");
             process_udp_h(fp);
             break;
         default:
@@ -293,7 +300,7 @@ void process_ip_h(FILE *fp) {
     }
 }
 
-void process_tcp_h(FILE *fp) {
+void process_tcp_h(FILE *fp, pseudo_header_t *pseudo_header) {
 
     char ack[21] = "<not valid>";
     char verify[21] = "Correct";
@@ -302,8 +309,12 @@ void process_tcp_h(FILE *fp) {
 
     fread(tcp_header, TCP_HEADER_LEN, 1, fp);
 
+    unsigned short *checksum_packet = malloc(PSEUDO_HEADER_LEN + TCP_HEADER_LEN);
+    memcpy(checksum_packet, pseudo_header, PSEUDO_HEADER_LEN);
+    memcpy(&checksum_packet[6], tcp_header, TCP_HEADER_LEN);
+
     /* TODO: Fix checksum */
-    if (in_cksum((unsigned short *) tcp_header, TCP_HEADER_LEN)) {
+    if (in_cksum(checksum_packet, PSEUDO_HEADER_LEN + TCP_HEADER_LEN)) {
         snprintf(verify, 20, "Incorrect");
     }
 
@@ -316,6 +327,7 @@ void process_tcp_h(FILE *fp) {
     }
 
     printf(
+            "\n"
             "\tTCP Header\n"
             "\t\tSource Port: %s\n"
             "\t\tDest Port: %s\n"
@@ -348,6 +360,7 @@ void process_icmp_h(FILE *fp) {
     fread(icmp_header, ICMP_HEADER_LEN, 1, fp);
 
     printf(
+            "\n"
             "\tICMP Header\n"
             "\t\tType: %s\n",
             get_type(ICMP_HEADER, icmp_header->type)
@@ -362,6 +375,7 @@ void process_udp_h(FILE *fp) {
     fread(udp_header, UDP_HEADER_LEN, 1, fp);
 
     printf(
+            "\n"
             "\tUDP Header\n"
             "\t\tSource Port: : %u\n"
             "\t\tDest Port: : %u\n",

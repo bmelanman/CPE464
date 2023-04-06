@@ -16,14 +16,15 @@
 #define TCP_HEADER  4
 #define ICMP_HEADER 5
 
-#define PCAP_HEADER_LEN sizeof(pcap_header_t    )
-#define PKT_HEADER_LEN  sizeof(packet_header_t  )
-#define ETH_HEADER_LEN  sizeof(eth_header_t     )
-#define ARP_HEADER_LEN  sizeof(arp_header_t     )
-#define IPV4_HEADER_LEN sizeof(ip_v4_header_t   )
-#define TCP_HEADER_LEN  sizeof(ip_v4_header_t   )
-#define ICMP_HEADER_LEN sizeof(icmp_header_t    )
-#define UDP_HEADER_LEN  sizeof(udp_header_t     )
+#define PCAP_HEADER_LEN   sizeof(pcap_header_t   )
+#define PKT_HEADER_LEN    sizeof(packet_header_t )
+#define ETH_HEADER_LEN    sizeof(eth_header_t    )
+#define ARP_HEADER_LEN    sizeof(arp_header_t    )
+#define IPV4_HEADER_LEN   sizeof(ip_v4_header_t  )
+#define TCP_HEADER_LEN    sizeof(ip_v4_header_t  )
+#define ICMP_HEADER_LEN   sizeof(icmp_header_t   )
+#define UDP_HEADER_LEN    sizeof(udp_header_t    )
+#define PSEUDO_HEADER_LEN sizeof(pseudo_header_t )
 
 // 24 bytes (192 bits)
 typedef struct __attribute__((packed)) pcap_header {    /* Offset */
@@ -90,6 +91,14 @@ typedef struct __attribute__((packed)) tcp_header {     /* Offset */
     uint16_t urg_ptr;                                   /*    144 */
 } tcp_header_t;
 
+// 12 bytes (96 bits)
+typedef struct __attribute__((packed)) pseudo_header {  /* Offset */
+    uint32_t src_addr;                                  /*      0 */
+    uint32_t dst_addr;                                  /*     32 */
+    uint16_t type;                                      /*     64 */
+    uint16_t tcp_len;                                   /*     80 */
+} pseudo_header_t;
+
 // 4 bytes (32 bits)
 typedef struct __attribute__((packed)) icmp_header {    /* Offset */
     uint8_t type;                                       /*      0 */
@@ -118,7 +127,7 @@ void process_arp_h(FILE *fp);
 
 void process_ip_h(FILE *fp);
 
-void process_tcp_h(FILE *fp);
+void process_tcp_h(FILE *fp, pseudo_header_t *pseudo_header);
 
 void process_icmp_h(FILE *fp);
 

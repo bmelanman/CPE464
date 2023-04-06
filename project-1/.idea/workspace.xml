@@ -23,9 +23,6 @@
   <component name="ChangeListManager">
     <list default="true" id="39bf8f42-fcb1-4656-a0a9-4f2d5e0986fa" name="Changes" comment="updated">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/checksum.c" beforeDir="false" afterPath="$PROJECT_DIR$/libs/checksum.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/p1_test.sh" beforeDir="false" afterPath="$PROJECT_DIR$/testing/p1_test.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trace" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/trace.c" beforeDir="false" afterPath="$PROJECT_DIR$/trace.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trace.h" beforeDir="false" afterPath="$PROJECT_DIR$/trace.h" afterDir="false" />
     </list>
@@ -84,7 +81,7 @@
       <recent name="$PROJECT_DIR$/given files/trace_files_3_29_19" />
     </key>
   </component>
-  <component name="RunManager" selected="Shell Script.P1 Test">
+  <component name="RunManager" selected="CMake Application.trace">
     <configuration default="true" type="BIBTEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
       <texify-bibtex>
         <compiler />
@@ -101,7 +98,7 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="trace" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="../ref_pcap/IP_bad_checksum.pcap" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="project_1" TARGET_NAME="trace" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="project_1" RUN_TARGET_NAME="trace">
+    <configuration name="trace" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="../ref_pcap/http.pcap" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="project_1" TARGET_NAME="trace" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="project_1" RUN_TARGET_NAME="trace">
       <envs>
         <env name="DEBUG" value="1" />
       </envs>
@@ -204,7 +201,7 @@
       <workItem from="1680621433193" duration="23710000" />
       <workItem from="1680712126265" duration="6693000" />
       <workItem from="1680742387553" duration="57000" />
-      <workItem from="1680744775378" duration="14145000" />
+      <workItem from="1680744775378" duration="21960000" />
     </task>
     <task id="LOCAL-00001" summary="updated">
       <created>1680799821406</created>
@@ -262,7 +259,14 @@
       <option name="project" value="LOCAL" />
       <updated>1680801152267</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="updated">
+      <created>1680812485000</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1680812485000</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -273,6 +277,17 @@
     <isAutomaticCheckingOnLaunch value="false" />
     <isAutomaticFoundErrors value="true" />
     <isAutomaticFoundErrors value="true" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
@@ -285,6 +300,11 @@
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file:///Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/usr/include/pcap.h</url>
           <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/trace.c</url>
+          <line>316</line>
+          <option name="timeStamp" value="54" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
