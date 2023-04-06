@@ -3,14 +3,14 @@
 # Just links in pcap library
 
 CC = gcc
-LIBS = -lpcap
+LIBS = libs/checksum.c -lpcap
 CFLAGS = -g -Wall -pedantic 
 #CGLAGS = 
 
 all:  trace
 
 trace: trace.c libs/checksum.c
-	$(CC) $(CFLAGS) -o $@ trace.c checksum.c $(LIBS)
+	$(CC) $(CFLAGS) -o $@ trace.c $(LIBS)
 
 clean:
 	rm -f trace

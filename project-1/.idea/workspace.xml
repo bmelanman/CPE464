@@ -21,40 +21,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="39bf8f42-fcb1-4656-a0a9-4f2d5e0986fa" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ref_pcap/ArpTest.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ref_pcap/Http.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ref_pcap/IP_bad_checksum.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ref_pcap/PingTest.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ref_pcap/TCP_bad_checksum.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ref_pcap/UDPfile.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ref_pcap/largeMix.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ref_pcap/largeMix2.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ref_pcap/mix_withIPoptions.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ref_pcap/smallTCP.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/trace.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/given files/Packing your structs.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/given_files/Packing your structs.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/given files/grade_sheet_Spring_2023.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/given_files/grade_sheet_Spring_2023.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/given files/trace_prog_assignment_winter_2023_v6.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/given_files/trace_prog_assignment_winter_2023_v6.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/ArpTest.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/Http.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/IP_bad_checksum.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/Makefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/PingTest.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/TCP_bad_checksum.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/UDPfile.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/checksum.c" beforeDir="false" afterPath="$PROJECT_DIR$/libs/checksum.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/largeMix.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/largeMix2.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/mix_withIPoptions.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/smallTCP.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/trace_files_3_29_19.tgz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/trace.c" beforeDir="false" afterPath="$PROJECT_DIR$/trace.c" afterDir="false" />
-    </list>
+    <list default="true" id="39bf8f42-fcb1-4656-a0a9-4f2d5e0986fa" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -207,7 +174,7 @@
       <workItem from="1680621433193" duration="23710000" />
       <workItem from="1680712126265" duration="6693000" />
       <workItem from="1680742387553" duration="57000" />
-      <workItem from="1680744775378" duration="2383000" />
+      <workItem from="1680744775378" duration="2511000" />
     </task>
     <servers />
   </component>
