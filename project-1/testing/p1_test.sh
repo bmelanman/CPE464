@@ -1,5 +1,7 @@
 #!/bin/bash
 
+make trace
+
 clear
 
 echo "-----"
@@ -16,7 +18,7 @@ NUM_DIFFS=0
 
 for FILE in "${TEST_FILES[@]}"; do
 
-    ../cmake-build-debug/trace "../ref_pcap/$FILE" > "./results/$FILE.out"
+    ../trace "../ref_pcap/$FILE" > "./results/$FILE.out"
 
     diff "../ref_output/$FILE.out" "./results/$FILE.out" > "./diff/$FILE.diff"
 
