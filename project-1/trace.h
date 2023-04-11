@@ -127,16 +127,16 @@ char *iptostr(uint32_t ip_addr);
 
 char *get_type(uint8_t protocol, uint16_t type);
 
-void process_eth_h(FILE *fp);
+void process_eth_h(uint8_t *packet_data);
 
-void process_arp_h(FILE *fp);
+void process_arp_h(uint8_t *packet_data);
 
-void process_ip_h(FILE *fp);
+void process_ip_h(uint8_t *packet_data);
 
-void process_tcp_h(FILE *fp, pseudo_header_t *pseudo_header);
+void process_tcp_h(uint8_t *packet_data, pseudo_header_t *pseudo_header);
 
-void process_icmp_h(FILE *fp);
+void process_icmp_h(uint8_t *packet_data);
 
-void process_udp_h(FILE *fp);
+void process_udp_h(uint8_t *packet_data);
 
 #endif //PROJECT_1_TRACE_H

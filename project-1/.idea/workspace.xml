@@ -22,7 +22,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="39bf8f42-fcb1-4656-a0a9-4f2d5e0986fa" name="Changes" comment="updated">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/checksum.c" beforeDir="false" afterPath="$PROJECT_DIR$/libs/checksum.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/diff/Http.pcap.diff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/diff/largeMix.pcap.diff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/diff/largeMix2.pcap.diff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/diff/mix_withIPoptions.pcap.diff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/diff/smallTCP.pcap.diff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/results/Http.pcap.txt" beforeDir="false" afterPath="$PROJECT_DIR$/testing/results/Http.pcap.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/results/largeMix.pcap.txt" beforeDir="false" afterPath="$PROJECT_DIR$/testing/results/largeMix.pcap.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/results/largeMix2.pcap.txt" beforeDir="false" afterPath="$PROJECT_DIR$/testing/results/largeMix2.pcap.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/results/mix_withIPoptions.pcap.txt" beforeDir="false" afterPath="$PROJECT_DIR$/testing/results/mix_withIPoptions.pcap.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/results/smallTCP.pcap.txt" beforeDir="false" afterPath="$PROJECT_DIR$/testing/results/smallTCP.pcap.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trace.c" beforeDir="false" afterPath="$PROJECT_DIR$/trace.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trace.h" beforeDir="false" afterPath="$PROJECT_DIR$/trace.h" afterDir="false" />
     </list>
@@ -54,26 +64,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.build.tools.auto.reload&quot;: &quot;ALL&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.build.tools.auto.reload": "ALL",
+    "settings.editor.selected.configurable": "preferences.keymap",
+    "structure.view.defaults.are.configured": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -81,7 +92,7 @@
       <recent name="$PROJECT_DIR$/given files/trace_files_3_29_19" />
     </key>
   </component>
-  <component name="RunManager" selected="CMake Application.trace">
+  <component name="RunManager" selected="Shell Script.P1 Test">
     <configuration default="true" type="BIBTEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
       <texify-bibtex>
         <compiler />
@@ -93,7 +104,7 @@
       </texify-bibtex>
       <method v="2" />
     </configuration>
-    <configuration name="trace" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="../ref_pcap/http.pcap" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="project_1" TARGET_NAME="trace" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="project_1" RUN_TARGET_NAME="trace">
+    <configuration name="trace" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="../ref_pcap/mix_withIPoptions.pcap" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="project_1" TARGET_NAME="trace" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="project_1" RUN_TARGET_NAME="trace">
       <envs>
         <env name="DEBUG" value="1" />
       </envs>
@@ -198,7 +209,7 @@
       <workItem from="1680742387553" duration="57000" />
       <workItem from="1680744775378" duration="22559000" />
       <workItem from="1680897163852" duration="447000" />
-      <workItem from="1681051607024" duration="7048000" />
+      <workItem from="1681051607024" duration="21167000" />
     </task>
     <task id="LOCAL-00001" summary="updated">
       <created>1680799821406</created>
@@ -263,7 +274,14 @@
       <option name="project" value="LOCAL" />
       <updated>1680812485000</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="updated">
+      <created>1681241397076</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1681241397076</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -299,9 +317,9 @@
           <option name="timeStamp" value="18" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/trace.c</url>
-          <line>42</line>
-          <option name="timeStamp" value="59" />
+          <url>file://$PROJECT_DIR$/libs/checksum.c</url>
+          <line>70</line>
+          <option name="timeStamp" value="72" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

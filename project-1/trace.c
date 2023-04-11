@@ -1,121 +1,44 @@
 
 #include "trace.h"
 
-int test(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 
-    uint32_t pkt_num = 0, pkt_len;
+    uint32_t pkt_num = 1;
+    uint8_t *packet_data = NULL;
+
+    char errbuf[PCAP_ERRBUF_SIZE];
 
     pcap_t *fp;
-    char errbuf[PCAP_ERRBUF_SIZE], *buff = NULL;
-    const u_char *packet_data = NULL;
-
     struct pcap_pkthdr *pcap_header = malloc(PCAP_HEADER_LEN);
-    eth_header_t *eth_header = malloc(ETH_HEADER_LEN);
 
-    /* Check for file input */
-    if (argc < 2) {
+    /* Check for single input */
+    if (argc != 2) {
         fprintf(stderr, "ERR: Please provide an input *.pcap file!\n");
         return 1;
     }
 
-    /* Check for the correct file type */
-    strtok_r(strdup(argv[1]), ".", &buff);
-    if (strcmp(buff, "pcap") != 0) {
-        fprintf(stderr, "ERR: The given file MUST be a *.pcap file!\n");
-        return 1;
-    }
-
+    /* Open the pcap file */
     fp = pcap_open_offline(argv[1], errbuf);
 
+    /* Verify file pointer */
     if (fp == NULL) {
         fprintf(stderr, "\npcap_open_offline() failed: %s\n", errbuf);
         return 1;
     }
 
-    while (pcap_next_ex(fp, &pcap_header, &packet_data) >= 0) {
+    /* Iterate through each packet */
+    while (pcap_next_ex(fp, &pcap_header, (const u_char **) &packet_data) >= 0) {
 
-        memcpy(eth_header, packet_data, ETH_HEADER_LEN);
+        /* Display packet info */
+        printf("\nPacket number: %d  Frame Len: %d\n\n", pkt_num++, pcap_header->len);
 
-        pkt_len = pcap_header->len;
-
-        printf("\nPacket number: %d  Frame Len: %d\n\n", pkt_num++, pkt_len);
-
-        if (pkt_num > 2) break;
+        /* Begin parsing eth packet */
+        process_eth_h(packet_data);
     }
 
+    /* Clean up */
     pcap_close(fp);
-
-    return 0;
-}
-
-int main(int argc, char *argv[]) {
-
-    char *buff = NULL, *debug = getenv("DEBUG");
-    FILE *fp;
-
-    pcap_header_t *pcap_header = malloc(PCAP_HEADER_LEN);
-    packet_header_t *pkt_header = malloc(PKT_HEADER_LEN);
-
-    unsigned int packet_num = 1, packet_len;
-    uint32_t eth_start;
-
-    /* Check for file input */
-    if (argc < 2) {
-        fprintf(stderr, "ERR: Please provide an input *.pcap file!\n");
-        return 1;
-    }
-
-    /* Check for the correct file type */
-    strtok_r(strdup(argv[1]), ".", &buff);
-    if (strcmp(buff, "pcap") != 0) {
-        fprintf(stderr, "ERR: The given file MUST be a *.pcap file!\n");
-        return 1;
-    }
-
-    /* Make sure the file opens correctly */
-    if ((fp = fopen(argv[1], "r")) == NULL) {
-        fprintf(stderr, "\nfopen(%s) failed, errno: %d\n", argv[1], errno);
-        return 1;
-    }
-
-    /* Read the PCAP header into a struct */
-    fread(pcap_header, PCAP_HEADER_LEN, 1, fp);
-
-    /* Loop through each packet */
-    while (1) {
-
-        /* Read the Ethernet header into a struct */
-        fread(pkt_header, PKT_HEADER_LEN, 1, fp);
-
-        /* check for End Of File */
-        if (feof(fp)) break;
-
-        /* Display info */
-        packet_len = pkt_header->org_len;
-        printf("\nPacket number: %d  Frame Len: %d\n\n", packet_num, packet_len);
-
-        /* Keep track of packet size via the file pointer position */
-        eth_start = ftell(fp);
-
-        /* Process the rest of the header */
-        process_eth_h(fp);
-
-        /* Make sure the file pointer is at the end of the
-         * packet before moving on to the next packet */
-        fseek(fp, eth_start + packet_len, SEEK_SET);
-
-        /* Next packet! */
-        packet_num++;
-
-        /* Debug stuff */
-        if (debug != NULL) {
-            if (strcmp(debug, "1") == 0 && packet_num > 2) break;
-        }
-    }
-
-    fclose(fp);
-
-    test(argc, argv);
+    free(pcap_header);
 
     return 0;
 }
@@ -138,10 +61,6 @@ char *iptostr(uint32_t ip_addr) {
     return str_addr;
 }
 
-/* get_type: Get type from protocol
- * Takes a given protocol type and returns the corresponding string
- * (ex: 1711384768 -> 192.168.1.102)
- * */
 char *get_type(uint8_t protocol, uint16_t type) {
 
     char *unknown_type;
@@ -198,45 +117,46 @@ char *get_type(uint8_t protocol, uint16_t type) {
     }
 }
 
-void process_eth_h(FILE *fp) {
+void process_eth_h(uint8_t *packet_data) {
 
-    eth_header_t *eth_h = malloc(ETH_HEADER_LEN);
+    /* Copy header data into a struct */
+    eth_header_t *eth_header = malloc(ETH_HEADER_LEN);
+    memcpy(eth_header, packet_data, ETH_HEADER_LEN);
 
-    /* Read eth header from file */
-    fread(eth_h, ETH_HEADER_LEN, 1, fp);
+    /* Advance the packet data pointer to the next header */
+    packet_data = &packet_data[ETH_HEADER_LEN];
 
-    uint16_t type = eth_h->type;
+    uint16_t type = eth_header->type;
 
-    /* Print template */
+    /* Parse header */
     printf(
             "\tEthernet Header\n"
             "\t\tDest MAC: %s\n"
             "\t\tSource MAC: %s\n"
             "\t\tType: %s\n\n",
-            mactostr(eth_h->dst_addr),
-            mactostr(eth_h->src_addr),
+            mactostr(eth_header->dst_addr),
+            mactostr(eth_header->src_addr),
             get_type(ETH_HEADER, type)
     );
 
     switch (type) {
         case 0x0608:
-            process_arp_h(fp);
+            process_arp_h(packet_data);
             break;
         case 0x0008:
-            process_ip_h(fp);
+            process_ip_h(packet_data);
             break;
         default:
-            /*printf("default main loop case: 0x%02x\n", type);*/
-            printf("default main loop case: 0x%x\n", type);
             break;
     }
+
 }
 
-void process_arp_h(FILE *fp) {
+void process_arp_h(uint8_t *packet_data) {
 
-    arp_header_t *arp_h = malloc(ARP_HEADER_LEN);
+    arp_header_t *arp_header = malloc(ARP_HEADER_LEN);
 
-    fread(arp_h, ARP_HEADER_LEN, 1, fp);
+    memcpy(arp_header, packet_data, ARP_HEADER_LEN);
 
     printf(
             "\tARP header\n"
@@ -245,27 +165,34 @@ void process_arp_h(FILE *fp) {
             "\t\tSender IP: %s\n"
             "\t\tTarget MAC: %s\n"
             "\t\tTarget IP: %s\n\n",
-            get_type(ARP_HEADER, arp_h->OPER),
-            mactostr(arp_h->SHA), iptostr(arp_h->SPA),
-            mactostr(arp_h->THA), iptostr(arp_h->TPA)
+            get_type(ARP_HEADER, arp_header->OPER),
+            mactostr(arp_header->SHA), iptostr(arp_header->SPA),
+            mactostr(arp_header->THA), iptostr(arp_header->TPA)
     );
 }
 
-void process_ip_h(FILE *fp) {
+void process_ip_h(uint8_t *packet_data) {
 
     char verify[10] = "Correct";
 
-    ip_v4_header_t *ip_header = malloc(ARP_HEADER_LEN);
-    fread(ip_header, IPV4_HEADER_LEN, 1, fp);
+    ip_v4_header_t *ip_header = malloc(IPV4_HEADER_LEN);
+    pseudo_header_t *pseudo_header = malloc(PSEUDO_HEADER_LEN);
+
+    /* Move packet data into a struct */
+    memcpy(ip_header, packet_data, IPV4_HEADER_LEN);
 
     uint16_t header_len = (ip_header->Ver_IHL & 0xf) * 4;
     uint8_t protocol = ip_header->protocol;
 
-    /* TODO: Fix checksum */
-    if (in_cksum((unsigned short *) ip_header, IPV4_HEADER_LEN)) {
+    /* Verify checksum */
+    if (in_cksum((unsigned short *) packet_data, header_len)) {
         snprintf(verify, 10, "Incorrect");
     }
 
+    /* Advance the packet data pointer to the next header */
+    packet_data = &packet_data[header_len];
+
+    /* Unpack data */
     printf(
             "\tIP Header\n"
             "\t\tHeader Len: %d (bytes)\n"
@@ -288,48 +215,43 @@ void process_ip_h(FILE *fp) {
             iptostr(ip_header->dst_addr)
     );
 
-    /* Skip over any remaining data in the header */
-    if (header_len > IPV4_HEADER_LEN) {
-        fseek(fp, (long) (header_len - IPV4_HEADER_LEN), SEEK_CUR);
-    }
-
-    pseudo_header_t *p_header = malloc(PSEUDO_HEADER_LEN);
-
+    /* Go to the next header unpacker */
     switch (protocol) {
         case 0x1:
-            process_icmp_h(fp);
+            process_icmp_h(packet_data);
             break;
         case 0x6:
-            p_header->src_addr = ip_header->src_addr;
-            p_header->dst_addr = ip_header->dst_addr;
-            p_header->type = 0x0600;
-            p_header->tcp_len = ntohs(htons(ip_header->len) - header_len);
-
-            process_tcp_h(fp, p_header);
+            pseudo_header->src_addr = ip_header->src_addr;
+            pseudo_header->dst_addr = ip_header->dst_addr;
+            pseudo_header->type = 0x0600;
+            pseudo_header->tcp_len = ntohs(htons(ip_header->len) - header_len);
+            process_tcp_h(packet_data, pseudo_header);
             break;
         case 0x11:
-            process_udp_h(fp);
+            process_udp_h(packet_data);
             break;
         default:
             break;
     }
 }
 
-void process_tcp_h(FILE *fp, pseudo_header_t *pseudo_header) {
+void process_tcp_h(uint8_t *packet_data, pseudo_header_t *pseudo_header) {
+
+    uint16_t tcp_pkt_len = htons(pseudo_header->tcp_len);
 
     char ack[21] = "<not valid>";
     char verify[21] = "Correct";
 
     tcp_header_t *tcp_header = malloc(TCP_HEADER_LEN);
 
-    fread(tcp_header, TCP_HEADER_LEN, 1, fp);
+    memcpy(tcp_header, packet_data, TCP_HEADER_LEN);
 
-    unsigned short *checksum_packet = malloc(PSEUDO_HEADER_LEN + TCP_HEADER_LEN);
+    unsigned short *checksum_packet = malloc(PSEUDO_HEADER_LEN + tcp_pkt_len);
     memcpy(checksum_packet, pseudo_header, PSEUDO_HEADER_LEN);
-    memcpy(&checksum_packet[6], tcp_header, TCP_HEADER_LEN);
+    memcpy(&checksum_packet[6], packet_data, tcp_pkt_len);
 
     /* TODO: Fix checksum */
-    if (in_cksum(checksum_packet, PSEUDO_HEADER_LEN + TCP_HEADER_LEN)) {
+    if (in_cksum(checksum_packet, PSEUDO_HEADER_LEN + tcp_pkt_len)) {
         snprintf(verify, 20, "Incorrect");
     }
 
@@ -368,11 +290,11 @@ void process_tcp_h(FILE *fp, pseudo_header_t *pseudo_header) {
     );
 }
 
-void process_icmp_h(FILE *fp) {
+void process_icmp_h(uint8_t *packet_data) {
 
     icmp_header_t *icmp_header = malloc(ICMP_HEADER_LEN);
 
-    fread(icmp_header, ICMP_HEADER_LEN, 1, fp);
+    memcpy(icmp_header, packet_data, ICMP_HEADER_LEN);
 
     printf(
             "\n"
@@ -383,11 +305,11 @@ void process_icmp_h(FILE *fp) {
 
 }
 
-void process_udp_h(FILE *fp) {
+void process_udp_h(uint8_t *packet_data) {
 
     udp_header_t *udp_header = malloc(UDP_HEADER_LEN);
 
-    fread(udp_header, UDP_HEADER_LEN, 1, fp);
+    memcpy(udp_header, packet_data, UDP_HEADER_LEN);
 
     printf(
             "\n"

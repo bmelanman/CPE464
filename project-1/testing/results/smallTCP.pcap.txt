@@ -26,7 +26,7 @@ Packet number: 1  Frame Len: 62
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 16384
-		Checksum: Incorrect (0x5aba)
+		Checksum: Correct (0x5aba)
 
 Packet number: 2  Frame Len: 62
 
@@ -55,7 +55,7 @@ Packet number: 2  Frame Len: 62
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 49680
-		Checksum: Incorrect (0x717a)
+		Checksum: Correct (0x717a)
 
 Packet number: 3  Frame Len: 54
 
@@ -113,7 +113,7 @@ Packet number: 4  Frame Len: 74
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 49680
-		Checksum: Incorrect (0xe036)
+		Checksum: Correct (0xe036)
 
 Packet number: 5  Frame Len: 54
 
@@ -171,7 +171,7 @@ Packet number: 6  Frame Len: 78
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 16540
-		Checksum: Incorrect (0xaeb)
+		Checksum: Correct (0xaeb)
 
 Packet number: 7  Frame Len: 60
 
@@ -229,7 +229,7 @@ Packet number: 8  Frame Len: 686
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 16540
-		Checksum: Incorrect (0xf01c)
+		Checksum: Correct (0xf01c)
 
 Packet number: 9  Frame Len: 60
 
@@ -287,7 +287,7 @@ Packet number: 10  Frame Len: 438
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 49680
-		Checksum: Incorrect (0x43ed)
+		Checksum: Correct (0x43ed)
 
 Packet number: 11  Frame Len: 78
 
@@ -316,7 +316,7 @@ Packet number: 11  Frame Len: 78
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 16156
-		Checksum: Incorrect (0xea68)
+		Checksum: Correct (0xea68)
 
 Packet number: 12  Frame Len: 478
 
@@ -345,7 +345,7 @@ Packet number: 12  Frame Len: 478
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 49680
-		Checksum: Incorrect (0x84bd)
+		Checksum: Correct (0x84bd)
 
 Packet number: 13  Frame Len: 54
 
@@ -403,7 +403,7 @@ Packet number: 14  Frame Len: 470
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 15732
-		Checksum: Incorrect (0x4d42)
+		Checksum: Correct (0x4d42)
 
 Packet number: 15  Frame Len: 60
 
@@ -461,7 +461,7 @@ Packet number: 16  Frame Len: 790
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 49680
-		Checksum: Incorrect (0xb406)
+		Checksum: Correct (0xb406)
 
 Packet number: 17  Frame Len: 54
 
@@ -519,4 +519,4 @@ Packet number: 18  Frame Len: 70
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 16560
-		Checksum: Incorrect (0xab2)
+		Checksum: Correct (0xab2)

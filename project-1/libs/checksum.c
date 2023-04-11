@@ -51,7 +51,7 @@
  * in_cksum --
  *      Checksum routine for Internet Protocol family headers (C Version)
  */
-unsigned short in_cksum(unsigned short *addr, int len) {
+unsigned short  in_cksum(unsigned short *addr, int len) {
     register int sum = 0;
     u_short answer = 0;
     register u_short *w = addr;

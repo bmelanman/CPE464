@@ -12,7 +12,7 @@ Packet number: 1  Frame Len: 79
 		TTL: 128
 		IP PDU Len: 65 (bytes)
 		Protocol: UDP
-		Checksum: Incorrect (0x1b06)
+		Checksum: Correct (0x1b06)
 		Sender IP: 192.168.1.102
 		Dest IP: 64.166.172.8
 
@@ -54,7 +54,7 @@ Packet number: 3  Frame Len: 430
 		TTL: 247
 		IP PDU Len: 416 (bytes)
 		Protocol: UDP
-		Checksum: Incorrect (0x4672)
+		Checksum: Correct (0x4672)
 		Sender IP: 206.13.29.12
 		Dest IP: 192.168.1.102
 
@@ -95,7 +95,7 @@ Packet number: 5  Frame Len: 82
 		TTL: 56
 		IP PDU Len: 68 (bytes)
 		Protocol: ICMP
-		Checksum: Incorrect (0x85c2)
+		Checksum: Correct (0x85c2)
 		Sender IP: 69.226.92.47
 		Dest IP: 192.168.1.102
 
@@ -135,7 +135,7 @@ Packet number: 7  Frame Len: 82
 		TTL: 56
 		IP PDU Len: 68 (bytes)
 		Protocol: ICMP
-		Checksum: Incorrect (0x84c2)
+		Checksum: Correct (0x84c2)
 		Sender IP: 69.226.92.47
 		Dest IP: 192.168.1.102
 
@@ -176,7 +176,7 @@ Packet number: 9  Frame Len: 261
 		TTL: 247
 		IP PDU Len: 247 (bytes)
 		Protocol: UDP
-		Checksum: Incorrect (0xa368)
+		Checksum: Correct (0xa368)
 		Sender IP: 206.13.29.12
 		Dest IP: 192.168.1.102
 
@@ -217,7 +217,7 @@ Packet number: 11  Frame Len: 82
 		TTL: 111
 		IP PDU Len: 68 (bytes)
 		Protocol: ICMP
-		Checksum: Incorrect (0x34d6)
+		Checksum: Correct (0x34d6)
 		Sender IP: 199.181.132.250
 		Dest IP: 192.168.1.102
 
@@ -257,7 +257,7 @@ Packet number: 13  Frame Len: 82
 		TTL: 111
 		IP PDU Len: 68 (bytes)
 		Protocol: ICMP
-		Checksum: Incorrect (0xecd5)
+		Checksum: Correct (0xecd5)
 		Sender IP: 199.181.132.250
 		Dest IP: 192.168.1.102
 
@@ -297,7 +297,7 @@ Packet number: 15  Frame Len: 82
 		TTL: 111
 		IP PDU Len: 68 (bytes)
 		Protocol: ICMP
-		Checksum: Incorrect (0xacd5)
+		Checksum: Correct (0xacd5)
 		Sender IP: 199.181.132.250
 		Dest IP: 192.168.1.102
 
@@ -337,7 +337,7 @@ Packet number: 17  Frame Len: 82
 		TTL: 111
 		IP PDU Len: 68 (bytes)
 		Protocol: ICMP
-		Checksum: Incorrect (0x75d5)
+		Checksum: Correct (0x75d5)
 		Sender IP: 199.181.132.250
 		Dest IP: 192.168.1.102
 
@@ -414,7 +414,7 @@ Packet number: 21  Frame Len: 188
 		TTL: 247
 		IP PDU Len: 174 (bytes)
 		Protocol: UDP
-		Checksum: Incorrect (0xf765)
+		Checksum: Correct (0xf765)
 		Sender IP: 206.13.29.12
 		Dest IP: 192.168.1.102
 
@@ -449,7 +449,7 @@ Packet number: 22  Frame Len: 62
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 16384
-		Checksum: Incorrect (0x88ed)
+		Checksum: Correct (0x88ed)
 
 Packet number: 23  Frame Len: 68
 
@@ -464,7 +464,7 @@ Packet number: 23  Frame Len: 68
 		TTL: 237
 		IP PDU Len: 52 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x27ee)
+		Checksum: Correct (0x27ee)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -478,7 +478,7 @@ Packet number: 23  Frame Len: 68
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 8192
-		Checksum: Incorrect (0x2785)
+		Checksum: Correct (0x2785)
 
 Packet number: 24  Frame Len: 54
 
@@ -522,7 +522,7 @@ Packet number: 25  Frame Len: 152
 		TTL: 128
 		IP PDU Len: 138 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xf389)
+		Checksum: Correct (0xf389)
 		Sender IP: 192.168.1.102
 		Dest IP: 66.212.229.183
 
@@ -536,7 +536,7 @@ Packet number: 25  Frame Len: 152
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 17424
-		Checksum: Incorrect (0x8318)
+		Checksum: Correct (0x8318)
 
 Packet number: 26  Frame Len: 60
 
@@ -580,7 +580,7 @@ Packet number: 27  Frame Len: 1000
 		TTL: 44
 		IP PDU Len: 986 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xeef)
+		Checksum: Correct (0xeef)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -594,7 +594,7 @@ Packet number: 27  Frame Len: 1000
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 5840
-		Checksum: Incorrect (0xb587)
+		Checksum: Correct (0xb587)
 
 Packet number: 28  Frame Len: 266
 
@@ -623,7 +623,7 @@ Packet number: 28  Frame Len: 266
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 16486
-		Checksum: Incorrect (0x3f9d)
+		Checksum: Correct (0x3f9d)
 
 Packet number: 29  Frame Len: 137
 
@@ -638,7 +638,7 @@ Packet number: 29  Frame Len: 137
 		TTL: 44
 		IP PDU Len: 123 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x6cf2)
+		Checksum: Correct (0x6cf2)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -652,7 +652,7 @@ Packet number: 29  Frame Len: 137
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 6432
-		Checksum: Incorrect (0x46c8)
+		Checksum: Correct (0x46c8)
 
 Packet number: 30  Frame Len: 355
 
@@ -681,7 +681,7 @@ Packet number: 30  Frame Len: 355
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 16411
-		Checksum: Incorrect (0x98e0)
+		Checksum: Correct (0x98e0)
 
 Packet number: 31  Frame Len: 568
 
@@ -696,7 +696,7 @@ Packet number: 31  Frame Len: 568
 		TTL: 44
 		IP PDU Len: 554 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xbcf0)
+		Checksum: Correct (0xbcf0)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -710,7 +710,7 @@ Packet number: 31  Frame Len: 568
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 7504
-		Checksum: Incorrect (0x8800)
+		Checksum: Correct (0x8800)
 
 Packet number: 32  Frame Len: 139
 
@@ -739,7 +739,7 @@ Packet number: 32  Frame Len: 139
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 17424
-		Checksum: Incorrect (0x391)
+		Checksum: Correct (0x391)
 
 Packet number: 33  Frame Len: 1514
 
@@ -754,7 +754,7 @@ Packet number: 33  Frame Len: 1514
 		TTL: 44
 		IP PDU Len: 1500 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x9ed)
+		Checksum: Correct (0x9ed)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -768,7 +768,7 @@ Packet number: 33  Frame Len: 1514
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 7504
-		Checksum: Incorrect (0xc07c)
+		Checksum: Correct (0xc07c)
 
 Packet number: 34  Frame Len: 1506
 
@@ -797,7 +797,7 @@ Packet number: 34  Frame Len: 1506
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 7504
-		Checksum: Incorrect (0xc7ec)
+		Checksum: Correct (0xc7ec)
 
 Packet number: 35  Frame Len: 62
 
@@ -812,7 +812,7 @@ Packet number: 35  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x498a)
+		Checksum: Correct (0x498a)
 		Sender IP: 192.168.1.102
 		Dest IP: 66.212.229.183
 
@@ -855,7 +855,7 @@ Packet number: 36  Frame Len: 284
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 7504
-		Checksum: Incorrect (0x9e17)
+		Checksum: Correct (0x9e17)
 
 Packet number: 37  Frame Len: 171
 
@@ -870,7 +870,7 @@ Packet number: 37  Frame Len: 171
 		TTL: 128
 		IP PDU Len: 157 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xdb89)
+		Checksum: Correct (0xdb89)
 		Sender IP: 192.168.1.102
 		Dest IP: 66.212.229.183
 
@@ -884,7 +884,7 @@ Packet number: 37  Frame Len: 171
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 17194
-		Checksum: Incorrect (0xd27b)
+		Checksum: Correct (0xd27b)
 
 Packet number: 38  Frame Len: 60
 
@@ -928,7 +928,7 @@ Packet number: 39  Frame Len: 907
 		TTL: 128
 		IP PDU Len: 893 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xfa86)
+		Checksum: Correct (0xfa86)
 		Sender IP: 192.168.1.102
 		Dest IP: 66.212.229.183
 
@@ -942,7 +942,7 @@ Packet number: 39  Frame Len: 907
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 17194
-		Checksum: Incorrect (0x5e96)
+		Checksum: Correct (0x5e96)
 
 Packet number: 40  Frame Len: 60
 
@@ -986,7 +986,7 @@ Packet number: 41  Frame Len: 184
 		TTL: 44
 		IP PDU Len: 170 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x36f2)
+		Checksum: Correct (0x36f2)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -1000,7 +1000,7 @@ Packet number: 41  Frame Len: 184
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 9295
-		Checksum: Incorrect (0x3e8c)
+		Checksum: Correct (0x3e8c)
 
 Packet number: 42  Frame Len: 1506
 
@@ -1029,7 +1029,7 @@ Packet number: 42  Frame Len: 1506
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 9295
-		Checksum: Incorrect (0xd760)
+		Checksum: Correct (0xd760)
 
 Packet number: 43  Frame Len: 62
 
@@ -1044,7 +1044,7 @@ Packet number: 43  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x468a)
+		Checksum: Correct (0x468a)
 		Sender IP: 192.168.1.102
 		Dest IP: 66.212.229.183
 
@@ -1087,7 +1087,7 @@ Packet number: 44  Frame Len: 1506
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 9295
-		Checksum: Incorrect (0x9717)
+		Checksum: Correct (0x9717)
 
 Packet number: 45  Frame Len: 1514
 
@@ -1102,7 +1102,7 @@ Packet number: 45  Frame Len: 1514
 		TTL: 44
 		IP PDU Len: 1500 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x1ed)
+		Checksum: Correct (0x1ed)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -1116,7 +1116,7 @@ Packet number: 45  Frame Len: 1514
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 9295
-		Checksum: Incorrect (0x8214)
+		Checksum: Correct (0x8214)
 
 Packet number: 46  Frame Len: 54
 
@@ -1160,7 +1160,7 @@ Packet number: 47  Frame Len: 1514
 		TTL: 44
 		IP PDU Len: 1500 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xed)
+		Checksum: Correct (0xed)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -1174,7 +1174,7 @@ Packet number: 47  Frame Len: 1514
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 9295
-		Checksum: Incorrect (0x1995)
+		Checksum: Correct (0x1995)
 
 Packet number: 48  Frame Len: 1506
 
@@ -1203,7 +1203,7 @@ Packet number: 48  Frame Len: 1506
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 9295
-		Checksum: Incorrect (0x87f9)
+		Checksum: Correct (0x87f9)
 
 Packet number: 49  Frame Len: 62
 
@@ -1218,7 +1218,7 @@ Packet number: 49  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x448a)
+		Checksum: Correct (0x448a)
 		Sender IP: 192.168.1.102
 		Dest IP: 66.212.229.183
 
@@ -1261,7 +1261,7 @@ Packet number: 50  Frame Len: 820
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 9295
-		Checksum: Incorrect (0x1868)
+		Checksum: Correct (0x1868)
 
 Packet number: 51  Frame Len: 62
 
@@ -1276,7 +1276,7 @@ Packet number: 51  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x438a)
+		Checksum: Correct (0x438a)
 		Sender IP: 192.168.1.102
 		Dest IP: 66.212.229.183
 
@@ -1319,7 +1319,7 @@ Packet number: 52  Frame Len: 840
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 9295
-		Checksum: Incorrect (0x8368)
+		Checksum: Correct (0x8368)
 
 Packet number: 53  Frame Len: 62
 
@@ -1334,7 +1334,7 @@ Packet number: 53  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x428a)
+		Checksum: Correct (0x428a)
 		Sender IP: 192.168.1.102
 		Dest IP: 66.212.229.183
 
@@ -1377,7 +1377,7 @@ Packet number: 54  Frame Len: 139
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 15872
-		Checksum: Incorrect (0x38b3)
+		Checksum: Correct (0x38b3)
 
 Packet number: 55  Frame Len: 68
 
@@ -1392,7 +1392,7 @@ Packet number: 55  Frame Len: 68
 		TTL: 44
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xa8f2)
+		Checksum: Correct (0xa8f2)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -1435,7 +1435,7 @@ Packet number: 56  Frame Len: 139
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 15872
-		Checksum: Incorrect (0x741b)
+		Checksum: Correct (0x741b)
 
 Packet number: 57  Frame Len: 68
 
@@ -1450,7 +1450,7 @@ Packet number: 57  Frame Len: 68
 		TTL: 44
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xa7f2)
+		Checksum: Correct (0xa7f2)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -1493,7 +1493,7 @@ Packet number: 58  Frame Len: 139
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 15872
-		Checksum: Incorrect (0xf9e)
+		Checksum: Correct (0xf9e)
 
 Packet number: 59  Frame Len: 68
 
@@ -1508,7 +1508,7 @@ Packet number: 59  Frame Len: 68
 		TTL: 44
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xa6f2)
+		Checksum: Correct (0xa6f2)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -1551,7 +1551,7 @@ Packet number: 60  Frame Len: 293
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 15872
-		Checksum: Incorrect (0xf264)
+		Checksum: Correct (0xf264)
 
 Packet number: 61  Frame Len: 68
 
@@ -1566,7 +1566,7 @@ Packet number: 61  Frame Len: 68
 		TTL: 44
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xa5f2)
+		Checksum: Correct (0xa5f2)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -1609,7 +1609,7 @@ Packet number: 62  Frame Len: 176
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 9295
-		Checksum: Incorrect (0x209c)
+		Checksum: Correct (0x209c)
 
 Packet number: 63  Frame Len: 62
 
@@ -1624,7 +1624,7 @@ Packet number: 63  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x3d8a)
+		Checksum: Correct (0x3d8a)
 		Sender IP: 192.168.1.102
 		Dest IP: 66.212.229.183
 
@@ -1667,7 +1667,7 @@ Packet number: 64  Frame Len: 600
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 9295
-		Checksum: Incorrect (0xb4c6)
+		Checksum: Correct (0xb4c6)
 
 Packet number: 65  Frame Len: 62
 
@@ -1682,7 +1682,7 @@ Packet number: 65  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x3c8a)
+		Checksum: Correct (0x3c8a)
 		Sender IP: 192.168.1.102
 		Dest IP: 66.212.229.183
 
@@ -1740,7 +1740,7 @@ Packet number: 67  Frame Len: 147
 		TTL: 128
 		IP PDU Len: 133 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xe589)
+		Checksum: Correct (0xe589)
 		Sender IP: 192.168.1.102
 		Dest IP: 66.212.229.183
 
@@ -1754,7 +1754,7 @@ Packet number: 67  Frame Len: 147
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 17424
-		Checksum: Incorrect (0x44a4)
+		Checksum: Correct (0x44a4)
 
 Packet number: 68  Frame Len: 60
 
@@ -1798,7 +1798,7 @@ Packet number: 69  Frame Len: 147
 		TTL: 128
 		IP PDU Len: 133 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xe489)
+		Checksum: Correct (0xe489)
 		Sender IP: 192.168.1.102
 		Dest IP: 66.212.229.183
 
@@ -1812,7 +1812,7 @@ Packet number: 69  Frame Len: 147
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 17424
-		Checksum: Incorrect (0x7365)
+		Checksum: Correct (0x7365)
 
 Packet number: 70  Frame Len: 60
 
@@ -1856,7 +1856,7 @@ Packet number: 71  Frame Len: 840
 		TTL: 44
 		IP PDU Len: 826 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x96ef)
+		Checksum: Correct (0x96ef)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -1870,7 +1870,7 @@ Packet number: 71  Frame Len: 840
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 9295
-		Checksum: Incorrect (0xf873)
+		Checksum: Correct (0xf873)
 
 Packet number: 72  Frame Len: 54
 
@@ -1914,7 +1914,7 @@ Packet number: 73  Frame Len: 139
 		TTL: 128
 		IP PDU Len: 125 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xea89)
+		Checksum: Correct (0xea89)
 		Sender IP: 192.168.1.102
 		Dest IP: 66.212.229.183
 
@@ -1928,7 +1928,7 @@ Packet number: 73  Frame Len: 139
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 16646
-		Checksum: Incorrect (0x99bc)
+		Checksum: Correct (0x99bc)
 
 Packet number: 74  Frame Len: 60
 
@@ -1972,7 +1972,7 @@ Packet number: 75  Frame Len: 87
 		TTL: 128
 		IP PDU Len: 73 (bytes)
 		Protocol: UDP
-		Checksum: Incorrect (0x8507)
+		Checksum: Correct (0x8507)
 		Sender IP: 192.168.1.102
 		Dest IP: 206.13.29.12
 
@@ -2014,7 +2014,7 @@ Packet number: 77  Frame Len: 70
 		TTL: 128
 		IP PDU Len: 56 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x86c1)
+		Checksum: Correct (0x86c1)
 		Sender IP: 192.168.1.102
 		Dest IP: 195.10.46.40
 
@@ -2028,7 +2028,7 @@ Packet number: 77  Frame Len: 70
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 16384
-		Checksum: Incorrect (0x5a8)
+		Checksum: Correct (0x5a8)
 
 Packet number: 78  Frame Len: 62
 
@@ -2057,7 +2057,7 @@ Packet number: 78  Frame Len: 62
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 5840
-		Checksum: Incorrect (0xc477)
+		Checksum: Correct (0xc477)
 
 Packet number: 79  Frame Len: 62
 
@@ -2072,7 +2072,7 @@ Packet number: 79  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x8cc1)
+		Checksum: Correct (0x8cc1)
 		Sender IP: 192.168.1.102
 		Dest IP: 195.10.46.40
 
@@ -2115,7 +2115,7 @@ Packet number: 80  Frame Len: 382
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 17424
-		Checksum: Incorrect (0xa038)
+		Checksum: Correct (0xa038)
 
 Packet number: 81  Frame Len: 68
 
@@ -2130,7 +2130,7 @@ Packet number: 81  Frame Len: 68
 		TTL: 43
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xb01b)
+		Checksum: Correct (0xb01b)
 		Sender IP: 195.10.46.40
 		Dest IP: 192.168.1.102
 
@@ -2173,7 +2173,7 @@ Packet number: 82  Frame Len: 1506
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 6432
-		Checksum: Incorrect (0x1728)
+		Checksum: Correct (0x1728)
 
 Packet number: 83  Frame Len: 862
 
@@ -2188,7 +2188,7 @@ Packet number: 83  Frame Len: 862
 		TTL: 43
 		IP PDU Len: 848 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x8e18)
+		Checksum: Correct (0x8e18)
 		Sender IP: 195.10.46.40
 		Dest IP: 192.168.1.102
 
@@ -2202,7 +2202,7 @@ Packet number: 83  Frame Len: 862
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 6432
-		Checksum: Incorrect (0x15bf)
+		Checksum: Correct (0x15bf)
 
 Packet number: 84  Frame Len: 54
 
@@ -2246,7 +2246,7 @@ Packet number: 85  Frame Len: 591
 		TTL: 128
 		IP PDU Len: 577 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x77bf)
+		Checksum: Correct (0x77bf)
 		Sender IP: 192.168.1.102
 		Dest IP: 195.10.46.40
 
@@ -2260,7 +2260,7 @@ Packet number: 85  Frame Len: 591
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 17424
-		Checksum: Incorrect (0xf180)
+		Checksum: Correct (0xf180)
 
 Packet number: 86  Frame Len: 62
 
@@ -2289,7 +2289,7 @@ Packet number: 86  Frame Len: 62
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 16384
-		Checksum: Incorrect (0x72c4)
+		Checksum: Correct (0x72c4)
 
 Packet number: 87  Frame Len: 1514
 
@@ -2304,7 +2304,7 @@ Packet number: 87  Frame Len: 1514
 		TTL: 43
 		IP PDU Len: 1500 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x116)
+		Checksum: Correct (0x116)
 		Sender IP: 195.10.46.40
 		Dest IP: 192.168.1.102
 
@@ -2318,7 +2318,7 @@ Packet number: 87  Frame Len: 1514
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 7504
-		Checksum: Incorrect (0x8719)
+		Checksum: Correct (0x8719)
 
 Packet number: 88  Frame Len: 1506
 
@@ -2347,7 +2347,7 @@ Packet number: 88  Frame Len: 1506
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 7504
-		Checksum: Incorrect (0x11ba)
+		Checksum: Correct (0x11ba)
 
 Packet number: 89  Frame Len: 62
 
@@ -2362,7 +2362,7 @@ Packet number: 89  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x84c1)
+		Checksum: Correct (0x84c1)
 		Sender IP: 192.168.1.102
 		Dest IP: 195.10.46.40
 
@@ -2405,7 +2405,7 @@ Packet number: 90  Frame Len: 1506
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 7504
-		Checksum: Incorrect (0xe62f)
+		Checksum: Correct (0xe62f)
 
 Packet number: 91  Frame Len: 62
 
@@ -2420,7 +2420,7 @@ Packet number: 91  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x83c1)
+		Checksum: Correct (0x83c1)
 		Sender IP: 192.168.1.102
 		Dest IP: 195.10.46.40
 
@@ -2463,7 +2463,7 @@ Packet number: 92  Frame Len: 62
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 5840
-		Checksum: Incorrect (0x115)
+		Checksum: Correct (0x115)
 
 Packet number: 93  Frame Len: 62
 
@@ -2478,7 +2478,7 @@ Packet number: 93  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x82c1)
+		Checksum: Correct (0x82c1)
 		Sender IP: 192.168.1.102
 		Dest IP: 195.10.46.40
 
@@ -2536,7 +2536,7 @@ Packet number: 95  Frame Len: 592
 		TTL: 128
 		IP PDU Len: 578 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x6ebf)
+		Checksum: Correct (0x6ebf)
 		Sender IP: 192.168.1.102
 		Dest IP: 195.10.46.40
 
@@ -2550,7 +2550,7 @@ Packet number: 95  Frame Len: 592
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 17424
-		Checksum: Incorrect (0x461d)
+		Checksum: Correct (0x461d)
 
 Packet number: 96  Frame Len: 62
 
@@ -2579,7 +2579,7 @@ Packet number: 96  Frame Len: 62
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 16384
-		Checksum: Incorrect (0x1228)
+		Checksum: Correct (0x1228)
 
 Packet number: 97  Frame Len: 1514
 
@@ -2594,7 +2594,7 @@ Packet number: 97  Frame Len: 1514
 		TTL: 43
 		IP PDU Len: 1500 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xfe15)
+		Checksum: Correct (0xfe15)
 		Sender IP: 195.10.46.40
 		Dest IP: 192.168.1.102
 
@@ -2608,7 +2608,7 @@ Packet number: 97  Frame Len: 1514
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 7504
-		Checksum: Incorrect (0x4706)
+		Checksum: Correct (0x4706)
 
 Packet number: 98  Frame Len: 54
 
@@ -2652,7 +2652,7 @@ Packet number: 99  Frame Len: 1514
 		TTL: 43
 		IP PDU Len: 1500 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xfd15)
+		Checksum: Correct (0xfd15)
 		Sender IP: 195.10.46.40
 		Dest IP: 192.168.1.102
 
@@ -2666,7 +2666,7 @@ Packet number: 99  Frame Len: 1514
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 7504
-		Checksum: Incorrect (0xea20)
+		Checksum: Correct (0xea20)
 
 Packet number: 100  Frame Len: 54
 
@@ -2710,7 +2710,7 @@ Packet number: 101  Frame Len: 1514
 		TTL: 43
 		IP PDU Len: 1500 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xfc15)
+		Checksum: Correct (0xfc15)
 		Sender IP: 195.10.46.40
 		Dest IP: 192.168.1.102
 
@@ -2724,7 +2724,7 @@ Packet number: 101  Frame Len: 1514
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 7504
-		Checksum: Incorrect (0xd7c8)
+		Checksum: Correct (0xd7c8)
 
 Packet number: 102  Frame Len: 54
 
@@ -2768,7 +2768,7 @@ Packet number: 103  Frame Len: 334
 		TTL: 43
 		IP PDU Len: 320 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x961a)
+		Checksum: Correct (0x961a)
 		Sender IP: 195.10.46.40
 		Dest IP: 192.168.1.102
 
@@ -2782,7 +2782,7 @@ Packet number: 103  Frame Len: 334
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 7504
-		Checksum: Incorrect (0x21a3)
+		Checksum: Correct (0x21a3)
 
 Packet number: 104  Frame Len: 54
 
@@ -2826,7 +2826,7 @@ Packet number: 105  Frame Len: 1514
 		TTL: 43
 		IP PDU Len: 1500 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xfb15)
+		Checksum: Correct (0xfb15)
 		Sender IP: 195.10.46.40
 		Dest IP: 192.168.1.102
 
@@ -2840,7 +2840,7 @@ Packet number: 105  Frame Len: 1514
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 7504
-		Checksum: Incorrect (0xde9d)
+		Checksum: Correct (0xde9d)
 
 Packet number: 106  Frame Len: 54
 
@@ -2884,7 +2884,7 @@ Packet number: 107  Frame Len: 68
 		TTL: 43
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x5af9)
+		Checksum: Correct (0x5af9)
 		Sender IP: 195.10.46.40
 		Dest IP: 192.168.1.102
 
@@ -2927,7 +2927,7 @@ Packet number: 108  Frame Len: 1506
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 6432
-		Checksum: Incorrect (0xd6d5)
+		Checksum: Correct (0xd6d5)
 
 Packet number: 109  Frame Len: 1514
 
@@ -2942,7 +2942,7 @@ Packet number: 109  Frame Len: 1514
 		TTL: 43
 		IP PDU Len: 1500 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xacf3)
+		Checksum: Correct (0xacf3)
 		Sender IP: 195.10.46.40
 		Dest IP: 192.168.1.102
 
@@ -2956,7 +2956,7 @@ Packet number: 109  Frame Len: 1514
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 6432
-		Checksum: Incorrect (0x15c8)
+		Checksum: Correct (0x15c8)
 
 Packet number: 110  Frame Len: 54
 
@@ -3000,7 +3000,7 @@ Packet number: 111  Frame Len: 70
 		TTL: 43
 		IP PDU Len: 56 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x7751)
+		Checksum: Correct (0x7751)
 		Sender IP: 195.10.46.40
 		Dest IP: 192.168.1.102
 
@@ -3014,7 +3014,7 @@ Packet number: 111  Frame Len: 70
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 5840
-		Checksum: Incorrect (0xf6cf)
+		Checksum: Correct (0xf6cf)
 
 Packet number: 112  Frame Len: 54
 
@@ -3058,7 +3058,7 @@ Packet number: 113  Frame Len: 587
 		TTL: 128
 		IP PDU Len: 573 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x68bf)
+		Checksum: Correct (0x68bf)
 		Sender IP: 192.168.1.102
 		Dest IP: 195.10.46.40
 
@@ -3072,7 +3072,7 @@ Packet number: 113  Frame Len: 587
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 17424
-		Checksum: Incorrect (0x365c)
+		Checksum: Correct (0x365c)
 
 Packet number: 114  Frame Len: 1506
 
@@ -3101,7 +3101,7 @@ Packet number: 114  Frame Len: 1506
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 6432
-		Checksum: Incorrect (0x6ed0)
+		Checksum: Correct (0x6ed0)
 
 Packet number: 115  Frame Len: 62
 
@@ -3116,7 +3116,7 @@ Packet number: 115  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x73c1)
+		Checksum: Correct (0x73c1)
 		Sender IP: 192.168.1.102
 		Dest IP: 195.10.46.40
 
@@ -3174,7 +3174,7 @@ Packet number: 117  Frame Len: 1051
 		TTL: 43
 		IP PDU Len: 1037 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x79f5)
+		Checksum: Correct (0x79f5)
 		Sender IP: 195.10.46.40
 		Dest IP: 192.168.1.102
 
@@ -3188,7 +3188,7 @@ Packet number: 117  Frame Len: 1051
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 6432
-		Checksum: Incorrect (0x73c7)
+		Checksum: Correct (0x73c7)
 
 Packet number: 118  Frame Len: 54
 
@@ -3232,7 +3232,7 @@ Packet number: 119  Frame Len: 68
 		TTL: 43
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x2960)
+		Checksum: Correct (0x2960)
 		Sender IP: 195.10.46.40
 		Dest IP: 192.168.1.102
 
@@ -3275,7 +3275,7 @@ Packet number: 120  Frame Len: 239
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 6432
-		Checksum: Incorrect (0x6a7e)
+		Checksum: Correct (0x6a7e)
 
 Packet number: 121  Frame Len: 70
 
@@ -3290,7 +3290,7 @@ Packet number: 121  Frame Len: 70
 		TTL: 128
 		IP PDU Len: 56 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x68c1)
+		Checksum: Correct (0x68c1)
 		Sender IP: 192.168.1.102
 		Dest IP: 195.10.46.40
 
@@ -3304,7 +3304,7 @@ Packet number: 121  Frame Len: 70
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 16384
-		Checksum: Incorrect (0x54aa)
+		Checksum: Correct (0x54aa)
 
 Packet number: 122  Frame Len: 580
 
@@ -3333,7 +3333,7 @@ Packet number: 122  Frame Len: 580
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 17239
-		Checksum: Incorrect (0x71a3)
+		Checksum: Correct (0x71a3)
 
 Packet number: 123  Frame Len: 70
 
@@ -3348,7 +3348,7 @@ Packet number: 123  Frame Len: 70
 		TTL: 43
 		IP PDU Len: 56 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x7751)
+		Checksum: Correct (0x7751)
 		Sender IP: 195.10.46.40
 		Dest IP: 192.168.1.102
 
@@ -3362,7 +3362,7 @@ Packet number: 123  Frame Len: 70
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 5840
-		Checksum: Incorrect (0x98d)
+		Checksum: Correct (0x98d)
 
 Packet number: 124  Frame Len: 54
 
@@ -3406,7 +3406,7 @@ Packet number: 125  Frame Len: 588
 		TTL: 128
 		IP PDU Len: 574 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x5dbf)
+		Checksum: Correct (0x5dbf)
 		Sender IP: 192.168.1.102
 		Dest IP: 195.10.46.40
 
@@ -3420,7 +3420,7 @@ Packet number: 125  Frame Len: 588
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 17424
-		Checksum: Incorrect (0x8e1)
+		Checksum: Correct (0x8e1)
 
 Packet number: 126  Frame Len: 1506
 
@@ -3449,7 +3449,7 @@ Packet number: 126  Frame Len: 1506
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 7504
-		Checksum: Incorrect (0x97d1)
+		Checksum: Correct (0x97d1)
 
 Packet number: 127  Frame Len: 1514
 
@@ -3464,7 +3464,7 @@ Packet number: 127  Frame Len: 1514
 		TTL: 43
 		IP PDU Len: 1500 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x7a5a)
+		Checksum: Correct (0x7a5a)
 		Sender IP: 195.10.46.40
 		Dest IP: 192.168.1.102
 
@@ -3478,7 +3478,7 @@ Packet number: 127  Frame Len: 1514
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 7504
-		Checksum: Incorrect (0xbcea)
+		Checksum: Correct (0xbcea)
 
 Packet number: 128  Frame Len: 54
 
@@ -3522,7 +3522,7 @@ Packet number: 129  Frame Len: 68
 		TTL: 43
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x4c7f)
+		Checksum: Correct (0x4c7f)
 		Sender IP: 195.10.46.40
 		Dest IP: 192.168.1.102
 
@@ -3565,7 +3565,7 @@ Packet number: 130  Frame Len: 268
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 6432
-		Checksum: Incorrect (0x8c34)
+		Checksum: Correct (0x8c34)
 
 Packet number: 131  Frame Len: 74
 
@@ -3580,7 +3580,7 @@ Packet number: 131  Frame Len: 74
 		TTL: 128
 		IP PDU Len: 60 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x5cc1)
+		Checksum: Correct (0x5cc1)
 		Sender IP: 192.168.1.102
 		Dest IP: 195.10.46.40
 
@@ -3594,7 +3594,7 @@ Packet number: 131  Frame Len: 74
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 17424
-		Checksum: Incorrect (0xdc2a)
+		Checksum: Correct (0xdc2a)
 
 Packet number: 132  Frame Len: 1506
 
@@ -3623,7 +3623,7 @@ Packet number: 132  Frame Len: 1506
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 6432
-		Checksum: Incorrect (0xf008)
+		Checksum: Correct (0xf008)
 
 Packet number: 133  Frame Len: 62
 
@@ -3638,7 +3638,7 @@ Packet number: 133  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x67c1)
+		Checksum: Correct (0x67c1)
 		Sender IP: 192.168.1.102
 		Dest IP: 195.10.46.40
 
@@ -3696,7 +3696,7 @@ Packet number: 135  Frame Len: 1514
 		TTL: 43
 		IP PDU Len: 1500 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x795a)
+		Checksum: Correct (0x795a)
 		Sender IP: 195.10.46.40
 		Dest IP: 192.168.1.102
 
@@ -3710,7 +3710,7 @@ Packet number: 135  Frame Len: 1514
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 7504
-		Checksum: Incorrect (0xb31d)
+		Checksum: Correct (0xb31d)
 
 Packet number: 136  Frame Len: 54
 
@@ -3754,7 +3754,7 @@ Packet number: 137  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x64c1)
+		Checksum: Correct (0x64c1)
 		Sender IP: 192.168.1.102
 		Dest IP: 195.10.46.40
 
@@ -3797,7 +3797,7 @@ Packet number: 138  Frame Len: 1506
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 7504
-		Checksum: Incorrect (0x2038)
+		Checksum: Correct (0x2038)
 
 Packet number: 139  Frame Len: 62
 
@@ -3812,7 +3812,7 @@ Packet number: 139  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x6401)
+		Checksum: Correct (0x6401)
 		Sender IP: 192.168.1.102
 		Dest IP: 195.10.46.40
 
@@ -3855,7 +3855,7 @@ Packet number: 140  Frame Len: 1506
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 7504
-		Checksum: Incorrect (0xff5e)
+		Checksum: Correct (0xff5e)
 
 Packet number: 141  Frame Len: 62
 
@@ -3870,7 +3870,7 @@ Packet number: 141  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x6301)
+		Checksum: Correct (0x6301)
 		Sender IP: 192.168.1.102
 		Dest IP: 195.10.46.40
 
@@ -3913,7 +3913,7 @@ Packet number: 142  Frame Len: 1506
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 7504
-		Checksum: Incorrect (0x9b60)
+		Checksum: Correct (0x9b60)
 
 Packet number: 143  Frame Len: 62
 
@@ -3928,7 +3928,7 @@ Packet number: 143  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x6201)
+		Checksum: Correct (0x6201)
 		Sender IP: 192.168.1.102
 		Dest IP: 195.10.46.40
 
@@ -3971,7 +3971,7 @@ Packet number: 144  Frame Len: 1506
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 7504
-		Checksum: Incorrect (0xd397)
+		Checksum: Correct (0xd397)
 
 Packet number: 145  Frame Len: 62
 
@@ -3986,7 +3986,7 @@ Packet number: 145  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x6101)
+		Checksum: Correct (0x6101)
 		Sender IP: 192.168.1.102
 		Dest IP: 195.10.46.40
 
@@ -4029,7 +4029,7 @@ Packet number: 146  Frame Len: 131
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 16646
-		Checksum: Incorrect (0x28e7)
+		Checksum: Correct (0x28e7)
 
 Packet number: 147  Frame Len: 68
 
@@ -4044,7 +4044,7 @@ Packet number: 147  Frame Len: 68
 		TTL: 44
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x9ef2)
+		Checksum: Correct (0x9ef2)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -4087,7 +4087,7 @@ Packet number: 148  Frame Len: 147
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 16646
-		Checksum: Incorrect (0xca8b)
+		Checksum: Correct (0xca8b)
 
 Packet number: 149  Frame Len: 68
 
@@ -4102,7 +4102,7 @@ Packet number: 149  Frame Len: 68
 		TTL: 44
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x9df2)
+		Checksum: Correct (0x9df2)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -4145,7 +4145,7 @@ Packet number: 150  Frame Len: 1506
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 9295
-		Checksum: Incorrect (0x4607)
+		Checksum: Correct (0x4607)
 
 Packet number: 151  Frame Len: 1514
 
@@ -4160,7 +4160,7 @@ Packet number: 151  Frame Len: 1514
 		TTL: 44
 		IP PDU Len: 1500 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xefec)
+		Checksum: Correct (0xefec)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -4174,7 +4174,7 @@ Packet number: 151  Frame Len: 1514
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 9295
-		Checksum: Incorrect (0xb915)
+		Checksum: Correct (0xb915)
 
 Packet number: 152  Frame Len: 54
 
@@ -4218,7 +4218,7 @@ Packet number: 153  Frame Len: 696
 		TTL: 44
 		IP PDU Len: 682 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x20f0)
+		Checksum: Correct (0x20f0)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -4232,7 +4232,7 @@ Packet number: 153  Frame Len: 696
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 9295
-		Checksum: Incorrect (0xe844)
+		Checksum: Correct (0xe844)
 
 Packet number: 154  Frame Len: 54
 
@@ -4276,7 +4276,7 @@ Packet number: 155  Frame Len: 304
 		TTL: 44
 		IP PDU Len: 290 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xa7f1)
+		Checksum: Correct (0xa7f1)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -4290,7 +4290,7 @@ Packet number: 155  Frame Len: 304
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 9295
-		Checksum: Incorrect (0x91d9)
+		Checksum: Correct (0x91d9)
 
 Packet number: 156  Frame Len: 131
 
@@ -4319,7 +4319,7 @@ Packet number: 156  Frame Len: 131
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 16548
-		Checksum: Incorrect (0x9308)
+		Checksum: Correct (0x9308)
 
 Packet number: 157  Frame Len: 68
 
@@ -4334,7 +4334,7 @@ Packet number: 157  Frame Len: 68
 		TTL: 44
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x98f2)
+		Checksum: Correct (0x98f2)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -4377,7 +4377,7 @@ Packet number: 158  Frame Len: 208
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 16548
-		Checksum: Incorrect (0x6474)
+		Checksum: Correct (0x6474)
 
 Packet number: 159  Frame Len: 272
 
@@ -4392,7 +4392,7 @@ Packet number: 159  Frame Len: 272
 		TTL: 44
 		IP PDU Len: 258 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xc5f1)
+		Checksum: Correct (0xc5f1)
 		Sender IP: 66.212.229.183
 		Dest IP: 192.168.1.102
 
@@ -4406,7 +4406,7 @@ Packet number: 159  Frame Len: 272
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 9295
-		Checksum: Incorrect (0x8aa5)
+		Checksum: Correct (0x8aa5)
 
 Packet number: 160  Frame Len: 60
 
@@ -4450,7 +4450,7 @@ Packet number: 161  Frame Len: 248
 		TTL: 128
 		IP PDU Len: 234 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0x4689)
+		Checksum: Correct (0x4689)
 		Sender IP: 192.168.1.102
 		Dest IP: 66.212.229.183
 
@@ -4464,7 +4464,7 @@ Packet number: 161  Frame Len: 248
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 16338
-		Checksum: Incorrect (0xba9d)
+		Checksum: Correct (0xba9d)
 
 Packet number: 162  Frame Len: 1200
 
@@ -4493,7 +4493,7 @@ Packet number: 162  Frame Len: 1200
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 12675
-		Checksum: Incorrect (0x4538)
+		Checksum: Correct (0x4538)
 
 Packet number: 163  Frame Len: 62
 
@@ -4508,7 +4508,7 @@ Packet number: 163  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xff89)
+		Checksum: Correct (0xff89)
 		Sender IP: 192.168.1.102
 		Dest IP: 66.212.229.183
 
@@ -4551,7 +4551,7 @@ Packet number: 164  Frame Len: 147
 		RST Flag: No
 		FIN Flag: No
 		Window Size: 17424
-		Checksum: Incorrect (0xc7a8)
+		Checksum: Correct (0xc7a8)
 
 Packet number: 165  Frame Len: 131
 
@@ -4566,7 +4566,7 @@ Packet number: 165  Frame Len: 131
 		TTL: 128
 		IP PDU Len: 117 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xb889)
+		Checksum: Correct (0xb889)
 		Sender IP: 192.168.1.102
 		Dest IP: 66.212.229.183
 
@@ -4580,7 +4580,7 @@ Packet number: 165  Frame Len: 131
 		RST Flag: No
 		FIN Flag: Yes
 		Window Size: 17424
-		Checksum: Incorrect (0x36fc)
+		Checksum: Correct (0x36fc)
 
 Packet number: 166  Frame Len: 60
 
@@ -4624,7 +4624,7 @@ Packet number: 167  Frame Len: 62
 		TTL: 128
 		IP PDU Len: 48 (bytes)
 		Protocol: TCP
-		Checksum: Incorrect (0xfc89)
+		Checksum: Correct (0xfc89)
 		Sender IP: 192.168.1.102
 		Dest IP: 66.212.229.183
 
