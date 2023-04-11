@@ -8,6 +8,12 @@
 #include <pcap/pcap.h>
 #include <errno.h>
 
+#if __APPLE__
+#include <net/ethernet.h>
+#else
+#include <netinet/ether.h>
+#endif
+
 #include "libs/checksum.h"
 
 #define ETH_HEADER  1
@@ -47,8 +53,8 @@ typedef struct __attribute__((packed)) packet_header {  /* Offset */
 
 // 14 bytes (112 bits)
 typedef struct __attribute__((packed)) eth_header {     /* Offset */
-    uint64_t dst_addr: 48;                              /*      0 */
-    uint64_t src_addr: 48;                              /*     48 */
+    uint8_t dst_addr[6];                                /*      0 */
+    uint8_t src_addr[6];                                /*     48 */
     uint16_t type;                                      /*     96 */
 } eth_header_t;
 
@@ -59,9 +65,9 @@ typedef struct __attribute__((packed)) arp_header {     /* Offset */
     uint8_t H_LEN;                                      /*     32 */
     uint8_t P_LEN;                                      /*     40 */
     uint16_t OPER;                                      /*     48 */
-    uint64_t SHA: 48;                                   /*     64 */
+    uint8_t SHA[6];                                     /*     64 */
     uint32_t SPA;                                       /*    112 */
-    uint64_t THA: 48;                                   /*    144 */
+    uint8_t THA[6];                                     /*    144 */
     uint32_t TPA;                                       /*    192 */
 } arp_header_t;
 
@@ -115,9 +121,9 @@ typedef struct __attribute__((packed)) udp_header {     /* Offset */
     uint16_t cksum;                                     /*     48 */
 } udp_header_t;
 
-char *mactostr(uint64_t mac_addr);
+char *mactostr(uint8_t mac_addr[6]);
 
-char *iptostr(uint64_t ip_addr);
+char *iptostr(uint32_t ip_addr);
 
 char *get_type(uint8_t protocol, uint16_t type);
 

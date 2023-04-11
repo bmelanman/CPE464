@@ -1,6 +1,53 @@
 
 #include "trace.h"
 
+int test(int argc, char *argv[]) {
+
+    uint32_t pkt_num = 0, pkt_len;
+
+    pcap_t *fp;
+    char errbuf[PCAP_ERRBUF_SIZE], *buff = NULL;
+    const u_char *packet_data = NULL;
+
+    struct pcap_pkthdr *pcap_header = malloc(PCAP_HEADER_LEN);
+    eth_header_t *eth_header = malloc(ETH_HEADER_LEN);
+
+    /* Check for file input */
+    if (argc < 2) {
+        fprintf(stderr, "ERR: Please provide an input *.pcap file!\n");
+        return 1;
+    }
+
+    /* Check for the correct file type */
+    strtok_r(strdup(argv[1]), ".", &buff);
+    if (strcmp(buff, "pcap") != 0) {
+        fprintf(stderr, "ERR: The given file MUST be a *.pcap file!\n");
+        return 1;
+    }
+
+    fp = pcap_open_offline(argv[1], errbuf);
+
+    if (fp == NULL) {
+        fprintf(stderr, "\npcap_open_offline() failed: %s\n", errbuf);
+        return 1;
+    }
+
+    while (pcap_next_ex(fp, &pcap_header, &packet_data) >= 0) {
+
+        memcpy(eth_header, packet_data, ETH_HEADER_LEN);
+
+        pkt_len = pcap_header->len;
+
+        printf("\nPacket number: %d  Frame Len: %d\n\n", pkt_num++, pkt_len);
+
+        if (pkt_num > 2) break;
+    }
+
+    pcap_close(fp);
+
+    return 0;
+}
+
 int main(int argc, char *argv[]) {
 
     char *buff = NULL, *debug = getenv("DEBUG");
@@ -66,62 +113,29 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    fclose(fp);
+
+    test(argc, argv);
+
     return 0;
 }
 
-/* mactostr: MAC Address to String
- * Converts a little-endian uint64_t MAC address to a human-readable string
- * (ex: 151138023047680 -> 00:02:2d:90:75:89)
- * */
-char *mactostr(uint64_t mac_addr) {
+char *mactostr(uint8_t mac_addr[6]) {
 
-    uint8_t i;
-    uint64_t _mac_addr;
-    char buff[3] = "", *dst = malloc(18);
+    char *mac_str = malloc(19);
 
-    for (i = 0; i < 6; i++) {
-        /* Get the current byte from the given address */
-        _mac_addr = (mac_addr >> (i * 8)) & 0xff;
+    snprintf(mac_str, 18, "%s", ether_ntoa((const struct ether_addr *) mac_addr));
 
-        /* Concatenate the byte onto the final address */
-        /*snprintf(buff, 3, "%02llx", _mac_addr);*/
-        snprintf(buff, 3, "%llx", _mac_addr);
-        strncat(dst, buff, 3);
-
-        /* Add colons where appropriate */
-        if (i < 5) {
-            strncat(dst, ":", 2);
-        }
-    }
-
-    return dst;
+    return mac_str;
 }
 
-/* iptostr: IP Address to String
- * Converts a little-endian uint64_t IP address to a human-readable string
- * (ex: 1711384768 -> 192.168.1.102)
- * */
-char *iptostr(uint64_t ip_addr) {
+char *iptostr(uint32_t ip_addr) {
 
-    uint8_t i;
-    uint64_t _ip_addr;
-    char buff[4] = "", *dst = malloc(18);
+    char *str_addr = malloc(16);
 
-    for (i = 0; i < 4; i++) {
-        /* Grab the next byte from the given address */
-        _ip_addr = (ip_addr >> (i * 8)) & 0xff;
+    inet_ntop(AF_INET, &(ip_addr), str_addr, INET_ADDRSTRLEN);
 
-        /* Concatenate the byte as a base-10 number onto the final address */
-        snprintf(buff, 4, "%lld", _ip_addr);
-        strncat(dst, buff, 3);
-
-        /* Add dots where appropriate */
-        if (i < 3) {
-            strncat(dst, ".", 2);
-        }
-    }
-
-    return dst;
+    return str_addr;
 }
 
 /* get_type: Get type from protocol
@@ -274,6 +288,7 @@ void process_ip_h(FILE *fp) {
             iptostr(ip_header->dst_addr)
     );
 
+    /* Skip over any remaining data in the header */
     if (header_len > IPV4_HEADER_LEN) {
         fseek(fp, (long) (header_len - IPV4_HEADER_LEN), SEEK_CUR);
     }
@@ -320,7 +335,7 @@ void process_tcp_h(FILE *fp, pseudo_header_t *pseudo_header) {
 
     uint16_t flags = htons(tcp_header->flags);
     uint32_t ack_num = htonl(tcp_header->ack);
-    uint8_t ack_flag = flags & (0x01 << 4);
+    uint8_t ack_flag = flags & (0x10);
 
     if (ack_flag) {
         snprintf(ack, 20, "%u", ack_num);
@@ -345,9 +360,9 @@ void process_tcp_h(FILE *fp, pseudo_header_t *pseudo_header) {
             htonl(tcp_header->seq),
             ack,
             ack_flag ? "Yes" : "No",
-            flags & (0x01 << 1) ? "Yes" : "No",
-            flags & (0x01 << 2) ? "Yes" : "No",
-            flags & (0x01 << 0) ? "Yes" : "No",
+            flags & (0x02) ? "Yes" : "No",
+            flags & (0x04) ? "Yes" : "No",
+            flags & (0x01) ? "Yes" : "No",
             htons(tcp_header->win_size),
             verify, htons(tcp_header->cksum)
     );
