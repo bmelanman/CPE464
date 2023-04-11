@@ -31,8 +31,8 @@
 #define ICMP_HEADER_LEN   sizeof(icmp_header_t   )
 #define UDP_HEADER_LEN    sizeof(udp_header_t    )
 #define PSEUDO_HEADER_LEN sizeof(pseudo_header_t )
-
-// 24 bytes (192 bits)
+ 
+/* 24 bytes (192 bits) */
 typedef struct __attribute__((packed)) pcap_header {    /* Offset */
     uint32_t magic;                                     /*      0 */
     uint16_t version_major;                             /*     32 */
@@ -43,7 +43,7 @@ typedef struct __attribute__((packed)) pcap_header {    /* Offset */
     uint32_t linktype;                                  /*    160 */
 } pcap_header_t;
 
-// 16 bytes (128 bits)
+/* 16 bytes (128 bits) */
 typedef struct __attribute__((packed)) packet_header {  /* Offset */
     uint32_t t_sec;                                     /*      0 */
     uint32_t t_usec;                                    /*     32 */
@@ -51,14 +51,14 @@ typedef struct __attribute__((packed)) packet_header {  /* Offset */
     uint32_t org_len;                                   /*     96 */
 } packet_header_t;
 
-// 14 bytes (112 bits)
+/* 14 bytes (112 bits) */
 typedef struct __attribute__((packed)) eth_header {     /* Offset */
     uint8_t dst_addr[6];                                /*      0 */
     uint8_t src_addr[6];                                /*     48 */
     uint16_t type;                                      /*     96 */
 } eth_header_t;
 
-// 28 bytes (224 bits)
+/* 28 bytes (224 bits) */
 typedef struct __attribute__((packed)) arp_header {     /* Offset */
     uint16_t H_TYPE;                                    /*      0 */
     uint16_t P_TYPE;                                    /*     16 */
@@ -71,7 +71,7 @@ typedef struct __attribute__((packed)) arp_header {     /* Offset */
     uint32_t TPA;                                       /*    192 */
 } arp_header_t;
 
-// 20 bytes (160 bits)
+/* 20 bytes (160 bits) */
 typedef struct __attribute__((packed)) ip_v4_header {   /* Offset */
     uint8_t Ver_IHL;                                    /*    0/4 */
     uint8_t TOS;                                        /*      8 */
@@ -85,7 +85,7 @@ typedef struct __attribute__((packed)) ip_v4_header {   /* Offset */
     uint32_t dst_addr;                                  /*    128 */
 } ip_v4_header_t;
 
-// 20 bytes (160 bits)
+/* 20 bytes (160 bits) */
 typedef struct __attribute__((packed)) tcp_header {     /* Offset */
     uint16_t src_port;                                  /*      0 */
     uint16_t dst_port;                                  /*     16 */
@@ -97,7 +97,7 @@ typedef struct __attribute__((packed)) tcp_header {     /* Offset */
     uint16_t urg_ptr;                                   /*    144 */
 } tcp_header_t;
 
-// 12 bytes (96 bits)
+/* 12 bytes (96 bits) */
 typedef struct __attribute__((packed)) pseudo_header {  /* Offset */
     uint32_t src_addr;                                  /*      0 */
     uint32_t dst_addr;                                  /*     32 */
@@ -105,7 +105,7 @@ typedef struct __attribute__((packed)) pseudo_header {  /* Offset */
     uint16_t tcp_len;                                   /*     80 */
 } pseudo_header_t;
 
-// 4 bytes (32 bits)
+/* 4 bytes (32 bits) */
 typedef struct __attribute__((packed)) icmp_header {    /* Offset */
     uint8_t type;                                       /*      0 */
     uint8_t code;                                       /*      8 */
@@ -113,7 +113,7 @@ typedef struct __attribute__((packed)) icmp_header {    /* Offset */
     uint32_t data;                                      /*     32 */
 } icmp_header_t;
 
-// 8 bytes (64 bits)
+/* 8 bytes (64 bits) */
 typedef struct __attribute__((packed)) udp_header {     /* Offset */
     uint16_t src_port;                                  /*      0 */
     uint16_t dst_port;                                  /*     16 */
