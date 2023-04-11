@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pcap/pcap.h>
+#include <netinet/in.h>
 #include <errno.h>
 
 #if __APPLE__
@@ -23,7 +24,6 @@
 #define ICMP_HEADER 5
 
 #define PCAP_HEADER_LEN   sizeof(pcap_header_t   )
-#define PKT_HEADER_LEN    sizeof(packet_header_t )
 #define ETH_HEADER_LEN    sizeof(eth_header_t    )
 #define ARP_HEADER_LEN    sizeof(arp_header_t    )
 #define IPV4_HEADER_LEN   sizeof(ip_v4_header_t  )
@@ -139,4 +139,4 @@ void process_icmp_h(uint8_t *packet_data);
 
 void process_udp_h(uint8_t *packet_data);
 
-#endif //PROJECT_1_TRACE_H
+#endif /* PROJECT_1_TRACE_H */
