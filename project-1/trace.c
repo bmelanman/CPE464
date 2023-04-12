@@ -38,7 +38,6 @@ int main(int argc, char *argv[]) {
 
     /* Clean up */
     pcap_close(fp);
-    free(pcap_header);
 
     return 0;
 }
