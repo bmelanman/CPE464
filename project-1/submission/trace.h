@@ -19,7 +19,7 @@
 #include <errno.h>
 #include <arpa/inet.h>
 
-#include "libs/checksum.h"
+#include "checksum.h"
 
 #define ETH_HEADER  1
 #define ARP_HEADER  2
