@@ -6,7 +6,7 @@ int main(int argc, char *argv[]) {
     uint32_t pkt_num = 1;
     uint8_t *packet_data = NULL;
 
-    char errbuf[PCAP_ERRBUF_SIZE];
+    char errBuf[PCAP_ERRBUF_SIZE];
 
     pcap_t *fp;
     struct pcap_pkthdr *pcap_header = malloc(PCAP_HEADER_LEN);
@@ -18,11 +18,11 @@ int main(int argc, char *argv[]) {
     }
 
     /* Open the pcap file */
-    fp = pcap_open_offline(argv[1], errbuf);
+    fp = pcap_open_offline(argv[1], errBuf);
 
     /* Verify file pointer */
     if (fp == NULL) {
-        fprintf(stderr, "\npcap_open_offline() failed: %s\n", errbuf);
+        fprintf(stderr, "\npcap_open_offline() failed: %s\n", errBuf);
         return 1;
     }
 
@@ -34,21 +34,13 @@ int main(int argc, char *argv[]) {
 
         /* Begin parsing eth packet */
         process_eth_h(packet_data);
+
     }
 
     /* Clean up */
     pcap_close(fp);
 
     return 0;
-}
-
-char *mactostr(uint8_t mac_addr[6]) {
-
-    char *mac_str = malloc(19);
-
-    snprintf(mac_str, 18, "%s", ether_ntoa((const struct ether_addr *) mac_addr));
-
-    return mac_str;
 }
 
 char *iptostr(uint32_t ip_addr) {
@@ -62,7 +54,7 @@ char *iptostr(uint32_t ip_addr) {
 
 char *get_type(uint8_t protocol, uint16_t type) {
 
-    char *unknown_type;
+    char *buffer;
 
     switch (protocol) {
         case ETH_HEADER:
@@ -93,10 +85,24 @@ char *get_type(uint8_t protocol, uint16_t type) {
             }
 
         case TCP_HEADER:
-            if (type == 0x5000) return " HTTP";
-            unknown_type = malloc(10);
-            snprintf(unknown_type, 8, ": %d", htons(type));
-            return unknown_type;
+            switch (type) {
+                case 0x5000:
+                    return " HTTP";
+                case 0x1700:
+                    return " Telnet";
+                case 0x1400:
+                    return " FTP Data";
+                case 0x1500:
+                    return " FTP";
+                case 0x6E00:
+                    return " POP3";
+                case 0x1900:
+                    return " SMTP";
+                default:
+                    buffer = malloc(10);
+                    snprintf(buffer, 8, ": %d", htons(type));
+                    return buffer;
+            }
 
         case ICMP_HEADER:
             switch (type) {
@@ -105,9 +111,9 @@ char *get_type(uint8_t protocol, uint16_t type) {
                 case 0x0008:
                     return "Request";
                 default:
-                    unknown_type = malloc(10);
-                    snprintf(unknown_type, 8, "%d", type);
-                    return unknown_type;
+                    buffer = malloc(10);
+                    snprintf(buffer, 8, "%d", type);
+                    return buffer;
             }
 
         default:
@@ -122,10 +128,10 @@ void process_eth_h(uint8_t *packet_data) {
     eth_header_t *eth_header = malloc(ETH_HEADER_LEN);
     memcpy(eth_header, packet_data, ETH_HEADER_LEN);
 
+    uint16_t type = eth_header->type;
+
     /* Advance the packet data pointer to the next header */
     packet_data = &packet_data[ETH_HEADER_LEN];
-
-    uint16_t type = eth_header->type;
 
     /* Parse header */
     printf(
@@ -133,11 +139,12 @@ void process_eth_h(uint8_t *packet_data) {
             "\t\tDest MAC: %s\n"
             "\t\tSource MAC: %s\n"
             "\t\tType: %s\n\n",
-            mactostr(eth_header->dst_addr),
-            mactostr(eth_header->src_addr),
+            strdup(ether_ntoa((const struct ether_addr *) eth_header->dst_addr)),
+            ether_ntoa((const struct ether_addr *) eth_header->src_addr),
             get_type(ETH_HEADER, type)
     );
 
+    /* Continue to the next header */
     switch (type) {
         case 0x0608:
             process_arp_h(packet_data);
@@ -155,8 +162,10 @@ void process_arp_h(uint8_t *packet_data) {
 
     arp_header_t *arp_header = malloc(ARP_HEADER_LEN);
 
+    /* Fill header */
     memcpy(arp_header, packet_data, ARP_HEADER_LEN);
 
+    /* Parse info */
     printf(
             "\tARP header\n"
             "\t\tOpcode: %s\n"
@@ -165,8 +174,11 @@ void process_arp_h(uint8_t *packet_data) {
             "\t\tTarget MAC: %s\n"
             "\t\tTarget IP: %s\n\n",
             get_type(ARP_HEADER, arp_header->OPER),
-            mactostr(arp_header->SHA), iptostr(arp_header->SPA),
-            mactostr(arp_header->THA), iptostr(arp_header->TPA)
+            /* ether_ntoa() uses a buffer as its output, so the value is copied before using it again */
+            strdup(ether_ntoa((const struct ether_addr *) arp_header->SHA)),
+            iptostr(arp_header->SPA),
+            ether_ntoa((const struct ether_addr *) arp_header->THA),
+            iptostr(arp_header->TPA)
     );
 }
 
@@ -220,10 +232,13 @@ void process_ip_h(uint8_t *packet_data) {
             process_icmp_h(packet_data);
             break;
         case 0x6:
+
+            /* Fill pseudo-header for TCP checksum */
             pseudo_header->src_addr = ip_header->src_addr;
             pseudo_header->dst_addr = ip_header->dst_addr;
             pseudo_header->type = 0x0600;
             pseudo_header->tcp_len = ntohs(htons(ip_header->len) - header_len);
+
             process_tcp_h(packet_data, pseudo_header);
             break;
         case 0x11:
@@ -243,25 +258,28 @@ void process_tcp_h(uint8_t *packet_data, pseudo_header_t *pseudo_header) {
 
     tcp_header_t *tcp_header = malloc(TCP_HEADER_LEN);
 
+    /* Move data into a struct */
     memcpy(tcp_header, packet_data, TCP_HEADER_LEN);
 
+    /* Pack together the pseudo-header with the TCP header for the checksum */
     unsigned short *checksum_packet = malloc(PSEUDO_HEADER_LEN + tcp_pkt_len);
     memcpy(checksum_packet, pseudo_header, PSEUDO_HEADER_LEN);
     memcpy(&checksum_packet[6], packet_data, tcp_pkt_len);
 
-    /* TODO: Fix checksum */
+    /* Run checksum */
     if (in_cksum(checksum_packet, PSEUDO_HEADER_LEN + tcp_pkt_len)) {
         snprintf(verify, 20, "Incorrect");
     }
 
     uint16_t flags = htons(tcp_header->flags);
-    uint32_t ack_num = htonl(tcp_header->ack);
     uint8_t ack_flag = flags & (0x10);
 
+    /* Check ACK status */
     if (ack_flag) {
-        snprintf(ack, 20, "%u", ack_num);
+        snprintf(ack, 20, "%u", htonl(tcp_header->ack));
     }
 
+    /* Data time */
     printf(
             "\n"
             "\tTCP Header\n"
@@ -293,8 +311,10 @@ void process_icmp_h(uint8_t *packet_data) {
 
     icmp_header_t *icmp_header = malloc(ICMP_HEADER_LEN);
 
+    /* Move data into a struct */
     memcpy(icmp_header, packet_data, ICMP_HEADER_LEN);
 
+    /* Display data */
     printf(
             "\n"
             "\tICMP Header\n"
@@ -308,8 +328,10 @@ void process_udp_h(uint8_t *packet_data) {
 
     udp_header_t *udp_header = malloc(UDP_HEADER_LEN);
 
+    /* Move data to struct */
     memcpy(udp_header, packet_data, UDP_HEADER_LEN);
 
+    /* Print data */
     printf(
             "\n"
             "\tUDP Header\n"

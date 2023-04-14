@@ -2,18 +2,19 @@
 #ifndef PROJECT_1_TRACE_H
 #define PROJECT_1_TRACE_H
 
+/* Need because M1 Mac */
+#if __APPLE__
+#include <net/ethernet.h>
+#else
+#include <netinet/ether.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <pcap/pcap.h>
 #include <netinet/in.h>
 #include <errno.h>
-
-#if __APPLE__
-#include <net/ethernet.h>
-#else
-#include <netinet/ether.h>
-#endif
 
 #include "libs/checksum.h"
 
@@ -120,8 +121,6 @@ typedef struct __attribute__((packed)) udp_header {     /* Offset */
     uint16_t udp_len;                                   /*     32 */
     uint16_t cksum;                                     /*     48 */
 } udp_header_t;
-
-char *mactostr(uint8_t mac_addr[6]);
 
 char *iptostr(uint32_t ip_addr);
 

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+clear
+
 export DEBUG=0
 NUM_DIFFS=0
 

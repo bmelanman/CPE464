@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(project_1 C CXX)
+project(project-1 C CXX)
 
 set(CMAKE_C_STANDARD 23)
 

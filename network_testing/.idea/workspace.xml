@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="CMakePresetLoader"><![CDATA[{
+  "useNewFormat": true
+}]]></component>
+  <component name="CMakeReloadState">
+    <option name="reloaded" value="true" />
+  </component>
+  <component name="CMakeRunConfigurationManager">
+    <generated>
+      <config projectName="network_testing" targetName="network_testing" />
+    </generated>
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="ca5803ac-f214-4ae7-9994-2b19bc9443be" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.mxproject" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Device/ST/STM32F0xx/Include/stm32f030x6.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Device/ST/STM32F0xx/Include/stm32f0xx.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Device/ST/STM32F0xx/Include/system_stm32f0xx.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Device/ST/STM32F0xx/LICENSE.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/cmsis_armcc.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/cmsis_armclang.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/cmsis_compiler.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/cmsis_gcc.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/cmsis_iccarm.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/cmsis_version.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/core_armv8mbl.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/core_armv8mml.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/core_cm0.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/core_cm0plus.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/core_cm1.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/core_cm23.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/core_cm3.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/core_cm33.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/core_cm4.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/core_cm7.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/core_sc000.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/core_sc300.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/mpu_armv7.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/mpu_armv8.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/Include/tz_context.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/CMSIS/LICENSE.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_cortex.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_def.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_dma.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_dma_ex.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_exti.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_flash.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_flash_ex.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_gpio.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_gpio_ex.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_i2c.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_i2c_ex.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_pwr.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_pwr_ex.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_rcc.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_rcc_ex.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_hal_tim_ex.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_bus.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_cortex.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_crs.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_dma.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_exti.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_gpio.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_pwr.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_rcc.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_system.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Inc/stm32f0xx_ll_utils.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/LICENSE.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_cortex.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_dma.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_exti.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_flash.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_flash_ex.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_gpio.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_i2c.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_i2c_ex.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_pwr.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_pwr_ex.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rcc.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_rcc_ex.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_tim.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_tim_ex.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Inc/main.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Inc/stm32f0xx_hal_conf.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Inc/stm32f0xx_it.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Src/main.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Src/stm32f0xx_hal_msp.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Src/stm32f0xx_it.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Src/system_stm32f0xx.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/network_testing.ioc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-1/submission/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-1/submission/README" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-1/submission/libs/checksum.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-1/submission/libs/checksum.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-1/submission/trace.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-1/submission/trace.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-1/submission/trace_files/home_wifi_high_traffic.pcap" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/.idea/.name" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/.idea/project-2.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/given_files/Detecting a Closed Connection on recv.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/given_files/Prog2_chat_TCP_winter2023_v19.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/given_files/chatDesign_Winter_2023_v17.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/given_files/grade_sheet_chat_Winter_2023_v14.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/given_files/pseudoCode_manyHandles.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/given_files/send_recv_PDU_and_program2.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/given_files/tcpUdpPollCode.tar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/main.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/main.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../project-1/.idea/.name" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../project-1/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../project-1/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../project-1/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../project-1/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../project-1/given_files/trace_prog_assignment_winter_2023_v6.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/../project-1/given_files/trace_prog_assignment_winter_2023_v6.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../project-1/trace.c" beforeDir="false" afterPath="$PROJECT_DIR$/../project-1/trace.c" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectApplicationVersion">
+    <option name="ide" value="CLion" />
+    <option name="majorVersion" value="2023" />
+    <option name="minorVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2OOk4ldpT2kaIondJkYkvuv5uAm" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration default="true" type="BIBTEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
+      <texify-bibtex>
+        <compiler />
+        <compiler-path />
+        <compiler-arguments />
+        <envs />
+        <main-file />
+        <aux-dir />
+      </texify-bibtex>
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="network_testing" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="network_testing" TARGET_NAME="network_testing" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="network_testing" RUN_TARGET_NAME="network_testing">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="EXTERNAL_TOOL_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
+      <texify-external>
+        <program>PYTHONTEX</program>
+        <main-file />
+        <work-dir />
+      </texify-external>
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="MAKEINDEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
+      <texify-makeindex>
+        <program>MAKEINDEX</program>
+        <main-file />
+        <command-line-args />
+        <work-dir />
+      </texify-makeindex>
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ca5803ac-f214-4ae7-9994-2b19bc9443be" name="Changes" comment="" />
+      <created>1681438826669</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1681438826669</updated>
+      <workItem from="1681438869684" duration="409000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+</project>
