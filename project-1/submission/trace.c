@@ -140,7 +140,7 @@ void process_eth_h(uint8_t *packet_data) {
             "\t\tSource MAC: %s\n"
             "\t\tType: %s\n\n",
             strdup(ether_ntoa((const struct ether_addr *) eth_header->dst_addr)),
-            ether_ntoa((const struct ether_addr *) eth_header->src_addr),
+            strdup(ether_ntoa((const struct ether_addr *) eth_header->src_addr)),
             get_type(ETH_HEADER, type)
     );
 
@@ -177,7 +177,7 @@ void process_arp_h(uint8_t *packet_data) {
             /* ether_ntoa() uses a buffer as its output, so the value is copied before using it again */
             strdup(ether_ntoa((const struct ether_addr *) arp_header->SHA)),
             iptostr(arp_header->SPA),
-            ether_ntoa((const struct ether_addr *) arp_header->THA),
+            strdup(ether_ntoa((const struct ether_addr *) arp_header->THA)),
             iptostr(arp_header->TPA)
     );
 }
