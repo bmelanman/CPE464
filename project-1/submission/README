@@ -4,5 +4,4 @@ CPE 464-02 (12:10PM - 3:00PM)
 Project 1: trace
 Run: 
  - $ make trace
- - $ ./trace Http.pcap > output.out
-
+ - $ ./trace home_wifi_high_traffic.pcap > output.out
