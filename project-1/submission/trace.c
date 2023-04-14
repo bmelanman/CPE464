@@ -124,11 +124,13 @@ char *get_type(uint8_t protocol, uint16_t type) {
 
 void process_eth_h(uint8_t *packet_data) {
 
+    uint16_t type;
+
     /* Copy header data into a struct */
     eth_header_t *eth_header = malloc(ETH_HEADER_LEN);
     memcpy(eth_header, packet_data, ETH_HEADER_LEN);
 
-    uint16_t type = eth_header->type;
+    type = eth_header->type;
 
     /* Advance the packet data pointer to the next header */
     packet_data = &packet_data[ETH_HEADER_LEN];
@@ -184,6 +186,9 @@ void process_arp_h(uint8_t *packet_data) {
 
 void process_ip_h(uint8_t *packet_data) {
 
+    uint16_t header_len, ip_len;
+    uint8_t protocol;
+
     char verify[10] = "Correct";
 
     ip_v4_header_t *ip_header = malloc(IPV4_HEADER_LEN);
@@ -192,9 +197,9 @@ void process_ip_h(uint8_t *packet_data) {
     /* Move packet data into a struct */
     memcpy(ip_header, packet_data, IPV4_HEADER_LEN);
 
-    uint16_t header_len = (ip_header->Ver_IHL & 0xf) * 4;
-    uint8_t protocol = ip_header->protocol;
-    uint16_t ip_len = ntohs(ip_header->len);
+    header_len = (ip_header->Ver_IHL & 0xf) * 4;
+    protocol = ip_header->protocol;
+    ip_len = ntohs(ip_header->len);
 
     /* Verify checksum */
     if (in_cksum((unsigned short *) packet_data, header_len)) {
@@ -250,7 +255,10 @@ void process_ip_h(uint8_t *packet_data) {
 
 void process_tcp_h(uint8_t *packet_data, pseudo_header_t *pseudo_header) {
 
-    uint16_t tcp_pkt_len = ntohs(pseudo_header->tcp_len);
+    uint8_t ack_flag;
+    uint16_t flags, tcp_pkt_len = ntohs(pseudo_header->tcp_len);
+
+    unsigned short *checksum_packet;
 
     char ack[21] = "<not valid>";
     char verify[21] = "Correct";
@@ -261,7 +269,7 @@ void process_tcp_h(uint8_t *packet_data, pseudo_header_t *pseudo_header) {
     memcpy(tcp_header, packet_data, TCP_HEADER_LEN);
 
     /* Pack together the pseudo-header with the TCP header for the checksum */
-    unsigned short *checksum_packet = malloc(PSEUDO_HEADER_LEN + tcp_pkt_len);
+    checksum_packet = malloc(PSEUDO_HEADER_LEN + tcp_pkt_len);
     memcpy(checksum_packet, pseudo_header, PSEUDO_HEADER_LEN);
     memcpy(&checksum_packet[6], packet_data, tcp_pkt_len);
 
@@ -270,8 +278,8 @@ void process_tcp_h(uint8_t *packet_data, pseudo_header_t *pseudo_header) {
         snprintf(verify, 20, "Incorrect");
     }
 
-    uint16_t flags = ntohs(tcp_header->flags);
-    uint8_t ack_flag = flags & (0x10);
+    flags = ntohs(tcp_header->flags);
+    ack_flag = flags & (0x10);
 
     /* Check ACK status */
     if (ack_flag) {

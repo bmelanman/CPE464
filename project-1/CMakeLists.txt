@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.24)
-project(project-1 C CXX)
+project(project-1 C)
 
-set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD 90)
+
+add_compile_options(-g -Wall -std=c89 -ansi -pedantic)
 
 find_library(PCAP
         NAMES pcap
