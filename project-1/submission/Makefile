@@ -4,8 +4,7 @@
 
 CC = gcc
 LIBS = libs/checksum.c -lpcap
-CFLAGS = -g -Wall -pedantic 
-#CGLAGS = 
+CFLAGS = -g -Wall -std=c89 -ansi -pedantic
 
 all:  trace
 
