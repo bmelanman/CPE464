@@ -17,6 +17,7 @@
 #include <pcap/pcap.h>
 #include <netinet/in.h>
 #include <errno.h>
+#include <arpa/inet.h>
 
 #include "libs/checksum.h"
 
