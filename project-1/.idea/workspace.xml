@@ -22,7 +22,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="39bf8f42-fcb1-4656-a0a9-4f2d5e0986fa" name="Changes" comment="updated">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/libs/dictionary.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/libs/dictionary.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/libs/user_packet.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/libs/user_packet.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/notes.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/src/server.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/src/server.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-2/src/test.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../project-2/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../project-2/cclient.c" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/src/cclient.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../project-2/cclient.h" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/src/cclient.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -222,6 +233,7 @@
       <workItem from="1681316189938" duration="333000" />
       <workItem from="1681323689433" duration="15698000" />
       <workItem from="1681688512293" duration="1199000" />
+      <workItem from="1681836009863" duration="3314000" />
     </task>
     <task id="LOCAL-00001" summary="updated">
       <created>1680799821406</created>
