@@ -10,18 +10,19 @@
 #include "server.h"
 
 int main(int argc, char *argv[]) {
-    int mainServerSocket;   //socket descriptor for the server socket
+    int mainServerSocket;
     int portNumber;
 
+    /* Check inout arguments */
     portNumber = checkArgs(argc, argv);
 
-    // Set up poll
+    /* Set up poll */
     setupPollSet();
 
-    //create the server socket
+    /* Create the server socket */
     mainServerSocket = tcpServerSetup(portNumber);
 
-    // Run the server
+    /* Run the server */
     serverControl(mainServerSocket);
 
     return 0;
@@ -42,18 +43,20 @@ int processClient(int clientSocket) {
     /* Now get the data from the client_socket */
     messageLen = recvPDU(clientSocket, dataBuffer, MAXBUF);
 
-    /* Error checking */
-    if (messageLen < 0) {
-        perror("recv call");
-        exit(-1);
-    }
-
     /* If the message length is zero, that means the client has left */
     if (messageLen > 0) {
         printf("Message received, length: %d Data: %s\n", messageLen, dataBuffer);
+
     } else {
         printf("Connection closed by other side\n");
+
+        /* Remove the client socket from the list of sockets */
         removeFromPollSet(clientSocket);
+
+        /* Close the client socket */
+        close(clientSocket);
+
+        /* Check for an exit message */
         if (dataBuffer[0] == '%' && tolower(dataBuffer[1]) == 'e') {
             return 0;
         }
@@ -94,7 +97,8 @@ int checkArgs(int argc, char *argv[]) {
     /* Check for optional port number */
     if (argc > 2) {
         fprintf(stderr, "Usage %s [optional port number]\n", argv[0]);
-        exit(-1);
+        exit(EXIT_FAILURE);
+
     } else if (argc == 2) {
         portNumber = (int) strtol(argv[1], NULL, 10);
     }

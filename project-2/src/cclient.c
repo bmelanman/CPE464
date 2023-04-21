@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-int network_init(char *server_name, char *handle, char *server_port) {
+int network_init(char *handle, char *server_name, char *server_port) {
 
     int sock_fd, err;
     struct addrinfo *info, hints = {

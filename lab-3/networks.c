@@ -49,20 +49,20 @@ int tcpServerSetup(int serverPort)
 	if (bind(mainServerSocket, (struct sockaddr *) &serverAddress, sizeof(serverAddress)) < 0)
 	{
 		perror("bind call");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 	
 	// get the port name and print it out
 	if (getsockname(mainServerSocket, (struct sockaddr*)&serverAddress, &serverAddressLen) < 0)
 	{
 		perror("getsockname call");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	if (listen(mainServerSocket, LISTEN_BACKLOG) < 0)
 	{
 		perror("listen call");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 	
 	printf("Server Port Number %d \n", ntohs(serverAddress.sin6_port));
@@ -82,7 +82,7 @@ int tcpAccept(int mainServerSocket, int debugFlag)
 	if ((client_socket = accept(mainServerSocket, (struct sockaddr*) &clientAddress, (socklen_t *) &clientAddressSize)) < 0)
 	{
 		perror("accept call");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 	  
 	if (debugFlag)
@@ -110,7 +110,7 @@ int tcpClientSetup(char * serverName, char * serverPort, int debugFlag)
 	if ((socket_num = socket(AF_INET6, SOCK_STREAM, 0)) < 0)
 	{
 		perror("socket call");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	// setup the server structure
@@ -121,13 +121,13 @@ int tcpClientSetup(char * serverName, char * serverPort, int debugFlag)
 	// get the address of the server 
 	if ((ipAddress = gethostbyname6(serverName, &serverAddress)) == NULL)
 	{
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	if(connect(socket_num, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0)
 	{
 		perror("connect call");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	if (debugFlag)
@@ -151,7 +151,7 @@ int udpServerSetup(int serverPort)
 	if ((socketNum = socket(AF_INET6,SOCK_DGRAM,0)) < 0)
 	{
 		perror("socket() call error");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 	
 	// set up the socket
@@ -164,7 +164,7 @@ int udpServerSetup(int serverPort)
 	if (bind(socketNum,(struct sockaddr *) &serverAddress, sizeof(serverAddress)) < 0)
 	{
 		perror("bind() call error");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	/* Get the port number */
@@ -190,7 +190,7 @@ int setupUdpClientToServer(struct sockaddr_in6 *serverAddress, char * hostName, 
 	if ((socketNum = socket(AF_INET6, SOCK_DGRAM, 0)) < 0)
 	{
 		perror("socket() call error");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
   	 	
 	memset(serverAddress, 0, sizeof(struct sockaddr_in6));
@@ -199,7 +199,7 @@ int setupUdpClientToServer(struct sockaddr_in6 *serverAddress, char * hostName, 
 	
 	if ((ipAddress = gethostbyname6(hostName, serverAddress)) == NULL)
 	{
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 		
 	

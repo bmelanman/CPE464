@@ -1,0 +1,15 @@
+Bryce Melander 
+CPE 464-02 (12:10PM - 3:00PM)
+
+Lab 3: cclient & server
+
+To run: 
+    $ make all
+    $ ./server 54321 > output.log &
+    $ ./cclient 54321
+
+Notes:
+    + The user can use '^C' to exit the cclient
+    + The user may also opt to type '%E' to exit, this will send a signal to the server to terminate as well.
+    + The cclient will terminate if it tries to send a PDU and recieves 0 bytes after sending
+

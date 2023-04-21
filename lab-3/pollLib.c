@@ -55,6 +55,8 @@ void removeFromPollSet(int socketNumber) {
 }
 
 int pollCall(int timeInMilliSeconds) {
+
+    // TODO: Implement static FIFO queue that keeps track of active sockets?
     // returns the socket number if one is ready for read
     // returns -1 if timeout occurred
     // if timeInMilliSeconds == -1 blocks forever (until a socket ready)
@@ -67,7 +69,7 @@ int pollCall(int timeInMilliSeconds) {
 
     if ((pollValue = poll(pollFileDescriptors, maxFileDescriptor, timeInMilliSeconds)) < 0) {
         perror("pollCall");
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
 
     // check to see if timeout occurred (poll returned 0)
@@ -83,7 +85,6 @@ int pollCall(int timeInMilliSeconds) {
                 break;
             }
         }
-
     }
 
     // Ready socket # or -1 if timeout/none
@@ -97,7 +98,7 @@ static void growPollSet(int newSetSize) {
     if (newSetSize <= currentPollSetSize) {
         printf("Error - current poll set size: %d newSetSize is not greater: %d\n",
                currentPollSetSize, newSetSize);
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
 
     //printf("Increasing poll set from: %d to %d\n", currentPollSetSize, newSetSize);

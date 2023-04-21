@@ -20,7 +20,7 @@ void checkArgs(int argc, char *argv[]);
 
 int main(int argc, char *argv[]) {
 
-    int socketNum, sendLen;
+    int socketNum, sendLen, sendActual;
     uint8_t run_client = 1, sendBuf[MAXBUF] = {0};
 
     /* Check input arguments */
@@ -30,13 +30,16 @@ int main(int argc, char *argv[]) {
     socketNum = tcpClientSetup(argv[1], argv[2], DEBUG_FLAG);
 
     /* Run the client */
-    while (run_client) {
+    while (run_client != 0) {
 
         /* Get user input */
         sendLen = readFromStdin(sendBuf);
 
         /* Sent the message to the server */
-        run_client = sendToServer(socketNum, sendBuf, sendLen);
+        sendActual = sendToServer(socketNum, sendBuf, sendLen) - PDU_HEADER_LEN;
+
+        /* If the data did not send, the server has disconnected */
+        if (sendActual != sendLen) break;
 
         /* Check for exit code */
         if (sendBuf[0] == '%' && tolower(sendBuf[1]) == 'e') break;
@@ -58,14 +61,8 @@ int sendToServer(int socketNum, uint8_t *sendBuf, int sendLen) {
             sendLen, sendBuf
     );
 
-    /* get the data and send it   */
+    /* Send the data as a packet with a header */
     sent = sendPDU(socketNum, sendBuf, sendLen);
-
-    /* Error Checking */
-    if (sent < 0) {
-        perror("send call");
-        exit(-1);
-    }
 
     printf("Amount of data sent is: %d\n", sent);
 

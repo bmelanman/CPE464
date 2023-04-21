@@ -16,7 +16,7 @@ int safeRecv(int socketNum, uint8_t *buffer, int bufferLen, int flag) {
             bytesReceived = 0;
         } else {
             perror("recv call");
-            exit(-1);
+            exit(EXIT_FAILURE);
         }
     }
 
@@ -25,9 +25,12 @@ int safeRecv(int socketNum, uint8_t *buffer, int bufferLen, int flag) {
 
 int safeSend(int socketNum, uint8_t *buffer, int bufferLen, int flag) {
     int bytesSent;
-    if ((bytesSent = (int) send(socketNum, buffer, bufferLen, flag)) < 0) {
+
+    bytesSent = (int) send(socketNum, buffer, bufferLen, flag);
+
+    if (bytesSent < 0) {
         perror("recv call");
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
 
     return bytesSent;
@@ -35,22 +38,28 @@ int safeSend(int socketNum, uint8_t *buffer, int bufferLen, int flag) {
 
 
 void *srealloc(void *ptr, size_t size) {
-    void *returnValue = NULL;
+    void *retVal = NULL;
 
-    if ((returnValue = realloc(ptr, size)) == NULL) {
+    retVal = realloc(ptr, size);
+
+    if (retVal == NULL) {
         printf("Error on realloc (tried for size: %d\n", (int) size);
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
 
-    return returnValue;
+    return retVal;
 }
 
 void *scalloc(size_t nmemb, size_t size) {
-    void *returnValue = NULL;
-    if ((returnValue = calloc(nmemb, size)) == NULL) {
+    void *retVal = NULL;
+
+    retVal = calloc(nmemb, size);
+
+    if (retVal == NULL) {
         perror("calloc");
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
-    return returnValue;
+
+    return retVal;
 }
 

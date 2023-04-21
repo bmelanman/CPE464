@@ -8,7 +8,7 @@
 
 #define BUFF_SIZE 1400
 
-int network_init(char *server_name, char *handle, char *server_port);
+int network_init(char *handle, char *server_name, char *server_port);
 
 void network_run(int client_socket);
 

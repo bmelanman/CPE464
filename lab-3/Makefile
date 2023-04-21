@@ -26,8 +26,8 @@ server: server.c $(OBJS)
 cleano:
 	rm -rf *.o *.dSYM
 
-clean:
-	rm -rf server cclient *.o
+clean: cleano
+	rm -f server cclient
 
 
 
