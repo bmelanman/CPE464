@@ -1,6 +1,6 @@
 
-#ifndef PROJECT_2_USER_PACKET_H
-#define PROJECT_2_USER_PACKET_H
+#ifndef PROJECT_2_NETWORK_UTILS_H
+#define PROJECT_2_NETWORK_UTILS_H
 
 #include <stdint.h>
 
@@ -33,7 +33,7 @@
  *  - After receiving this, the client can terminate
  *  - Format: chat-header
  *
- * 10: Client to server
+ * 10: Client to server_net_init
  *  - Client requesting the list of handles. (So %L command)
  *  - After sending the Flag = 10, client must continue processing any other messages that come in until the Flag = 11 message arrives.
  *  - Format: chat-header
@@ -65,7 +65,7 @@ struct __attribute__((packed)) chat_header {    /* Offset */
  *
  * 12: Server to client
  *  - Sent immediately following the [FLAG 11] packet.
- *  - Each [FLAG 12] packet contain one handles currently registered at the server.
+ *  - Each [FLAG 12] packet contain one handles currently registered at the server_net_init.
  *  - There will be one [FLAG 12] packet per handle.
  *  - The handles are sent one right after the other.
  *  - The server will not send any other packets until all the handles have been sent.
@@ -86,7 +86,7 @@ struct __attribute__((packed)) handshake_pkt {  /* Offset */
 };
 
 /*
- * 4: Sent from cclient to all other clients via the server
+ * 4: Sent from cclient to all other clients via the server_net_init
  *  - Broadcast packet (%B)
  *  - Format:
  *    - Normal 3 byte chat-header (length, flag) (flag = 4)
@@ -117,7 +117,7 @@ struct __attribute__((packed)) broadcast_pkt {  /* Offset */
  *      - 1 byte containing the length of the handle of the destination client you want to talk with3
  *      - Handle name of the destination client (no nulls or padding allowed)
  *    - Text message (a null terminated string)
- *    - The sending cclient does not block waiting for a response from the server after sending the %M message
+ *    - The sending cclient does not block waiting for a response from the server_net_init after sending the %M message
  */
 
 /* 104 bytes (832 bits) */
@@ -140,7 +140,7 @@ struct __attribute__((packed)) message_pkt {
  * 11: Server to client
  *  - Responding to flag = 10, giving the client the number of handles stored on the server.
  *  - Format: chat-header, 4 byte number (integer, in network order) stating how many handles are
- *    currently known by the server.
+ *    currently known by the server_net_init.
  */
 
 /* 104 bytes (832 bits) */
@@ -150,4 +150,4 @@ struct __attribute__((packed)) num_handles_pkt {    /* Offset */
     uint16_t num_handles;                           /*     16 */
 };
 
-#endif /* PROJECT_2_USER_PACKET_H */
+#endif /* PROJECT_2_NETWORK_UTILS_H */

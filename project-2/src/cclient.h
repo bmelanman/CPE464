@@ -8,7 +8,9 @@
 
 #define BUFF_SIZE 1400
 
-void parse_input(void);
+int network_init(char *server_name, char *handle, char *server_port);
+
+void network_run(int client_socket);
 
 void message(void);
 
