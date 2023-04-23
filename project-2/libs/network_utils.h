@@ -2,7 +2,51 @@
 #ifndef PROJECT_2_NETWORK_UTILS_H
 #define PROJECT_2_NETWORK_UTILS_H
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
+#include <memory.h>
+#include <errno.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <sys/poll.h>
+
+#define PDU_HEADER_LEN 2
+#define LISTEN_BACKLOG 10
+#define POLL_SET_SIZE 10
+
+#define MAXBUF 1024
+#define DEBUG_FLAG 1
+
+int sendPDU(int clientSocket, uint8_t *dataBuffer, int lengthOfData);
+
+int recvPDU(int socketNumber, uint8_t *dataBuffer, int bufferSize);
+
+/* TCP Server */
+int tcpServerSetup(int serverPort);
+
+int tcpAccept(int mainServerSocket, int debugFlag);
+
+unsigned char *gethostbyname6(const char *hostName, struct sockaddr_in6 *aSockaddr6);
+
+unsigned char *gethostbyname4(const char *hostName, struct sockaddr_in *aSockaddr);
+
+char *getIPAddressString4(unsigned char *ipAddress);
+
+char *getIPAddressString6(unsigned char *ipAddress);
+
+/* Just for printout out address info */
+void printIPInfo(struct sockaddr_in6 *ipAddressStruct);
+
+char *ipAddressToString(struct sockaddr_in6 *ipAddressStruct);
+
+void setupPollSet(void);
+
+void addToPollSet(int socketNumber);
+
+void removeFromPollSet(int socketNumber);
+
+int pollCall(int timeInMilliSeconds);
 
 /*
  * USER LEVEL PACKET FORMAT
@@ -47,7 +91,7 @@
 /* 3 bytes (12 bits) */
 struct __attribute__((packed)) chat_header {    /* Offset */
     uint8_t len;                                /*      0 */
-    uint8_t flag;                               /*      8 */
+    uint8_t flag: 4;                            /*      8 */
 };
 
 /*
@@ -135,6 +179,24 @@ struct __attribute__((packed)) message_pkt {
  * 6: Sent from the cclient to multiple other clients
  *  – Multicast packet, see format above under the %C (multicast) command.
  */
+
+/* 104 bytes (832 bits) */
+struct __attribute__((packed)) multicast_pkt {
+    uint8_t len;
+    uint8_t flag;
+
+    uint8_t src_handle_len;
+/*  char src_handle[MAX_HANDLE_LEN]; */
+
+    uint8_t num_dst;
+    uint8_t dst_handle_len;
+/*  char dst_handle[MAX_HANDLE_LEN]; */
+
+/*  Handles repeat ...*/
+
+    uint8_t msg_len;
+/*  char dst_handle[MAX_HANDLE_LEN]; */
+};
 
 /*
  * 11: Server to client

@@ -1,127 +1,102 @@
 
-#include <netdb.h>
+#include <ctype.h>
+#include "../libs/network_utils.h"
 #include "server.h"
-#include "../libs/dictionary.h"
 
-/*
- * server: The server acts as a packet forwarder between the cclients.
- *  - The main goal of the server is to forward messages between clients.
- *  - You can view the server as the center of a logical star topology.
- *  - This program is responsible for accepting connections from clients, keeping track of the clients’ handles,
- *    responding to requests for the current list of handles and forwarding messages to the correct client.
- *  - The server program does not terminate (you kill it with a ^c).
- *  - The server program has the following format:
- *      $: server [port-number]
- *      + port-number (optional): If present, it tells the server_net_init which port number to use.
- *                                If not present have the OS assign the port number
- *
- *
- * */
+int main(int argc, char *argv[]) {
+    int mainServerSocket;
+    int portNumber;
 
-int server_net_init(int port);
-int check_listen(int serv_sock);
+    /* Check inout arguments */
+    portNumber = checkArgs(argc, argv);
 
-int main(int argc, char **argv) {
+    /* Set up poll */
+    setupPollSet();
 
-    int port = 0, s_sock, exit_flag = 1;
-    dict *handle_dict = create_new_dict(12);
+    /* Create the server socket */
+    mainServerSocket = tcpServerSetup(portNumber);
 
-    if (argc > 2) {
-        fprintf(stderr, "Invalid number og args!");
-        return 1;
-    }
-
-    if (argc == 2) {
-        port = (int) strtol(argv[1], NULL, 10);
-    }
-
-    s_sock = server_net_init(port);
-
-//    while (exit_flag) {
-//
-//
-//    }
-
-//    check_listen(s_sock);
-
-    close(s_sock);
+    /* Run the server */
+    serverControl(mainServerSocket);
 
     return 0;
 }
 
-int server_net_init(int port) {
+void addNewSocket(int socket) {
 
-    int enable = 1, err;
-    int server_sock;
-    struct sockaddr_in serv_addr;
-    socklen_t len;
+    int clientSocket = tcpAccept(socket, 1);
 
-    /* Create a socket */
-    server_sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_sock < 0) {
-        printf("Could not create socket!\n");
-        return -1;
-    }
+    addToPollSet(clientSocket);
+}
 
-    if (setsockopt(server_sock, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
-        fprintf(stderr, "setsockopt() \"SO_REUSEADDR\" failed");
-        return 1;
-    }
+int processClient(int clientSocket) {
 
-    /* Apply the port and accept all local interfaces */
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    if (port > 0) {
-        serv_addr.sin_port = htons(port);   /* User specified port */
+    uint8_t dataBuffer[MAXBUF];
+    int messageLen;
+
+    /* Now get the data from the client_socket */
+    messageLen = recvPDU(clientSocket, dataBuffer, MAXBUF);
+
+    /* If the message length is zero, that means the client has left */
+    if (messageLen > 0) {
+        printf("Message received, length: %d Data: %s\n", messageLen, dataBuffer);
+
     } else {
-        serv_addr.sin_port = 0;             /* Random port */
-    }
+        printf("Connection closed by other side\n");
 
-    /* Bind the socket into to the socket */
-    if (bind(server_sock, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) != 0) {
-        printf("Could not bind server_net_init!\n");
-        perror("bind err");
-        return -1;
-    }
+        /* Remove the client socket from the list of sockets */
+        removeFromPollSet(clientSocket);
 
-    /* Get the port if necessary, otherwise just print it */
-    if (port > 0) {
-        printf("\nServer Port: %d\n\n", port);
-    } else {
-        len = sizeof(serv_addr);
-        if ((err = getsockname(server_sock, (struct sockaddr *) &serv_addr, &len)) == -1) {
-            fprintf(stderr, "getsockname() err #%d:\n", err);
-            fprintf(stderr, "%s\n", gai_strerror(err));
-            return -1;
+        /* Close the client socket */
+        close(clientSocket);
+
+        /* Check for an exit message */
+        if (dataBuffer[0] == '%' && tolower(dataBuffer[1]) == 'e') {
+            return 0;
         }
-
-        printf("\nServer Port: %d\n\n", ntohs(serv_addr.sin_port));
     }
 
-    return server_sock;
-
+    return 1;
 }
 
-int check_listen(int serv_sock) {
+void serverControl(int mainServerSocket) {
 
-    int client_sock;
-    struct sockaddr_in peer_info;
-    socklen_t len;
+    int run_server = 1, sock;
 
-    /* Listen for connection requests */
-    printf("Listening...\n\n");
-    if (listen(serv_sock, DEFAULT_BACKLOG) != 0) {
-        printf("Cannot listen for sockets!\n");
-        return -1;
+    /* Add the main server socket to the list of sockets to poll */
+    addToPollSet(mainServerSocket);
+
+    while (run_server) {
+
+        /* Call poll() non-blocking */
+        sock = pollCall(0);
+
+        /* If there's activity on the main server socket, add the new incoming socket */
+        if (sock == mainServerSocket) addNewSocket(sock);
+
+            /* Otherwise, look for new client packets */
+        else if (sock != -1) run_server = processClient(sock);
+
     }
 
-    /* Accept the connection request */
-    len = sizeof(peer_info);
-    client_sock = accept(serv_sock, (struct sockaddr *) &peer_info, &len);
-    if (client_sock == -1) {
-        fprintf(stderr, "Cannot accept socket connection!\n");
-        return -1;
-    }
-
-    return client_sock;
+    /* When finished, clean up*/
+    close(mainServerSocket);
 }
+
+int checkArgs(int argc, char *argv[]) {
+
+    /* Checks args and returns port number */
+    int portNumber = 0;
+
+    /* Check for optional port number */
+    if (argc > 2) {
+        fprintf(stderr, "Usage %s [optional port number]\n", argv[0]);
+        exit(EXIT_FAILURE);
+
+    } else if (argc == 2) {
+        portNumber = (int) strtol(argv[1], NULL, 10);
+    }
+
+    return portNumber;
+}
+

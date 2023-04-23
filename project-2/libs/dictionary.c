@@ -1,7 +1,4 @@
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "misc-no-recursion"
-
 #include "dictionary.h"
 
 int hash(char *key) {
@@ -128,6 +125,7 @@ int dict_remove(dict *dict, char *key) {
     if (strcmp(key, node->key) == 0) {
         removed_val = node->val;
         dict->Nodes[hashed_key] = node->next;
+        free(node);
         return removed_val;
     }
 
@@ -138,6 +136,7 @@ int dict_remove(dict *dict, char *key) {
         if (strcmp(key, node->next->key) == 0) {
             removed_val = node->next->val;
             node->next = node->next->next;
+            free(node);
             return removed_val;
         }
 
@@ -197,5 +196,3 @@ void free_hash(dict *dict) {
     free(dict->Nodes);
     free(dict);
 }
-
-#pragma clang diagnostic pop

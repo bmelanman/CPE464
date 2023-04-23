@@ -1,35 +1,49 @@
 
-#include <sys/socket.h>
-#include <unistd.h>
-#include <netdb.h>
 #include "cclient.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char *argv[]) {
 
-    int cli_sock;
+    int socket;
 
-    if (argc != 4) return 1;
+    /* Check input arguments */
+    checkArgs(argc, argv);
 
-    if (strlen(argv[1]) > 100) {
-        fprintf(stderr, "Invalid handle, handle longer than 100 characters: %s", argv[1]);
-        return 1;
-    } else if (!isalpha(argv[1][0])) {
-        fprintf(stderr, "Invalid handle, handle starts with a number");
-        return 1;
-    }
+    /* Set up the TCP Client socket with the handle, server name, and port  */
+    socket = clientInitTCP(argv[1], argv[2], argv[3]);
 
-    cli_sock = network_init(argv[1], argv[2], argv[3]);
+    /* Run the client */
+    clientControl(socket, argv[1]);
 
-    if (cli_sock < 0) return 1;
-
-    network_run(cli_sock);
+    /* Clean up */
+    close(socket);
 
     return 0;
 }
 
-int network_init(char *handle, char *server_name, char *server_port) {
+void clientControl(int clientSocket, char *handle) {
 
-    int sock_fd, err;
+    uint8_t pollSocket, run_client = 0;
+
+    /* Add stdin and the client socket to the poll list */
+    addToPollSet(clientSocket);
+    addToPollSet(STDIN_FILENO);
+
+    /* Run the client */
+    while (!run_client) {
+
+        /* Check poll */
+        pollSocket = pollCall(0);
+
+        /* Check for incoming packets and user input */
+        if (pollSocket == clientSocket) run_client = processUsrInput(clientSocket, handle);
+        else if (pollSocket == STDIN_FILENO) processPacket(clientSocket);
+    }
+
+}
+
+int clientInitTCP(char *handle, char *server_name, char *server_port) {
+
+    int sock, err;
     struct addrinfo *info, hints = {
             0,
             AF_INET6,
@@ -42,8 +56,8 @@ int network_init(char *handle, char *server_name, char *server_port) {
     };
 
     printf(
-            "\n"
-            "Handle: %s\n"
+            "Server Connected!\n"
+            "Your Handle: %s\n"
             "Server Name: %s\n"
             "Server Port: %s\n"
             "\n",
@@ -51,21 +65,23 @@ int network_init(char *handle, char *server_name, char *server_port) {
     );
 
     /* Get hostname of server_net_init */
-    if ((err = getaddrinfo(server_name, server_port, &hints, &info)) != 0) {
+    err = getaddrinfo(server_name, server_port, &hints, &info);
+    if (err != 0) {
         fprintf(stderr, "getaddrinfo() err #%d:\n", err);
         fprintf(stderr, "%s\n", gai_strerror(err));
         return -1;
     }
 
     /* Open a new socket */
-    sock_fd = socket(info->ai_family, info->ai_socktype, info->ai_protocol);
-    if (sock_fd == -1) {
+    sock = socket(info->ai_family, info->ai_socktype, info->ai_protocol);
+    if (sock == -1) {
         fprintf(stderr, "Couldn't open socket!\n");
         return -1;
     }
 
     /* Connect the socket */
-    if (connect(sock_fd, info->ai_addr, info->ai_addrlen) != 0) {
+    err = connect(sock, info->ai_addr, info->ai_addrlen);
+    if (err != 0) {
         fprintf(stderr, "Could not connect to server_net_init!\n");
         return -1;
     }
@@ -73,20 +89,20 @@ int network_init(char *handle, char *server_name, char *server_port) {
     /* Clean up */
     freeaddrinfo(info);
 
-    return sock_fd;
-
+    return sock;
 }
 
-void network_run(int client_socket) {
+int processUsrInput(int socket, char *handle) {
 
     int exit_flag = 1;
-    char buff[BUFF_SIZE] = "";
+    char buff[MAXBUF] = "";
+    char *strBuff = NULL;
 
     while (exit_flag) {
 
         printf("$: ");
 
-        fgets(buff, BUFF_SIZE, stdin);
+        fgets(buff, MAXBUF, stdin);
 
         /* Check for % at the beginning of each command */
         if (buff[0] != '%') {
@@ -97,7 +113,10 @@ void network_run(int client_socket) {
         /* Parse given command */
         switch (tolower(buff[1])) {
             case 'm':
-                message();
+                /* Get the handle */
+                strBuff = strtok(&(buff[2]), " ");
+                /* Send the message */
+                packMessage(0, handle, strBuff, strtok(NULL, " "));
                 break;
             case 'b':
                 broadcast();
@@ -119,11 +138,62 @@ void network_run(int client_socket) {
     }
 
     /* Clean up */
-    close(client_socket);
+    close(socket);
+
+    return 0;
 }
 
-void message(void) {
-    printf("message\n");
+void processPacket(int socket) {
+
+    printf("Process packet on socket %d", socket);
+
+}
+
+void packMessage(int socket, char *clientHandle, char *dstHandle, char *usrMsg) {
+
+    uint8_t dataBuff[MAXBUF];
+    uint8_t dataBuffLen = 0;
+
+    uint8_t flag = 5;
+    uint8_t numDests = 1;
+
+    /* Lengths of each string sent */
+    uint8_t srcHandleLen = (uint8_t) strlen(clientHandle);
+    uint8_t dstHandleLen = (uint8_t) strlen(dstHandle);
+    uint8_t msgLen = (uint8_t) strlen(usrMsg);
+
+    /* 2 Bytes: Message packet length */
+    memcpy(dataBuff, &msgLen, 2);
+    dataBuffLen += 2;
+    /* 1 Byte: Message packet flag */
+    memcpy(dataBuff + dataBuffLen, &flag, 1);
+    ++dataBuffLen;
+
+    /* 1 Byte: Client handle length */
+    memcpy(dataBuff + dataBuffLen, &srcHandleLen, 1);
+    ++dataBuffLen;
+    /* N Bytes: Client handle */
+    memcpy(dataBuff + dataBuffLen, clientHandle, srcHandleLen);
+    dataBuffLen += srcHandleLen;
+
+    /* 1 Byte: Number of destinations */
+    memcpy(dataBuff + dataBuffLen, &numDests, 1);
+    ++dataBuffLen;
+
+    /* 1 Byte: Destination handle length */
+    memcpy(dataBuff + dataBuffLen, &dstHandleLen, 1);
+    ++dataBuffLen;
+    /* N Bytes: Destination handle */
+    memcpy(dataBuff + dataBuffLen, &dstHandle, dstHandleLen);
+    dataBuffLen += dstHandleLen;
+
+    /* N Bytes: The message */
+    memcpy(dataBuff + dataBuffLen, &usrMsg, msgLen);
+    dataBuffLen += msgLen;
+
+    /* Send the packet! */
+    sendToServer(socket, dataBuff, dataBuffLen);
+
 }
 
 void broadcast(void) {
@@ -138,36 +208,62 @@ void list(void) {
     printf("list\n");
 }
 
-/*
- * cclient: This program connects to the server and then sends and receives message from the server.
- *  - Running cclient program has the following format:
- *      $: cclient {handle} {server-name} {server-port}
- *      + handle:      The clients handle (name), max 100 characters
- *      + server-name: The remote machine running the server
- *      + server-port: The port number of the server_net_init application
- *
- *  - The client takes the servers IP address and port number as run time parameters.
- *  - You will also pass in the client’s handle (name) as a run time parameter.
- *
- *  - The client uses the "$: " as a prompt for user input (so you output this to stdout).
- *
- *  - The cclient must support the following commands:
- *      + %M (send message)
- *      + %C (multicast a message)
- *      + %B (broadcast a message)
- *      + %L (get a listing of all handles from the server)
- *      + %E (exit)
- * */
+int sendToServer(int socket, uint8_t *sendBuf, int sendLen) {
 
-/*
- * Setup:
- *      - Initial setup at the network level
- *      - Refers to the init communication between the client and server_net_init
- *      - connect() and accept()
- * Use:
- *      - Using the network itself
- *      - send() and recv()
- * Teardown:
- *      - Shutting down communications and cleaning things up
- *      - close()
- * */
+    int sent;
+
+    printf(
+            "string len: %d (including null)\n",
+            sendLen
+    );
+
+    /* Send the data as a packet with a header */
+    sent = sendPDU(socket, sendBuf, sendLen);
+
+    printf("Amount of data sent is: %d\n", sent);
+
+    return sent;
+}
+
+int readFromStdin(uint8_t *buffer) {
+    int aChar, inputLen = 0;
+
+    /* Important you don't input more characters than you have space for */
+    buffer[inputLen] = '\0';
+
+    printf("Enter data: ");
+
+    /* Reach each character until we reach \n */
+    while (inputLen < (MAXBUF - 1) && (aChar = getchar()) != '\n') {
+
+        if (aChar != '\n') {
+            buffer[inputLen++] = aChar;
+        }
+
+    }
+
+    /* Null terminate the string */
+    buffer[inputLen++] = '\0';
+
+    return inputLen;
+}
+
+void checkArgs(int argc, char *argv[]) {
+
+    /* Check command line arguments  */
+    if (argc != 4) {
+        fprintf(stderr, "Usage: ./%s handle serverName serverPort \n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    /* Make sure the handle starts with a letter */
+    if (!isalpha(argv[1][0])) {
+        fprintf(stderr, "Invalid handle, handle starts with a number. \n");
+        exit(EXIT_FAILURE);
+    }
+
+    if (strlen(argv[1]) > 100) {
+        fprintf(stderr, "Invalid handle, handle longer than 100 characters. \n");
+        exit(EXIT_FAILURE);
+    }
+}

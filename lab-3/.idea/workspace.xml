@@ -77,7 +77,7 @@
       <recent name="$PROJECT_DIR$/src" />
     </key>
   </component>
-  <component name="RunManager" selected="CMake Application.cclient">
+  <component name="RunManager" selected="Makefile Target.clean">
     <configuration default="true" type="BIBTEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
       <texify-bibtex>
         <compiler />
@@ -89,7 +89,7 @@
       </texify-bibtex>
       <method v="2" />
     </configuration>
-    <configuration name="cclient" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="localhost 54320" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="lab_3" TARGET_NAME="cclient" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="lab_3" RUN_TARGET_NAME="cclient">
+    <configuration name="cclient" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="localhost 54321" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="lab_3" TARGET_NAME="cclient" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="lab_3" RUN_TARGET_NAME="cclient">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -174,6 +174,7 @@
       <option name="presentableId" value="Default" />
       <updated>1681938859841</updated>
       <workItem from="1681938861341" duration="15670000" />
+      <workItem from="1682093477420" duration="8033000" />
     </task>
     <task id="LOCAL-00001" summary="updated">
       <created>1682093324801</created>
@@ -182,7 +183,21 @@
       <option name="project" value="LOCAL" />
       <updated>1682093324801</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="updated">
+      <created>1682093498822</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1682093498822</updated>
+    </task>
+    <task id="LOCAL-00003" summary="updated">
+      <created>1682106332865</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1682106332865</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

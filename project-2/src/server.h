@@ -9,7 +9,8 @@
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
 
-#define BUFF_SIZE 1400
-#define DEFAULT_BACKLOG 128
+int checkArgs(int argc, char *argv[]);
+
+void serverControl(int mainServerSocket);
 
 #endif /* PROJECT_2_SERVER_H */

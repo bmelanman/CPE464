@@ -13,10 +13,12 @@ file(GLOB_RECURSE GIVEN_UTILS "given_files/tcpUdpPollCode/*")
 add_library(given_code ${GIVEN_UTILS})
 
 add_library(dict libs/dictionary.c libs/dictionary.h)
+add_library(serverTable libs/serverTable.c libs/serverTable.h)
+target_link_libraries(serverTable dict)
 
 add_executable(cclient src/cclient.c src/cclient.h)
 
-add_executable(server src/server.c src/server.h)
+add_executable(server src/server.c src/server.h )
 
 add_executable(test src/test.c)
 
