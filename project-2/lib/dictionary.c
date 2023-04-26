@@ -26,7 +26,7 @@ dict *create_new_dict(int size) {
     new_dict = malloc(sizeof(dict));
     if (new_dict == NULL) { MEM_ERR("dictionary.c", 0) }
 
-    new_dict->Nodes = malloc(sizeof(dict_Node) * size);
+    new_dict->Nodes = malloc(sizeof(dict_node_t) * size);
     if (new_dict->Nodes == NULL) { MEM_ERR("dictionary.c", 1) }
 
     /* Set the size and capacity */
@@ -36,10 +36,10 @@ dict *create_new_dict(int size) {
     return new_dict;
 }
 
-dict_Node *create_dict_node(char *key, int value) {
+dict_node_t *create_dict_node(char *key, int value) {
 
     /* Init a new node */
-    dict_Node *node = malloc(sizeof(dict_Node));
+    dict_node_t *node = malloc(sizeof(dict_node_t));
     if (node == NULL) { MEM_ERR("dictionary.c", 2) }
 
     node->key = strndup(key, strlen(key));
@@ -52,10 +52,10 @@ dict_Node *create_dict_node(char *key, int value) {
 dict *add_dict_capacity(dict *old_dict) {
 
     int i;
-    dict_Node *node = NULL;
+    dict_node_t *node = NULL;
 
     int old_size = old_dict->cap;
-    dict_Node **old_vals = old_dict->Nodes;
+    dict_node_t **old_vals = old_dict->Nodes;
 
     int new_size = 2 * old_size + 1;
 
@@ -77,7 +77,7 @@ dict *add_dict_capacity(dict *old_dict) {
 int dict_insert(dict *dict, char *key, int value) {
 
     int idx;
-    dict_Node *node;
+    dict_node_t *node;
 
     /* Check for empty keys */
     if (key == NULL || key[0] == '\0') return -1;
@@ -116,7 +116,7 @@ int dict_remove(dict *dict, char *key) {
     int hashed_key = hash(key) % dict->cap, removed_val;
 
     /* Get the head node */
-    dict_Node *node = dict->Nodes[hashed_key];
+    dict_node_t *node = dict->Nodes[hashed_key];
 
     /* Make sure the head node exists */
     if (node == NULL) return -1;
@@ -155,7 +155,7 @@ int dict_search(dict *dict, char *key) {
     int hashed_key = hash(key) % dict->cap;
 
     /* Get the head node */
-    dict_Node *node = dict->Nodes[hashed_key];
+    dict_node_t *node = dict->Nodes[hashed_key];
 
     /* If there is no head node, return not found */
     if (node == NULL) {
@@ -182,10 +182,10 @@ void free_hash(dict *dict) {
 
     for (i = 0; i < dict->cap; i++) {
 
-        dict_Node *node = dict->Nodes[i];
+        dict_node_t *node = dict->Nodes[i];
 
         while (node != NULL) {
-            dict_Node *temp = node;
+            dict_node_t *temp = node;
             node = node->next;
 
             free(temp->key);

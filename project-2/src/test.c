@@ -1,5 +1,5 @@
 
-#include "../libs/dictionary.h"
+#include "dictionary.h"
 
 int main(void) {
 

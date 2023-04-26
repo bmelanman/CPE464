@@ -16,17 +16,17 @@
 #define ENOMEM 12
 #define MEM_ERR(s, i) printf("%s malloc err at idx %d", s, i); exit(ENOMEM);
 
-typedef struct dict_Node_struct dict_Node;
+typedef struct dict_node_struct dict_node_t;
 typedef struct dict_struct dict;
 
-struct dict_Node_struct {
+struct dict_node_struct {
     char *key;
     int val;
-    dict_Node *next;
+    dict_node_t *next;
 };
 
 struct dict_struct {
-    dict_Node **Nodes;
+    dict_node_t **Nodes;
     int cap;
     int size;
 };

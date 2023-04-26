@@ -1,6 +1,6 @@
 
-#ifndef PROJECT_2_NETWORK_UTILS_H
-#define PROJECT_2_NETWORK_UTILS_H
+#ifndef PROJECT_2_NETWORKUTILS_H
+#define PROJECT_2_NETWORKUTILS_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,42 +11,34 @@
 #include <arpa/inet.h>
 #include <sys/poll.h>
 
-#define PDU_HEADER_LEN 2
-#define LISTEN_BACKLOG 10
-#define POLL_SET_SIZE 10
+#include "libPoll.h"
 
 #define MAXBUF 1024
-#define DEBUG_FLAG 1
+#define LISTEN_BACKLOG 10
 
-int sendPDU(int clientSocket, uint8_t *dataBuffer, int lengthOfData);
+#define PDU_MSG_LEN 2
+#define PDU_HEADER_LEN 3
 
-int recvPDU(int socketNumber, uint8_t *dataBuffer, int bufferSize);
+#define PDU_FLAG 2
+#define PDU_SRC_LEN_IDX 3
 
-/* TCP Server */
-int tcpServerSetup(int serverPort);
+#define CONN_PKT 1
+#define CONN_ACK_PKT 2
+#define CONN_ERR_PKT 3
+#define BROADCAST_PKT 4
+#define MESSAGE_PKT 5
+#define MULTICAST_PKT 6
+#define DST_ERR_PKT 7
+#define REQ_EXIT_PKT 8
+#define ACK_EXIT_PKT 9
+#define REQ_LIST_PKT 10
+#define ACK_LIST_PKT 11
+#define HDL_LIST_PKT 12
+#define FIN_LIST_PKT 13
 
-int tcpAccept(int mainServerSocket, int debugFlag);
+int sendPDU(int clientSocket, uint8_t dataBuffer[], int lengthOfData, uint8_t pduFlag);
 
-unsigned char *gethostbyname6(const char *hostName, struct sockaddr_in6 *aSockaddr6);
-
-unsigned char *gethostbyname4(const char *hostName, struct sockaddr_in *aSockaddr);
-
-char *getIPAddressString4(unsigned char *ipAddress);
-
-char *getIPAddressString6(unsigned char *ipAddress);
-
-/* Just for printout out address info */
-void printIPInfo(struct sockaddr_in6 *ipAddressStruct);
-
-char *ipAddressToString(struct sockaddr_in6 *ipAddressStruct);
-
-void setupPollSet(void);
-
-void addToPollSet(int socketNumber);
-
-void removeFromPollSet(int socketNumber);
-
-int pollCall(int timeInMilliSeconds);
+int recvPDU(int socketNumber, uint8_t dataBuffer[], int bufferSize);
 
 /*
  * USER LEVEL PACKET FORMAT
@@ -90,7 +82,7 @@ int pollCall(int timeInMilliSeconds);
 
 /* 3 bytes (12 bits) */
 struct __attribute__((packed)) chat_header {    /* Offset */
-    uint8_t len;                                /*      0 */
+    uint16_t len;                                /*      0 */
     uint8_t flag: 4;                            /*      8 */
 };
 
@@ -123,7 +115,7 @@ struct __attribute__((packed)) chat_header {    /* Offset */
 
 /* 104 bytes (832 bits) */
 struct __attribute__((packed)) handshake_pkt {  /* Offset */
-    uint8_t len;                                /*      0 */
+    uint16_t len;                               /*      0 */
     uint8_t flag;                               /*      8 */
     uint8_t handle_len;                         /*     16 */
 /*  char handle[MAX_HANDLE_LEN]; */             /*     24 */
@@ -142,7 +134,7 @@ struct __attribute__((packed)) handshake_pkt {  /* Offset */
 
 /* 104 bytes (832 bits) */
 struct __attribute__((packed)) broadcast_pkt {  /* Offset */
-    uint8_t len;                                /*      0 */
+    uint16_t len;                                /*      0 */
     uint8_t flag;                               /*      8 */
     uint8_t handle_len;                         /*     16 */
 /*  char handle[MAX_HANDLE_LEN]; */             /*     24 */
@@ -166,13 +158,14 @@ struct __attribute__((packed)) broadcast_pkt {  /* Offset */
 
 /* 104 bytes (832 bits) */
 struct __attribute__((packed)) message_pkt {
-    uint8_t len;
+    uint16_t len;
     uint8_t flag;
     uint8_t src_handle_len;
-/*  char src_handle[MAX_HANDLE_LEN]; */
+/*  char src_handle[src_handle_len]; */
     uint8_t num_dst;
     uint8_t dst_handle_len;
-/*  char dst_handle[MAX_HANDLE_LEN]; */
+/*  char dst_handle[dst_handle_len]; */
+/*  char *message;                   */
 };
 
 /*
@@ -182,7 +175,7 @@ struct __attribute__((packed)) message_pkt {
 
 /* 104 bytes (832 bits) */
 struct __attribute__((packed)) multicast_pkt {
-    uint8_t len;
+    uint16_t len;
     uint8_t flag;
 
     uint8_t src_handle_len;
@@ -207,9 +200,9 @@ struct __attribute__((packed)) multicast_pkt {
 
 /* 104 bytes (832 bits) */
 struct __attribute__((packed)) num_handles_pkt {    /* Offset */
-    uint8_t len;                                    /*      0 */
+    uint16_t len;                                    /*      0 */
     uint8_t flag;                                   /*      8 */
     uint16_t num_handles;                           /*     16 */
 };
 
-#endif /* PROJECT_2_NETWORK_UTILS_H */
+#endif /* PROJECT_2_NETWORKUTILS_H */
