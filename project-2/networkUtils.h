@@ -13,7 +13,7 @@
 
 #include "libPoll.h"
 
-#define MAX_BUF 1024
+#define MAX_BUF 1400
 #define MAX_HDL 100
 #define MAX_MSG 200
 #define LISTEN_BACKLOG 10

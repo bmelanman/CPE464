@@ -24,18 +24,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f9749982-727e-4fc8-820f-79daaa4b7d14" name="Changes" comment="updated">
-      <change afterPath="$PROJECT_DIR$/../project-2/libs/libPoll.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project-2/libs/libPoll.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../project-1/submission/trace" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/libs/network_utils.c" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/libs/network_utils.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/libs/network_utils.h" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/libs/network_utils.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/libs/serverTable.c" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/libs/serverTable.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../project-1/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../project-1/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../project-2/lib/networkUtils.h" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/lib/networkUtils.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../project-2/lib/serverTable.h" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/lib/serverTable.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../project-2/src/cclient.c" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/src/cclient.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/src/cclient.h" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/src/cclient.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../project-2/src/server.c" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/src/server.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/src/server.h" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/src/server.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -120,6 +115,27 @@
       </texify-external>
       <method v="2" />
     </configuration>
+    <configuration default="true" type="LATEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
+      <texify>
+        <compiler>PDFLATEX</compiler>
+        <compiler-path />
+        <sumatra-path />
+        <pdf-viewer>NONE</pdf-viewer>
+        <viewer-command />
+        <compiler-arguments />
+        <envs />
+        <main-file />
+        <output-path>{projectDir}/out</output-path>
+        <auxil-path>{projectDir}/auxil</auxil-path>
+        <compile-twice>false</compile-twice>
+        <output-format>PDF</output-format>
+        <latex-distribution>TEXLIVE</latex-distribution>
+        <has-been-run>false</has-been-run>
+        <bib-run-config>[]</bib-run-config>
+        <makeindex-run-config>[]</makeindex-run-config>
+      </texify>
+      <method v="2" />
+    </configuration>
     <configuration name="cclient" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
       <makefile filename="$PROJECT_DIR$/Makefile" target="cclient" workingDirectory="" arguments="">
         <envs />
@@ -189,6 +205,8 @@
       <workItem from="1681938861341" duration="15670000" />
       <workItem from="1682093477420" duration="8033000" />
       <workItem from="1682193136079" duration="8838000" />
+      <workItem from="1682465418271" duration="616000" />
+      <workItem from="1682535392191" duration="597000" />
     </task>
     <task id="LOCAL-00001" summary="updated">
       <created>1682093324801</created>

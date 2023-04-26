@@ -5,23 +5,24 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 
 #include "libPoll.h"
 
 /* ENOMEM definition taken from sys/errno.h */
 #define ENOMEM 12
-#define MEM_ERR(STR) printf("%s malloc err", STR); exit(ENOMEM);
+#define MEM_ERR(STR) printf("%s malloc err", STR); errno = ENOMEM; exit(errno);
 
 #define MAX_HANDLE_LEN 101
 #define NOT_FOUND (-1)
 
 typedef struct tableNode tableNode_t;
 
-typedef struct tableNode {
+struct tableNode {
     char *handle;
     int socket;
     tableNode_t *next;
-} tableNode_t;
+};
 
 typedef struct serverTable {
     tableNode_t **nodes;    /* An array of linked lists containing handle/socket pairs      */

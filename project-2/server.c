@@ -210,32 +210,12 @@ void sendToAll(serverTable_t *serverTable, int clientSocket, int flag, uint8_t s
 }
 
 void routeBroadcast(serverTable_t *serverTable, uint8_t dataBuff[], int pduLen) {
-
-//    int bytes;
-//    char *handle;
-
     sendToAll(serverTable, -1, BROADCAST_PKT, dataBuff, pduLen);
-
-//    /* Cycle through all sockets to find valid ones */
-//    for (int sock = 3; sock < serverTable->arrCap; sock++) {
-//
-//        /* Get the handle at the socket index */
-//        handle = serverTable->handleArr[sock];
-//
-//        /* Check for a valid handle */
-//        if (handle == NULL || handle[0] == '\0') continue;
-//
-//        /* Send the packet to the client */
-//        bytes = sendPDU(sock, &dataBuff[3], pduLen, BROADCAST_PKT);
-//        if (bytes < 1) {
-//            printf("Client unexpectedly disconnected\n");
-//            removeClientSocket(serverTable, sock);
-//        }
-//    }
-
 }
 
 void routeMessage(serverTable_t *serverTable, uint8_t dataBuff[], int pduLen) {
+
+    // TODO: make this not shitty cuz run its shitty idk whats going on here dude cmon
 
     char srcHandle[MAX_HDL], dstHandle[MAX_HDL];
     int srcSocket, dstSocket;
@@ -273,9 +253,9 @@ void routeMessage(serverTable_t *serverTable, uint8_t dataBuff[], int pduLen) {
 
 }
 
-void routeMulticast(serverTable_t *serverTable, uint8_t dataBuff[], int pduLen) {
-//todo:
-}
+//void routeMulticast(serverTable_t *serverTable, uint8_t dataBuff[], int pduLen) {
+////todo:
+//}
 
 void sendClose(serverTable_t *serverTable, int clientSocket) {
 
@@ -288,9 +268,8 @@ void sendClose(serverTable_t *serverTable, int clientSocket) {
 
 void sendList(serverTable_t *serverTable, int clientSocket) {
 
-    uint8_t bytesSent, sendBuff[MAX_BUF], handleLen;
+    uint8_t bytesSent, sendBuff[MAX_BUF];
     uint32_t numClients = htonl(serverTable->size);
-//    char *handle = NULL;
 
     /* Send a packet 11 containing the number of clients in the serverTable */
     memcpy(sendBuff, &numClients, 4);
@@ -302,29 +281,6 @@ void sendList(serverTable_t *serverTable, int clientSocket) {
     }
 
     sendToAll(serverTable, clientSocket, HDL_LIST_PKT, sendBuff, 0);
-
-//    /* Send each handle as in a packet 12 */
-//    for (int sock = 3; sock < serverTable->arrCap; ++sock) {
-//
-//        /* Get the next handle */
-//        handle = serverTable->handleArr[sock];
-//
-//        /* Check for valid handles */
-//        if (handle == NULL || handle[0] == '\0') continue;
-//
-//        /* Pack and send */
-//        handleLen = strnlen(handle, MAX_HANDLE_LEN);
-//        memcpy(sendBuff, &handleLen, 1);
-//        memcpy(&sendBuff[1], handle, handleLen);
-//
-//        bytesSent = sendPDU(clientSocket, sendBuff, 1 + handleLen, HDL_LIST_PKT);
-//        if (bytesSent < 1) {
-//            printf("Client unexpectedly disconnected\n");
-//            removeClientSocket(serverTable, clientSocket);
-//            return;
-//
-//        }
-//    }
 
     /* Finish with a packet 13 */
     bytesSent = sendPDU(clientSocket, NULL, 0, FIN_LIST_PKT);
@@ -360,7 +316,7 @@ void processClient(int clientSocket, serverTable_t *serverTable) {
             routeMessage(serverTable, recvBuffer, messageLen);
             break;
         case 6:   /* Multicast packet */
-            routeMulticast(serverTable, recvBuffer, messageLen);
+//            routeMulticast(serverTable, recvBuffer, messageLen);
             break;
         case 8:     /* Exit request */
             sendClose(serverTable, clientSocket);

@@ -199,6 +199,13 @@ void processBroadcast(uint8_t dataBuff[]) {
     fflush(stdout);
 }
 
+//void processMulticast(uint8_t dataBuff[]) {
+//
+//    int srcHandleLen = dataBuff[PDU_HEADER_LEN];
+//    char *srcHandle;
+//
+//}
+
 int processPacket(int socket, char *handle) {
 
     uint8_t recvBuff[MAX_BUF] = {0};
@@ -314,11 +321,16 @@ int sendToServer(int socket, uint8_t *sendBuf, int sendLen, uint8_t flag) {
     return sent;
 }
 
-void packMessage(int socket, char *clientHandle, char *dstHandle, char *usrMsg) {
+void packMessage(int socket, char *clientHandle, uint8_t *usrInput) {
 
     uint8_t sendBuff[MAX_BUF] = {0};
-    uint8_t dataBuffLen = 0, strLen;
-    uint8_t numDests = 1;
+    uint8_t dataBuffLen = 1, strLen, numDests = 1;
+    char *dstHandle = NULL, *usrMsg = NULL;
+
+    /* Get the handle */
+    dstHandle = strtok((char *) &(usrInput[3]), " ");
+    strLen = strnlen(dstHandle, MAX_HDL);
+    usrMsg = (char *) &(usrInput[4 + strLen]);
 
     /* Lengths of each string sent */
     if (clientHandle == NULL) {
@@ -331,7 +343,7 @@ void packMessage(int socket, char *clientHandle, char *dstHandle, char *usrMsg) 
 
     /* 1 Byte: Client handle length */
     strLen = (int) strlen(clientHandle);
-    memcpy(&sendBuff[dataBuffLen++], &strLen, 1);
+    memcpy(&sendBuff[dataBuffLen], &strLen, 1);
     /* N Bytes: Client handle */
     memcpy(&sendBuff[dataBuffLen], clientHandle, strLen);
     dataBuffLen += strLen;
@@ -376,8 +388,40 @@ void packBroadcast(int socket, char *handle, char *msg) {
 
 }
 
-void packMulticast(void) {
-    printf("packMulticast\n");
+void packMulticast(int socket, char *handle, uint8_t usrInput[]) {
+
+    uint8_t sendBuff[MAX_BUF] = {0}, handleLen, buffLen = 1, numDestinations;
+    char *dstHandle = NULL, *msg = NULL;
+
+    /* Add source handle and length */
+    handleLen = strnlen(handle, MAX_HDL);
+    memcpy(sendBuff, &handleLen, 1);
+    memcpy(&sendBuff[buffLen], handle, handleLen);
+    buffLen += handleLen;
+
+    /* Add the number of destinations */
+    numDestinations = strtol(strtok((char *) &usrInput[3], " "), NULL, 10);
+    memcpy(&sendBuff[buffLen++], &numDestinations, 1);
+
+    for (int i = 0; i < numDestinations; i++) {
+
+        dstHandle = strtok(NULL, " ");
+        handleLen = strnlen(dstHandle, MAX_HDL);
+        memcpy(sendBuff, &handleLen, 1);
+        memcpy(&sendBuff[buffLen], dstHandle, handleLen);
+        buffLen += handleLen;
+
+    }
+
+    /* Add the message */
+    msg = strtok(NULL, " ");
+    handleLen = strnlen(msg, MAX_MSG);
+    memcpy(&sendBuff[buffLen], msg, ++handleLen);
+    buffLen += handleLen;
+
+    /* Send the packet */
+    sendPDU(socket, sendBuff, buffLen, MULTICAST_PKT);
+
 }
 
 void reqList(int socket) {
@@ -396,8 +440,7 @@ void reqClose(int socket) {
 
 void processUsrInput(int clientSocket, char *handle) {
 
-    uint8_t usrInput[MAX_MSG] = {0}, strLen;
-    char *strBuff = NULL;
+    uint8_t usrInput[MAX_MSG] = {0};
 
     fgets((char *) usrInput, MAX_MSG, stdin);
 
@@ -435,15 +478,10 @@ void processUsrInput(int clientSocket, char *handle) {
     /* Parse given command */
     switch (tolower(usrInput[1])) {
         case 'm':
-            /* Get the handle */
-            strBuff = strtok((char *) &(usrInput[3]), " ");
-            strLen = strnlen(strBuff, MAX_HDL);
-
-            /* Send the message */
-            packMessage(clientSocket, handle, strBuff, (char *) &(usrInput[4 + strLen]));
+            packMessage(clientSocket, handle, usrInput);
             break;
         case 'c':
-            packMulticast();
+            packMulticast(clientSocket, handle, usrInput);
             break;
         case 'b':
             packBroadcast(clientSocket, handle, (char *) &(usrInput[3]));
