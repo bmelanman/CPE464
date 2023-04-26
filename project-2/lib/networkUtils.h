@@ -13,7 +13,9 @@
 
 #include "libPoll.h"
 
-#define MAXBUF 1024
+#define MAX_BUF 1024
+#define MAX_HDL 100
+#define MAX_MSG 200
 #define LISTEN_BACKLOG 10
 
 #define PDU_MSG_LEN 2
@@ -138,7 +140,7 @@ struct __attribute__((packed)) broadcast_pkt {  /* Offset */
     uint8_t flag;                               /*      8 */
     uint8_t handle_len;                         /*     16 */
 /*  char handle[MAX_HANDLE_LEN]; */             /*     24 */
-/*  char message[MAX_HANDLE_LEN]; */
+/*  char message[MAX_MSG_LEN]; */
 };
 
 /*

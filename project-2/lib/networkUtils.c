@@ -19,8 +19,12 @@ int sendPDU(int clientSocket, uint8_t dataBuffer[], int lengthOfData, uint8_t pd
 
     /* Error checking */
     if (bytesSent < 0) {
-        perror("send call");
-        exit(EXIT_FAILURE);
+        if (errno == EBADF) {
+            bytesSent = 0;
+        } else {
+            perror("send call");
+            exit(EXIT_FAILURE);
+        }
     }
 
     return (int) bytesSent;

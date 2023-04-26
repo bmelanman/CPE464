@@ -8,7 +8,7 @@ int clientInitTCP(char *handle, char *server_name, char *server_port);
 
 void clientControl(int clientSocket, char *handle);
 
-void processUsrInput(int socket, char *handle);
+void processUsrInput(int clientSocket, char *handle);
 
 void sendHandshake(int clientSocket, char *clientHandle);
 
@@ -60,7 +60,7 @@ void checkArgs(int argc, char *argv[]) {
 int clientInitTCP(char *handle, char *server_name, char *server_port) {
 
     int clientSocket, err, bytes, flag;
-    uint8_t dataBuff[MAXBUF];
+    uint8_t dataBuff[MAX_BUF];
     struct addrinfo *info, hints = {
             0,
             AF_INET6,
@@ -101,7 +101,7 @@ int clientInitTCP(char *handle, char *server_name, char *server_port) {
 
     /* Wait for the server to send an ACK */
     printf("Waiting for server connection response...\n");
-    bytes = recvPDU(clientSocket, dataBuff, MAXBUF);
+    bytes = recvPDU(clientSocket, dataBuff, MAX_BUF);
     if (bytes < 1) {
         fprintf(stderr, "Server disconnected during initialization, terminating...\n");
         close(clientSocket);
@@ -176,10 +176,10 @@ void printMessage(uint8_t dataBuff[]) {
     dataLen = dataBuff[offset];
 
     /* Get the message */
-    offset += dataLen + 2;
+    offset += dataLen + 1;
     msg = strdup((char *) &dataBuff[offset]);
 
-    printf("\n%s: %s\n", srcHandle, msg);
+    printf("\b\b\b%s: %s\n", srcHandle, msg);
     printf("$: ");
     fflush(stdout);
 
@@ -187,35 +187,53 @@ void printMessage(uint8_t dataBuff[]) {
     free(msg);
 }
 
-int processPacket(int socket) {
+void processBroadcast(uint8_t dataBuff[]) {
 
-    uint8_t recvBuff[MAXBUF] = {0};
+    /* Unpack the packet */
+    int handleLen = dataBuff[PDU_HEADER_LEN];
+    char *handle = strndup((char *) &dataBuff[PDU_HEADER_LEN + 1], handleLen);
+    char *msg = strndup((char *) &dataBuff[PDU_HEADER_LEN + 1 + handleLen], MAX_MSG);
+
+    /* Print the info */
+    printf("\b\b\b%s: %s\n$: ", handle, msg);
+    fflush(stdout);
+}
+
+int processPacket(int socket, char *handle) {
+
+    uint8_t recvBuff[MAX_BUF] = {0};
     int recvLen;
 
     /* Receive a new packet */
-    recvLen = recvPDU(socket, recvBuff, MAXBUF);
+    recvLen = recvPDU(socket, recvBuff, MAX_BUF);
 
     /* Check for server connection */
     if (recvLen == 0) {
-        printf("Server has disconnected!\n");
+        printf("\b\b\bServer has disconnected!\n");
         return 1;
     }
 
     switch (recvBuff[PDU_FLAG]) {
+        case 3: /* Duplicate header error */
+            printf("\b\b\bHandle already in use: %s\n", handle);
+            return 1;
+        case 4: /* Broadcast received */
+            processBroadcast(recvBuff);
+            break;
         case 5: /* Message received packet */
             printMessage(recvBuff);
             break;
         case 7: /* Message error packet */
-            printf("\nClient with handle %s does not exist.\n$: ",
+            printf("\b\b\bClient with handle %s does not exist.\n$: ",
                    strndup((char *) (recvBuff + 4), recvBuff[PDU_SRC_LEN_IDX])
             );
             fflush(stdout);
             break;
         case 9: /* Exit ACK packet */
-            printf("Exit request approved, shutting down...\n");
+            printf("\b\b\bExit request approved, shutting down...\n");
             return 1;
         case 11:
-            recvClientList(socket, recvBuff, MAXBUF);
+            recvClientList(socket, recvBuff, MAX_BUF);
     }
 
     return 0;
@@ -224,21 +242,37 @@ int processPacket(int socket) {
 
 void recvClientList(int clientSocket, uint8_t dataBuff[], int buffLen) {
 
-    int bytes, flag = 12;
+    int bytes, handleLen;
+    char *handle = NULL;
     uint32_t numClients = ntohl(*((uint32_t *) &dataBuff[PDU_HEADER_LEN]));
 
-    printf("\nNumber of clients: %u\n$: ", numClients);
+    printf("\b\b\bNumber of clients: %u\n$: ", numClients);
     fflush(stdout);
 
-    while (flag == 12) {
+    while (1) {
 
+        /* Get the next handle packet */
         bytes = recvPDU(clientSocket, dataBuff, buffLen);
 
-        /* Get the first  */
         if (bytes == 0) {
-            printf("Server has disconnected!\n");
+            printf("\b\b\bServer has disconnected!\n");
             return;
         }
+
+        /* Check for done flag */
+        if (dataBuff[PDU_FLAG] == FIN_LIST_PKT) break;
+
+        /* Get the handle length */
+        handleLen = dataBuff[PDU_HEADER_LEN] + 1;
+        /* Get the handle */
+        handle = strndup((char *) &dataBuff[PDU_HEADER_LEN], handleLen);
+
+        /* Print out the handle */
+        printf("\b\b\b    %s\n$: ", handle);
+        fflush(stdout);
+
+        /* Free the temp string */
+        free(handle);
     }
 
 }
@@ -259,7 +293,7 @@ void clientControl(int clientSocket, char *handle) {
         pollSocket = pollCall(pollSet, -1);
 
         /* Check for incoming packets and user input */
-        if (pollSocket == clientSocket) run_client = processPacket(clientSocket);
+        if (pollSocket == clientSocket) run_client = processPacket(clientSocket, handle);
         else if (pollSocket == STDIN_FILENO) processUsrInput(clientSocket, handle);
     }
 
@@ -282,7 +316,7 @@ int sendToServer(int socket, uint8_t *sendBuf, int sendLen, uint8_t flag) {
 
 void packMessage(int socket, char *clientHandle, char *dstHandle, char *usrMsg) {
 
-    uint8_t dataBuff[MAXBUF] = {0};
+    uint8_t sendBuff[MAX_BUF] = {0};
     uint8_t dataBuffLen = 0, strLen;
     uint8_t numDests = 1;
 
@@ -297,36 +331,49 @@ void packMessage(int socket, char *clientHandle, char *dstHandle, char *usrMsg) 
 
     /* 1 Byte: Client handle length */
     strLen = (int) strlen(clientHandle);
-    memcpy(dataBuff + (dataBuffLen++), &strLen, 1);
+    memcpy(&sendBuff[dataBuffLen++], &strLen, 1);
     /* N Bytes: Client handle */
-    memcpy(dataBuff + dataBuffLen, clientHandle, strLen);
+    memcpy(&sendBuff[dataBuffLen], clientHandle, strLen);
     dataBuffLen += strLen;
 
     /* 1 Byte: Number of destinations */
-    memcpy(dataBuff + (dataBuffLen++), &numDests, 1);
+    memcpy(&sendBuff[dataBuffLen++], &numDests, 1);
 
     /* 1 Byte: Destination handle length */
     strLen = (int) strlen(dstHandle);
-    memcpy(dataBuff + (dataBuffLen++), &strLen, 1);
+    memcpy(&sendBuff[dataBuffLen++], &strLen, 1);
     /* N Bytes: Destination handle */
-    memcpy(dataBuff + dataBuffLen, dstHandle, strLen);
+    memcpy(&sendBuff[dataBuffLen], dstHandle, strLen);
     dataBuffLen += strLen;
 
     /* 1 Byte: Message length */
     if (usrMsg == NULL) strLen = 0;
     else strLen = (int) strlen(usrMsg);
-    memcpy(dataBuff + (dataBuffLen++), &strLen, 1);
-    /* N Bytes: The message */
-    memcpy(dataBuff + dataBuffLen, usrMsg, strLen);
+    memcpy(&sendBuff[dataBuffLen++], &strLen, 1);
+    /* N Bytes: The message with null terminator */
+    memcpy(&sendBuff[dataBuffLen], usrMsg, ++strLen);
     dataBuffLen += strLen;
 
     /* Send the packet! */
-    sendToServer(socket, dataBuff, dataBuffLen, MESSAGE_PKT);
+    sendToServer(socket, sendBuff, dataBuffLen, MESSAGE_PKT);
 
 }
 
-void packBroadcast(void) {
-    printf("packBroadcast\n");
+void packBroadcast(int socket, char *handle, char *msg) {
+    uint8_t dataBuff[MAX_HDL];
+
+    /* Add handle length and handle */
+    int handleLen = (int) strnlen(handle, MAX_HDL), msgLen;
+    memcpy(dataBuff, &handleLen, 1);
+    memcpy(dataBuff + 1, handle, handleLen);
+
+    /* Add the message */
+    msgLen = (int) strnlen(msg, MAX_MSG) + 1;
+    memcpy(&dataBuff[handleLen + 1], msg, msgLen);
+
+    /* Sent the packet */
+    sendPDU(socket, dataBuff, handleLen + msgLen + 1, BROADCAST_PKT);
+
 }
 
 void packMulticast(void) {
@@ -347,14 +394,14 @@ void reqClose(int socket) {
 
 }
 
-void processUsrInput(int socket, char *handle) {
+void processUsrInput(int clientSocket, char *handle) {
 
-    uint8_t usrInput[MAXBUF] = {0}, strLen;
+    uint8_t usrInput[MAX_MSG] = {0}, strLen;
     char *strBuff = NULL;
 
-    fgets((char *) usrInput, MAXBUF, stdin);
+    fgets((char *) usrInput, MAX_MSG, stdin);
 
-    usrInput[strnlen((char *) usrInput, MAXBUF) - 1] = '\0';
+    usrInput[strnlen((char *) usrInput, MAX_MSG) - 1] = '\0';
 
     /* Check for % at the beginning of each command */
     if (usrInput[0] != '%') {
@@ -390,22 +437,22 @@ void processUsrInput(int socket, char *handle) {
         case 'm':
             /* Get the handle */
             strBuff = strtok((char *) &(usrInput[3]), " ");
-            strLen = strnlen(strBuff, MAXBUF);
+            strLen = strnlen(strBuff, MAX_HDL);
 
             /* Send the message */
-            packMessage(socket, handle, strBuff, (char *) &(usrInput[4 + strLen]));
+            packMessage(clientSocket, handle, strBuff, (char *) &(usrInput[4 + strLen]));
             break;
         case 'c':
             packMulticast();
             break;
         case 'b':
-            packBroadcast();
+            packBroadcast(clientSocket, handle, (char *) &(usrInput[3]));
             break;
         case 'l':
-            reqList(socket);
+            reqList(clientSocket);
             break;
         case 'e':
-            reqClose(socket);
+            reqClose(clientSocket);
             break;
         case 'd':
             printf("hello!");

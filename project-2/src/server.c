@@ -17,7 +17,6 @@ int main(int argc, char *argv[]) {
 
     /* Catch for ^C */
     signal(SIGINT, (void (*)(int)) intHandler);
-    signal(SIGKILL, (void (*)(int)) intHandler);
 
     /* Set up poll */
     newPollSet();
@@ -27,6 +26,9 @@ int main(int argc, char *argv[]) {
 
     /* Run the server */
     serverControl(mainServerSocket);
+
+    /* Close the main socket */
+    close(mainServerSocket);
 
     return 0;
 }
@@ -145,44 +147,108 @@ void processNewClient(int clientSocket, uint8_t dataBuff[], serverTable_t *serve
     memcpy(clientHandle, dataBuff + PDU_SRC_LEN_IDX + 1, handleLen);
     clientHandle[handleLen++] = '\0';
 
-    /* Make sure the handle begins with a letter */
-    if (!isalpha(clientHandle[0])) {
-        /* Decline the connection */
-        sendPDU(clientSocket, NULL, 0, 3);
-        removeFromPollSet(serverTable->pollSet, clientSocket);
-        return;
-    }
+    /* Check for duplicate headers */
+    bytesSent = addClient(serverTable, clientSocket, clientHandle);
 
     /* Add the client to the server table */
-    addClient(serverTable, clientSocket, clientHandle);
+    if (bytesSent == 0) {
 
-    /* Accept the client connection */
-    bytesSent = sendPDU(clientSocket, NULL, 0, 2);
-    if (bytesSent < 1) {
-        /* Client disconnected before the server could respond */
-        removeClient(serverTable, clientHandle);
-        return;
+        /* Accept the client connection */
+        bytesSent = sendPDU(clientSocket, NULL, 0, CONN_ACK_PKT);
+
+        if (bytesSent < 1) {
+            /* Client disconnected before the server could respond */
+            removeClient(serverTable, clientHandle);
+        }
+
+    } else {
+
+        /* Decline the connection */
+        sendPDU(clientSocket, NULL, 0, CONN_ERR_PKT);
+        removeFromPollSet(serverTable->pollSet, clientSocket);
+
     }
 }
 
-void routeBroadcast(serverTable_t *serverTable, uint8_t dataBuffer[], int pduLen) {
-//todo:
+void sendToAll(serverTable_t *serverTable, int clientSocket, int flag, uint8_t sendBuff[], int pduLen) {
+
+    /* Variables are initialized for broadcast packets */
+    int bytesSent, sock = clientSocket;
+    uint8_t handleLen, sendLen = pduLen;
+    char *handle = NULL;
+
+    /* Send each handle as in a packet 12 */
+    for (int i = 0; i < serverTable->arrCap; ++i) {
+
+        /* Get the next handle */
+        handle = serverTable->handleArr[i];
+
+        /* Check for valid handles */
+        if (handle == NULL || handle[0] == '\0') continue;
+
+        /* Check if we need to switch to handshake packets */
+        if (flag == HDL_LIST_PKT) {
+
+            /* Pack a packet 12 */
+            handleLen = (int) strnlen(handle, MAX_HANDLE_LEN);
+            memcpy(sendBuff, &handleLen, 1);
+            memcpy(&sendBuff[1], handle, handleLen);
+
+            sendLen = ++handleLen;
+            sock = i;
+
+        }
+
+        bytesSent = sendPDU(sock, sendBuff, sendLen, flag);
+        if (bytesSent < 1) {
+            printf("Client unexpectedly disconnected\n");
+            removeClientSocket(serverTable, clientSocket);
+            return;
+
+        }
+    }
 }
 
-void routeMessage(serverTable_t *serverTable, uint8_t dataBuffer[], int pduLen) {
+void routeBroadcast(serverTable_t *serverTable, uint8_t dataBuff[], int pduLen) {
 
-    char srcHandle[MAXBUF], dstHandle[MAXBUF];
+//    int bytes;
+//    char *handle;
+
+    sendToAll(serverTable, -1, BROADCAST_PKT, dataBuff, pduLen);
+
+//    /* Cycle through all sockets to find valid ones */
+//    for (int sock = 3; sock < serverTable->arrCap; sock++) {
+//
+//        /* Get the handle at the socket index */
+//        handle = serverTable->handleArr[sock];
+//
+//        /* Check for a valid handle */
+//        if (handle == NULL || handle[0] == '\0') continue;
+//
+//        /* Send the packet to the client */
+//        bytes = sendPDU(sock, &dataBuff[3], pduLen, BROADCAST_PKT);
+//        if (bytes < 1) {
+//            printf("Client unexpectedly disconnected\n");
+//            removeClientSocket(serverTable, sock);
+//        }
+//    }
+
+}
+
+void routeMessage(serverTable_t *serverTable, uint8_t dataBuff[], int pduLen) {
+
+    char srcHandle[MAX_HDL], dstHandle[MAX_HDL];
     int srcSocket, dstSocket;
 
-    uint8_t handleLen = dataBuffer[PDU_HEADER_LEN] + 1, offset = PDU_HEADER_LEN + 1;
+    uint8_t handleLen = dataBuff[PDU_HEADER_LEN] + 1, offset = PDU_HEADER_LEN + 1;
 
     /* Get the source handle */
-    snprintf(srcHandle, handleLen, "%s", (dataBuffer + offset));
+    snprintf(srcHandle, handleLen, "%s", &dataBuff[offset]);
 
     /* Get the destination handle */
     offset += handleLen;
-    handleLen = dataBuffer[offset++] + 1;
-    snprintf(dstHandle, handleLen, "%s", (dataBuffer + offset));
+    handleLen = dataBuff[offset++] + 1;
+    snprintf(dstHandle, handleLen, "%s", &dataBuff[offset]);
 
     dstSocket = getClient(serverTable, dstHandle);
 
@@ -195,19 +261,19 @@ void routeMessage(serverTable_t *serverTable, uint8_t dataBuffer[], int pduLen) 
         offset--;
 
         /* Send an error packet containing the length of the handle + the handle itself */
-        sendPDU(srcSocket, (dataBuffer + offset), handleLen + 1, DST_ERR_PKT);
+        sendPDU(srcSocket, &dataBuff[offset], handleLen + 1, DST_ERR_PKT);
 
         return;
     }
 
     /* Send the message packet to the destination client with the chat header removed (it will be added again by sendPDU) */
-    sendPDU(dstSocket, &dataBuffer[3], pduLen, MESSAGE_PKT);
+    sendPDU(dstSocket, &dataBuff[3], pduLen, MESSAGE_PKT);
 
     printf("Packet of length %d sent from \"%s\" to \"%s\"\n", pduLen, srcHandle, dstHandle);
 
 }
 
-void routeMulticast(serverTable_t *serverTable, uint8_t dataBuffer[], int pduLen) {
+void routeMulticast(serverTable_t *serverTable, uint8_t dataBuff[], int pduLen) {
 //todo:
 }
 
@@ -222,41 +288,43 @@ void sendClose(serverTable_t *serverTable, int clientSocket) {
 
 void sendList(serverTable_t *serverTable, int clientSocket) {
 
-    uint8_t bytesSent, dataBuff[MAXBUF], handleLen;
+    uint8_t bytesSent, sendBuff[MAX_BUF], handleLen;
     uint32_t numClients = htonl(serverTable->size);
-    char *handle = NULL;
+//    char *handle = NULL;
 
     /* Send a packet 11 containing the number of clients in the serverTable */
-    memcpy(dataBuff, &numClients, 4);
-    bytesSent = sendPDU(clientSocket, dataBuff, 4, ACK_LIST_PKT);
+    memcpy(sendBuff, &numClients, 4);
+    bytesSent = sendPDU(clientSocket, sendBuff, 4, ACK_LIST_PKT);
     if (bytesSent < 1) {
         printf("Client unexpectedly disconnected\n");
         removeClientSocket(serverTable, clientSocket);
         return;
     }
 
-    /* Send each handle as in a packet 12 */
-    for (int i = 0; i < serverTable->arrCap; ++i) {
+    sendToAll(serverTable, clientSocket, HDL_LIST_PKT, sendBuff, 0);
 
-        /* Get the next handle */
-        handle = serverTable->handleArr[i];
-
-        /* Check for valid handles */
-        if (handle != NULL && handle[0] != '\0') {
-
-            /* Pack and send */
-            handleLen = strnlen(handle, MAX_HANDLE_LEN);
-            memcpy(dataBuff,  &handleLen, 1);
-            memcpy(dataBuff + 1,  handle, handleLen);
-
-            bytesSent = sendPDU(clientSocket, dataBuff, 1 + handleLen, HDL_LIST_PKT);
-            if (bytesSent < 1) {
-                printf("Client unexpectedly disconnected\n");
-                removeClientSocket(serverTable, clientSocket);
-                return;
-            }
-        }
-    }
+//    /* Send each handle as in a packet 12 */
+//    for (int sock = 3; sock < serverTable->arrCap; ++sock) {
+//
+//        /* Get the next handle */
+//        handle = serverTable->handleArr[sock];
+//
+//        /* Check for valid handles */
+//        if (handle == NULL || handle[0] == '\0') continue;
+//
+//        /* Pack and send */
+//        handleLen = strnlen(handle, MAX_HANDLE_LEN);
+//        memcpy(sendBuff, &handleLen, 1);
+//        memcpy(&sendBuff[1], handle, handleLen);
+//
+//        bytesSent = sendPDU(clientSocket, sendBuff, 1 + handleLen, HDL_LIST_PKT);
+//        if (bytesSent < 1) {
+//            printf("Client unexpectedly disconnected\n");
+//            removeClientSocket(serverTable, clientSocket);
+//            return;
+//
+//        }
+//    }
 
     /* Finish with a packet 13 */
     bytesSent = sendPDU(clientSocket, NULL, 0, FIN_LIST_PKT);
@@ -270,29 +338,29 @@ void sendList(serverTable_t *serverTable, int clientSocket) {
 
 void processClient(int clientSocket, serverTable_t *serverTable) {
 
-    uint8_t dataBuffer[MAXBUF];
+    uint8_t recvBuffer[MAX_BUF];
     int messageLen;
 
     /* Now get the data from the client_socket */
-    messageLen = recvPDU(clientSocket, dataBuffer, MAXBUF);
+    messageLen = recvPDU(clientSocket, recvBuffer, MAX_BUF);
 
     /* If the message length is -1, the client has disconnected */
     if (messageLen == 0) {
         removeClientSocket(serverTable, clientSocket);
     }
 
-    switch (dataBuffer[PDU_FLAG]) {
+    switch (recvBuffer[PDU_FLAG]) {
         case 1:     /* New client handshake */
-            processNewClient(clientSocket, dataBuffer, serverTable);
+            processNewClient(clientSocket, recvBuffer, serverTable);
             break;
         case 4:   /* Broadcast packet */
-            routeBroadcast(serverTable, dataBuffer, messageLen);
+            routeBroadcast(serverTable, recvBuffer, messageLen);
             break;
         case 5:     /* Message packet */
-            routeMessage(serverTable, dataBuffer, messageLen);
+            routeMessage(serverTable, recvBuffer, messageLen);
             break;
         case 6:   /* Multicast packet */
-            routeMulticast(serverTable, dataBuffer, messageLen);
+            routeMulticast(serverTable, recvBuffer, messageLen);
             break;
         case 8:     /* Exit request */
             sendClose(serverTable, clientSocket);
@@ -302,35 +370,36 @@ void processClient(int clientSocket, serverTable_t *serverTable) {
             break;
         default:    /* Invalid packet */
             /* Received invalid/corrupt packet, but client has not disconnected */
-            printf("Unknown packet of length %d received with flag %d.\n", messageLen, dataBuffer[PDU_FLAG]);
+            printf("Unknown packet of length %d received with flag %d.\n", messageLen, recvBuffer[PDU_FLAG]);
     }
 
 }
 
 void serverControl(int mainServerSocket) {
 
-    int sock;
+    int pollSocket;
     serverTable_t *serverTable = newServerTable(1);
 
     /* Add the main server socket to the list of sockets to poll */
     addToPollTable(serverTable, mainServerSocket);
+    addToPollTable(serverTable, STDIN_FILENO);
 
     while (!shutdownServer) {
 
         /* Call poll() */
-        sock = callTablePoll(serverTable, -1);
+        pollSocket = callTablePoll(serverTable, -1);
 
         /* No new packets (useful for debugging when 'poll() interrupted' errors can occur more frequently) */
-        if (sock == -1) continue;
+        if (pollSocket == -1) continue;
 
         /* Check for new sockets */
-        if (sock == mainServerSocket) {
-            addNewSocket(serverTable, sock);
+        if (pollSocket == mainServerSocket) {
+            addNewSocket(serverTable, pollSocket);
             continue;
-        }
+        } else if (pollSocket == STDIN_FILENO && getc(stdin) == 'e') break;
 
         /* Receive new packets */
-        processClient(sock, serverTable);
+        processClient(pollSocket, serverTable);
 
     }
 

@@ -117,7 +117,7 @@ int addClient(serverTable_t *serverTable, int socket, char *handle) {
     tableNode_t *node;
 
     /* Check input */
-    if (serverTable == NULL || handle == NULL || handle[0] == '\0') return -1;
+    if (serverTable == NULL || handle == NULL || handle[0] == '\0') return 1;
 
     /* Make sure the serverTable has enough space for another node */
     if (serverTable->size >= serverTable->tableCap) {
@@ -132,7 +132,7 @@ int addClient(serverTable_t *serverTable, int socket, char *handle) {
     /* Traverse the linked list */
     while (node != NULL) {
 
-        if (strcmp(handle, node->handle) == 0) return -1;
+        if (strcmp(handle, node->handle) == 0) return 1;
 
         /* Go to the next node in the linked list */
         node = node->next;
