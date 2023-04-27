@@ -1,6 +1,6 @@
 
 CC = gcc
-CFLAGS = -g -Wall -std=c99 -pedantic
+CFLAGS = -g -Wall -pedantic
 LIBS = libs/checksum.c -lpcap
 
 all:  trace

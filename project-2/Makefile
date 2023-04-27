@@ -1,18 +1,15 @@
 
 CC = gcc
-CFLAGS = -g -Wall -std=c99 -pedantic
-LIBS = networkUtils.c serverTable.c libPoll.c
+CFLAGS = -g -Wall -pedantic
+LIBS = lib/networkUtils.c lib/serverTable.c lib/libPoll.c
 
-all:  cclient server
+all: cclient server
 
-cclient: cclient.c
-	$(CC) $(CFLAGS) -o $@ cclient.c $(LIBS)
+cclient: src/cclient.c
+	$(CC) $(CFLAGS) -o $@ src/cclient.c $(LIBS)
 
-server: server.c
-	$(CC) $(CFLAGS) -o $@ server.c $(LIBS)
+server: src/server.c
+	$(CC) $(CFLAGS) -o $@ src/server.c $(LIBS)
 
 clean:
 	rm -rf cclient server *.dSYM
-
-cleano:
-	rm -f *.o

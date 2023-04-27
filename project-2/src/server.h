@@ -10,9 +10,6 @@
 #include "networkUtils.h"
 #include "serverTable.h"
 
-#define DISCONN_CLIENT 1
-#define ADD_CLIENT 2
-
 int checkArgs(int argc, char *argv[]);
 
 int tcpServerSetup(int serverPort);
