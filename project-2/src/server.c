@@ -63,6 +63,10 @@ int tcpServerSetup(int serverPort) {
         exit(EXIT_FAILURE);
     }
 
+    if (setsockopt(mainServerSocket, SOL_SOCKET, SO_REUSEADDR, &(int) {1}, sizeof(int)) < 0) {
+        perror("setsockopt(SO_REUSEADDR) failed");
+    }
+
     memset(&serverAddress, 0, sizeof(struct sockaddr_in6));
     serverAddress.sin6_family = AF_INET6;
     serverAddress.sin6_addr = in6addr_any;
@@ -189,17 +193,21 @@ void sendToAll(serverTable_t *serverTable, int clientSocket, int flag, uint8_t s
         /* Check if we need to switch to handshake packets */
         if (flag == HDL_LIST_PKT) {
 
-            /* Pack a packet 12 */
+            /* Pack a packet 12, skipping the first 3 bytes */
             handleLen = (int) strnlen(handle, MAX_HANDLE_LEN);
             memcpy(sendBuff, &handleLen, 1);
-            memcpy(&sendBuff[1], handle, handleLen);
+            memcpy(&sendBuff[1], handle, ++handleLen);
 
-            sendLen = ++handleLen;
+            /* Set the packet length */
+            sendLen = handleLen + 1;
+
+        } else {
+            /* Send the broadcast to all valid sockets */
             sock = i;
 
         }
 
-        bytesSent = sendPDU(sock, sendBuff, sendLen, flag);
+        bytesSent = sendPDU(sock, &sendBuff[1], sendLen, flag);
         if (bytesSent < 1) {
             printf("Client unexpectedly disconnected\n");
             removeClientSocket(serverTable, clientSocket);
@@ -213,20 +221,16 @@ void routeBroadcast(serverTable_t *serverTable, uint8_t dataBuff[], int pduLen) 
     sendToAll(serverTable, -1, BROADCAST_PKT, dataBuff, pduLen);
 }
 
-void routeMessage(serverTable_t *serverTable, uint8_t dataBuff[], int pduLen) {
+void routeMessage(int clientSocket, serverTable_t *serverTable, uint8_t dataBuff[], int pduLen) {
 
-    // TODO: make this not shitty cuz run its shitty idk whats going on here dude cmon
+    char dstHandle[MAX_HDL];
+    int dstSocket;
 
-    char srcHandle[MAX_HDL], dstHandle[MAX_HDL];
-    int srcSocket, dstSocket;
-
-    uint8_t handleLen = dataBuff[PDU_HEADER_LEN] + 1, offset = PDU_HEADER_LEN + 1;
-
-    /* Get the source handle */
-    snprintf(srcHandle, handleLen, "%s", &dataBuff[offset]);
+    /* Skip chat header, src handle info, and number of destinations */
+    uint8_t handleLen = dataBuff[1];
+    uint8_t offset = handleLen + 3;
 
     /* Get the destination handle */
-    offset += handleLen;
     handleLen = dataBuff[offset++] + 1;
     snprintf(dstHandle, handleLen, "%s", &dataBuff[offset]);
 
@@ -234,28 +238,59 @@ void routeMessage(serverTable_t *serverTable, uint8_t dataBuff[], int pduLen) {
 
     /* Check if the destination client exists in our serverTable */
     if (dstSocket == -1) {
-        /* Get the socket of the source client */
-        srcSocket = getClient(serverTable, srcHandle);
 
         /* Decrement offset so that it will point to the dst handle length */
         offset--;
 
         /* Send an error packet containing the length of the handle + the handle itself */
-        sendPDU(srcSocket, &dataBuff[offset], handleLen + 1, DST_ERR_PKT);
+        sendPDU(clientSocket, &dataBuff[offset], handleLen + 1, DST_ERR_PKT);
 
         return;
     }
 
     /* Send the message packet to the destination client with the chat header removed (it will be added again by sendPDU) */
-    sendPDU(dstSocket, &dataBuff[3], pduLen, MESSAGE_PKT);
-
-    printf("Packet of length %d sent from \"%s\" to \"%s\"\n", pduLen, srcHandle, dstHandle);
+    sendPDU(dstSocket, &dataBuff[1], pduLen, MESSAGE_PKT);
 
 }
 
-//void routeMulticast(serverTable_t *serverTable, uint8_t dataBuff[], int pduLen) {
-////todo:
-//}
+void routeMulticast(int clientSocket, serverTable_t *serverTable, uint8_t dataBuff[], int pduLen) {
+
+    /* Skip the src handle */
+    uint8_t handleLen = dataBuff[1];
+    uint8_t offset = handleLen + 2;
+    uint8_t numDests = dataBuff[offset++];
+    int dstSocket;
+    char handle[MAX_HDL] = "1111111111111";
+
+    printf("\nMulticast packet addressed to %d recipients\n", numDests);
+
+    for (int i = 0; i < numDests; ++i) {
+
+        handleLen = dataBuff[offset++];
+        memcpy(handle, &dataBuff[offset], handleLen);
+        handle[handleLen] = '\0';
+
+        /* Get the next destination handle */
+        dstSocket = getClient(serverTable, handle);
+
+        /* Check for invalid handles */
+        if (dstSocket == -1) {
+
+            /* Send an error packet containing the length of the handle + the handle itself */
+            sendPDU(clientSocket, &dataBuff[offset - 1], handleLen + 1, DST_ERR_PKT);
+
+        } else {
+
+            /* Send the packet with the header removed to the destination client */
+            sendPDU(dstSocket, &dataBuff[1], pduLen, MULTICAST_PKT);
+
+        }
+
+        offset += handleLen;
+
+    }
+
+}
 
 void sendClose(serverTable_t *serverTable, int clientSocket) {
 
@@ -313,10 +348,10 @@ void processClient(int clientSocket, serverTable_t *serverTable) {
             routeBroadcast(serverTable, recvBuffer, messageLen);
             break;
         case 5:     /* Message packet */
-            routeMessage(serverTable, recvBuffer, messageLen);
+            routeMessage(clientSocket, serverTable, recvBuffer, messageLen);
             break;
         case 6:   /* Multicast packet */
-//            routeMulticast(serverTable, recvBuffer, messageLen);
+            routeMulticast(clientSocket, serverTable, recvBuffer, messageLen);
             break;
         case 8:     /* Exit request */
             sendClose(serverTable, clientSocket);
@@ -352,7 +387,10 @@ void serverControl(int mainServerSocket) {
         if (pollSocket == mainServerSocket) {
             addNewSocket(serverTable, pollSocket);
             continue;
-        } else if (pollSocket == STDIN_FILENO && getc(stdin) == 'e') break;
+        } else if (pollSocket == STDIN_FILENO) {
+            if (fgetc(stdin) == 'e') break; // debugging
+            else continue;
+        }
 
         /* Receive new packets */
         processClient(pollSocket, serverTable);

@@ -146,11 +146,12 @@ int pollCall(pollSet_t *pollSet, int timeInMilliSeconds) {
 
 void freePollSet(pollSet_t *pollSet) {
 
-    int i;
+    int i, s;
 
     /* Ensure all sockets are closed */
     for (i = pollSet->maxFd; i >= 0; --i) {
-        close(pollSet->pollFds[i].fd);
+        s = pollSet->pollFds[i].fd;
+        if (s > 0) close(s);
     }
 
     /* Free previously allocated memory */

@@ -62,8 +62,8 @@ int recvPDU(int socketNumber, uint8_t dataBuffer[], int bufferSize) {
         exit(EXIT_FAILURE);
     }
 
-    /* Get the rest of the message */
-    bytesReceived = (uint16_t) recv(socketNumber, dataBuffer + PDU_MSG_LEN, msgLen, MSG_WAITALL);
+    /* Get the rest of the message and overwrite the chat header */
+    bytesReceived = (uint16_t) recv(socketNumber, dataBuffer, msgLen, MSG_WAITALL);
 
     /* Error checking */
     if (bytesReceived < 0) {

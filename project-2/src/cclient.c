@@ -10,10 +10,6 @@ void clientControl(int clientSocket, char *handle);
 
 void processUsrInput(int clientSocket, char *handle);
 
-void sendHandshake(int clientSocket, char *clientHandle);
-
-void recvClientList(int clientSocket, uint8_t dataBuff[], int buffLen);
-
 /* Functions */
 int main(int argc, char *argv[]) {
 
@@ -55,6 +51,26 @@ void checkArgs(int argc, char *argv[]) {
     }
 
     printf("\n");
+}
+
+void sendHandshake(int clientSocket, char *clientHandle) {
+
+    int bytes, handleLen = (int) strnlen(clientHandle, 100);
+    uint8_t dataBuff[101];
+
+    /* 1 Byte: Handle length */
+    memcpy(dataBuff, &handleLen, 1);
+    /* N Bytes: The client handle*/
+    memcpy(dataBuff + 1, clientHandle, handleLen);
+
+    /* Send the packet */
+    bytes = sendPDU(clientSocket, dataBuff, handleLen + 1, CONN_PKT);
+    if (bytes < 1) {
+        fprintf(stderr, "\nServer disconnected during initialization, terminating...\n");
+        close(clientSocket);
+        exit(EXIT_FAILURE);
+    }
+
 }
 
 int clientInitTCP(char *handle, char *server_name, char *server_port) {
@@ -140,71 +156,125 @@ int clientInitTCP(char *handle, char *server_name, char *server_port) {
     return clientSocket;
 }
 
-void sendHandshake(int clientSocket, char *clientHandle) {
+void processMessage(uint8_t dataBuff[]) {
 
-    int bytes, handleLen = (int) strnlen(clientHandle, 100);
-    uint8_t dataBuff[101];
-
-    /* 1 Byte: Handle length */
-    memcpy(dataBuff, &handleLen, 1);
-    /* N Bytes: The client handle*/
-    memcpy(dataBuff + 1, clientHandle, handleLen);
-
-    /* Send the packet */
-    bytes = sendPDU(clientSocket, dataBuff, handleLen + 1, CONN_PKT);
-    if (bytes < 1) {
-        fprintf(stderr, "Server disconnected during initialization, terminating...\n");
-        close(clientSocket);
-        exit(EXIT_FAILURE);
-    }
-
-}
-
-void printMessage(uint8_t dataBuff[]) {
-
-    char *srcHandle, *msg;
-    int dataLen, offset = 4;
+    char srcHandle[MAX_HDL], msg[MAX_MSG];
+    int dataLen, offset = 2;
 
     /* Get the length of the src handle */
-    dataLen = dataBuff[PDU_SRC_LEN_IDX] + 1;
+    dataLen = dataBuff[1];
 
     /* Get the src handle */
-    srcHandle = strndup((char *) &dataBuff[offset], dataLen++);
+    memcpy(srcHandle, &dataBuff[offset], dataLen);
+    srcHandle[dataLen] = '\0';
 
     /* Get the length of the dst handle */
-    offset = PDU_SRC_LEN_IDX + dataLen;
+    offset += dataLen + 1;
     dataLen = dataBuff[offset];
 
     /* Get the message */
     offset += dataLen + 1;
-    msg = strdup((char *) &dataBuff[offset]);
+    snprintf(msg, MAX_MSG, "%s", &dataBuff[offset]);
 
-    printf("\b\b\b%s: %s\n", srcHandle, msg);
+    printf("\n%s: %s\n", srcHandle, msg);
     printf("$: ");
     fflush(stdout);
 
-    free(srcHandle);
-    free(msg);
 }
 
 void processBroadcast(uint8_t dataBuff[]) {
 
     /* Unpack the packet */
-    int handleLen = dataBuff[PDU_HEADER_LEN];
-    char *handle = strndup((char *) &dataBuff[PDU_HEADER_LEN + 1], handleLen);
-    char *msg = strndup((char *) &dataBuff[PDU_HEADER_LEN + 1 + handleLen], MAX_MSG);
+    int handleLen = dataBuff[1];
+    char handle[MAX_HDL];
+    memcpy(handle, &dataBuff[2], handleLen);
+    handle[handleLen] = '\0';
+    char *msg = strndup((char *) &dataBuff[handleLen + 2], MAX_MSG);
 
     /* Print the info */
-    printf("\b\b\b%s: %s\n$: ", handle, msg);
+    printf("\n%s: %s\n$: ", handle, msg);
     fflush(stdout);
 }
 
-//void processMulticast(uint8_t dataBuff[]) {
-//
-//    int srcHandleLen = dataBuff[PDU_HEADER_LEN];
-//    char *srcHandle;
-//
-//}
+void processMulticast(uint8_t dataBuff[]) {
+
+    int i;
+    uint8_t srcHandleLen, offset = 1;
+    char srcHandle[MAX_HDL], msg[MAX_BUF];
+
+    /* Get the source info */
+    srcHandleLen = dataBuff[offset++];
+
+    /* Grab the src handle */
+    memcpy(srcHandle, &dataBuff[offset], srcHandleLen);
+    srcHandle[srcHandleLen] = '\0';
+    offset += srcHandleLen;
+
+    /* Get the number of destinations */
+    uint8_t numDests = dataBuff[offset++];
+
+    /* Skip through all the dst handles */
+    for (i = 0; i < numDests; ++i) {
+        offset += dataBuff[offset] + 1;
+    }
+
+    /* Get the message */
+    snprintf(msg, MAX_MSG + MAX_HDL, "\n%s: %s\n", srcHandle, (char *) &dataBuff[offset]);
+
+    printf("%s$: ", msg);
+    fflush(stdout);
+}
+
+void recvClientList(int clientSocket, uint8_t dataBuff[], int buffLen) {
+
+    int bytes, handleLen;
+    uint32_t numClients = ntohl(*((uint32_t *) &dataBuff[1]));
+    char handle[MAX_HDL];
+
+    printf("\nNumber of clients: %u\n", numClients);
+    fflush(stdout);
+
+    while (1) {
+
+        /* Get the next handle packet */
+        bytes = recvPDU(clientSocket, dataBuff, buffLen);
+
+        if (bytes == 0) {
+            printf("\nServer has disconnected!\n");
+            return;
+        }
+
+        /* Check for done flag */
+        if (dataBuff[PDU_FLAG] == FIN_LIST_PKT) break;
+
+        /* Get the handle length */
+        handleLen = dataBuff[0];
+
+        /* Get the handle */
+        memcpy(handle, &dataBuff[1], handleLen);
+        handle[handleLen] = '\0';
+
+        /* Print out the handle */
+        printf(" * %s\n", handle);
+    }
+
+    /* Print out the handle */
+    printf("$: ");
+    fflush(stdout);
+
+}
+
+void processError(uint8_t recvBuff[]) {
+
+    printf(
+            "\nClient with handle %s does not exist.\n$: ",
+            strndup(
+                    (char *) (recvBuff + 1),
+                    recvBuff[PDU_SRC_LEN_IDX] + 1)
+    );
+    fflush(stdout);
+
+}
 
 int processPacket(int socket, char *handle) {
 
@@ -216,71 +286,34 @@ int processPacket(int socket, char *handle) {
 
     /* Check for server connection */
     if (recvLen == 0) {
-        printf("\b\b\bServer has disconnected!\n");
+        printf("\nServer has disconnected!\n");
         return 1;
     }
 
     switch (recvBuff[PDU_FLAG]) {
         case 3: /* Duplicate header error */
-            printf("\b\b\bHandle already in use: %s\n", handle);
+            printf("\nHandle already in use: %s\n", handle);
             return 1;
-        case 4: /* Broadcast received */
+        case 4: /* Broadcast packet received */
             processBroadcast(recvBuff);
             break;
-        case 5: /* Message received packet */
-            printMessage(recvBuff);
+        case 5: /* Message packet received */
+            processMessage(recvBuff);
+            break;
+        case 6: /* Multicast packet received */
+            processMulticast(recvBuff);
             break;
         case 7: /* Message error packet */
-            printf("\b\b\bClient with handle %s does not exist.\n$: ",
-                   strndup((char *) (recvBuff + 4), recvBuff[PDU_SRC_LEN_IDX])
-            );
-            fflush(stdout);
+            processError(recvBuff);
             break;
         case 9: /* Exit ACK packet */
-            printf("\b\b\bExit request approved, shutting down...\n");
+            printf("\nExit request approved, shutting down...\n");
             return 1;
         case 11:
             recvClientList(socket, recvBuff, MAX_BUF);
     }
 
     return 0;
-
-}
-
-void recvClientList(int clientSocket, uint8_t dataBuff[], int buffLen) {
-
-    int bytes, handleLen;
-    char *handle = NULL;
-    uint32_t numClients = ntohl(*((uint32_t *) &dataBuff[PDU_HEADER_LEN]));
-
-    printf("\b\b\bNumber of clients: %u\n$: ", numClients);
-    fflush(stdout);
-
-    while (1) {
-
-        /* Get the next handle packet */
-        bytes = recvPDU(clientSocket, dataBuff, buffLen);
-
-        if (bytes == 0) {
-            printf("\b\b\bServer has disconnected!\n");
-            return;
-        }
-
-        /* Check for done flag */
-        if (dataBuff[PDU_FLAG] == FIN_LIST_PKT) break;
-
-        /* Get the handle length */
-        handleLen = dataBuff[PDU_HEADER_LEN] + 1;
-        /* Get the handle */
-        handle = strndup((char *) &dataBuff[PDU_HEADER_LEN], handleLen);
-
-        /* Print out the handle */
-        printf("\b\b\b    %s\n$: ", handle);
-        fflush(stdout);
-
-        /* Free the temp string */
-        free(handle);
-    }
 
 }
 
@@ -324,13 +357,13 @@ int sendToServer(int socket, uint8_t *sendBuf, int sendLen, uint8_t flag) {
 void packMessage(int socket, char *clientHandle, uint8_t *usrInput) {
 
     uint8_t sendBuff[MAX_BUF] = {0};
-    uint8_t dataBuffLen = 1, strLen, numDests = 1;
+    uint8_t dataBuffLen = 0, strLen, numDests = 1;
     char *dstHandle = NULL, *usrMsg = NULL;
 
     /* Get the handle */
     dstHandle = strtok((char *) &(usrInput[3]), " ");
-    strLen = strnlen(dstHandle, MAX_HDL);
-    usrMsg = (char *) &(usrInput[4 + strLen]);
+    strLen = strnlen(dstHandle, MAX_HDL - 1) + 1;
+    usrMsg = (char *) &(usrInput[strLen + 3]);
 
     /* Lengths of each string sent */
     if (clientHandle == NULL) {
@@ -343,7 +376,7 @@ void packMessage(int socket, char *clientHandle, uint8_t *usrInput) {
 
     /* 1 Byte: Client handle length */
     strLen = (int) strlen(clientHandle);
-    memcpy(&sendBuff[dataBuffLen], &strLen, 1);
+    memcpy(&sendBuff[dataBuffLen++], &strLen, 1);
     /* N Bytes: Client handle */
     memcpy(&sendBuff[dataBuffLen], clientHandle, strLen);
     dataBuffLen += strLen;
@@ -361,7 +394,6 @@ void packMessage(int socket, char *clientHandle, uint8_t *usrInput) {
     /* 1 Byte: Message length */
     if (usrMsg == NULL) strLen = 0;
     else strLen = (int) strlen(usrMsg);
-    memcpy(&sendBuff[dataBuffLen++], &strLen, 1);
     /* N Bytes: The message with null terminator */
     memcpy(&sendBuff[dataBuffLen], usrMsg, ++strLen);
     dataBuffLen += strLen;
@@ -372,16 +404,17 @@ void packMessage(int socket, char *clientHandle, uint8_t *usrInput) {
 }
 
 void packBroadcast(int socket, char *handle, char *msg) {
-    uint8_t dataBuff[MAX_HDL];
+
+    uint8_t dataBuff[MAX_BUF];
 
     /* Add handle length and handle */
     int handleLen = (int) strnlen(handle, MAX_HDL), msgLen;
     memcpy(dataBuff, &handleLen, 1);
-    memcpy(dataBuff + 1, handle, handleLen);
+    memcpy(dataBuff + 1, handle, handleLen++);
 
     /* Add the message */
     msgLen = (int) strnlen(msg, MAX_MSG) + 1;
-    memcpy(&dataBuff[handleLen + 1], msg, msgLen);
+    memcpy(&dataBuff[handleLen], msg, msgLen);
 
     /* Sent the packet */
     sendPDU(socket, dataBuff, handleLen + msgLen + 1, BROADCAST_PKT);
@@ -392,6 +425,14 @@ void packMulticast(int socket, char *handle, uint8_t usrInput[]) {
 
     uint8_t sendBuff[MAX_BUF] = {0}, handleLen, buffLen = 1, numDestinations;
     char *dstHandle = NULL, *msg = NULL;
+
+    /* Check for a valid number of destinations */
+    if (!isnumber(usrInput[3]) || usrInput[3] < '2' || usrInput[3] > '9') {
+
+        printf("Invalid command format, number of destinations must be between 2 and 9 (inclusive)\n$: ");
+        fflush(stdout);
+        return;
+    }
 
     /* Add source handle and length */
     handleLen = strnlen(handle, MAX_HDL);
@@ -407,7 +448,7 @@ void packMulticast(int socket, char *handle, uint8_t usrInput[]) {
 
         dstHandle = strtok(NULL, " ");
         handleLen = strnlen(dstHandle, MAX_HDL);
-        memcpy(sendBuff, &handleLen, 1);
+        memcpy(&sendBuff[buffLen++], &handleLen, 1);
         memcpy(&sendBuff[buffLen], dstHandle, handleLen);
         buffLen += handleLen;
 
@@ -415,7 +456,8 @@ void packMulticast(int socket, char *handle, uint8_t usrInput[]) {
 
     /* Add the message */
     msg = strtok(NULL, " ");
-    handleLen = strnlen(msg, MAX_MSG);
+    if (msg == NULL) handleLen = 0;
+    else handleLen = strnlen(msg, MAX_MSG);
     memcpy(&sendBuff[buffLen], msg, ++handleLen);
     buffLen += handleLen;
 

@@ -22,11 +22,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="39bf8f42-fcb1-4656-a0a9-4f2d5e0986fa" name="Changes" comment="updated">
-      <change afterPath="$PROJECT_DIR$/submission/trace" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../lab-3/cclient" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../lab-3/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../lab-3/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../project-2/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../project-2/given_files/chatDesign_Winter_2023_v17.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../project-2/lib/libPoll.c" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/lib/libPoll.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../project-2/lib/networkUtils.c" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/lib/networkUtils.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../project-2/lib/networkUtils.h" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/lib/networkUtils.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/lib/serverTable.h" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/lib/serverTable.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../project-2/lib/serverTable.c" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/lib/serverTable.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../project-2/src/cclient.c" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/src/cclient.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../project-2/src/server.c" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/src/server.c" afterDir="false" />
     </list>
@@ -230,7 +233,7 @@
       <workItem from="1681688512293" duration="1199000" />
       <workItem from="1681836009863" duration="3314000" />
       <workItem from="1682200358747" duration="41000" />
-      <workItem from="1682541562488" duration="853000" />
+      <workItem from="1682541562488" duration="2659000" />
     </task>
     <task id="LOCAL-00001" summary="updated">
       <created>1680799821406</created>
@@ -393,7 +396,14 @@
       <option name="project" value="LOCAL" />
       <updated>1681512606812</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="updated">
+      <created>1682612213910</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1682612213910</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

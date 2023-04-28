@@ -314,9 +314,6 @@ void freeTable(serverTable_t *serverTable) {
             /* Go to the next node before free()ing the current one */
             node = node->next;
 
-            /* Close the socket just in case */
-            close(temp->socket);
-
             /* free() the current node */
             if (temp->handle != NULL) free(temp->handle);
             if (temp != NULL) free(temp);

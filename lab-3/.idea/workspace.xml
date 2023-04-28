@@ -24,13 +24,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f9749982-727e-4fc8-820f-79daaa4b7d14" name="Changes" comment="updated">
-      <change afterPath="$PROJECT_DIR$/../project-1/submission/trace" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-1/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../project-1/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/lib/networkUtils.h" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/lib/networkUtils.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/lib/serverTable.h" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/lib/serverTable.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/src/cclient.c" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/src/cclient.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/src/server.c" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/src/server.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cclient" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../project-2/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/Makefile" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,7 +80,7 @@
       <recent name="$PROJECT_DIR$/src" />
     </key>
   </component>
-  <component name="RunManager" selected="Makefile Target.clean">
+  <component name="RunManager" selected="Makefile Target.cclient">
     <configuration default="true" type="BIBTEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
       <texify-bibtex>
         <compiler />
@@ -186,8 +181,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Makefile Target.clean" />
         <item itemvalue="Makefile Target.cclient" />
+        <item itemvalue="Makefile Target.clean" />
         <item itemvalue="Makefile Target.run_server" />
         <item itemvalue="Makefile Target.cleano" />
         <item itemvalue="Makefile Target.server" />
@@ -207,6 +202,7 @@
       <workItem from="1682193136079" duration="8838000" />
       <workItem from="1682465418271" duration="616000" />
       <workItem from="1682535392191" duration="597000" />
+      <workItem from="1682612271058" duration="881000" />
     </task>
     <task id="LOCAL-00001" summary="updated">
       <created>1682093324801</created>
