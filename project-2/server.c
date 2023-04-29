@@ -178,12 +178,12 @@ void processNewClient(int clientSocket, uint8_t dataBuff[], serverTable_t *serve
 void sendToAll(serverTable_t *serverTable, int clientSocket, int flag, uint8_t sendBuff[], int pduLen) {
 
     /* Variables are initialized for broadcast packets */
-    int bytesSent, sock = clientSocket;
+    int i, bytesSent, sock = clientSocket;
     uint8_t handleLen, sendLen = pduLen;
     char *handle = NULL;
 
     /* Send each handle as in a packet 12 */
-    for (int i = 0; i < serverTable->arrCap; ++i) {
+    for (i = 0; i < serverTable->arrCap; ++i) {
 
         /* Get the next handle */
         handle = serverTable->handleArr[i];
@@ -255,10 +255,10 @@ void routeMulticast(int clientSocket, serverTable_t *serverTable, uint8_t dataBu
     uint8_t handleLen = dataBuff[1];
     uint8_t offset = handleLen + 2;
     uint8_t numDests = dataBuff[offset++];
-    int dstSocket;
+    int i, dstSocket;
     char handle[MAX_HDL];
 
-    for (int i = 0; i < numDests; ++i) {
+    for (i = 0; i < numDests; ++i) {
 
         handleLen = dataBuff[offset++];
         memcpy(handle, &dataBuff[offset], handleLen);
