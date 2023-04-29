@@ -1,7 +1,7 @@
 
 #include "cclient.h"
 
-#include <ctype.h>
+#include <_ctype.h>
 #include <unistd.h>
 
 /* Private prototypes */
