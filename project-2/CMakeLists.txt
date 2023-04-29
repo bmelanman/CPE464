@@ -8,14 +8,15 @@ add_compile_options(-g -Wall -std=c99 -pedantic)
 include_directories(src lib)
 
 # Libraries
-add_library(networkUtils lib/networkUtils.c lib/networkUtils.h lib/libPoll.c lib/libPoll.h)
-add_library(serverTable lib/serverTable.c lib/serverTable.h)
+add_library(serverTable serverTable.c serverTable.h)
+add_library(networkUtils networkUtils.c networkUtils.h libPoll.c libPoll.h)
+link_libraries(networkUtils serverTable)
 
 # Executables
-add_executable(cclient src/cclient.c src/cclient.h)
+add_executable(cclient cclient.c cclient.h)
 target_link_libraries(cclient networkUtils)
 
-add_executable(server src/server.c src/server.h)
+add_executable(server server.c server.h)
 target_link_libraries(server networkUtils serverTable)
 
 

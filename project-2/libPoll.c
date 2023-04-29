@@ -1,5 +1,4 @@
 
-#include <errno.h>
 #include "libPoll.h"
 
 /* Easy to use poll library

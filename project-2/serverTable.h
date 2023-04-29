@@ -2,18 +2,13 @@
 #ifndef PROJECT_2_SERVERTABLE_H
 #define PROJECT_2_SERVERTABLE_H
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-
 #include "libPoll.h"
 
 /* ENOMEM definition taken from sys/errno.h */
 #define ENOMEM 12
 #define MEM_ERR(STR) printf("%s malloc err", STR); errno = ENOMEM; exit(errno);
 
-#define MAX_HANDLE_LEN 101
+#define MAX_HANDLE_LEN 100
 #define NOT_FOUND (-1)
 
 typedef struct tableNode tableNode_t;

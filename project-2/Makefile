@@ -1,25 +1,26 @@
 
 CC= gcc
 CFLAGS= -g -Wall
-OBJS = obj/networkUtils.o obj/libPoll.o
+
+OBJS = libPoll.o networkUtils.o serverTable.o
 
 all: cclient server cleano
 
-cclient: objDir $(OBJS)
-	$(CC) $(CFLAGS) -o cclient cclient.c $(OBJS)
+cclient: cclient.c $(OBJS)
+	$(CC) $(CFLAGS) -o cclient cclient.c $(OBJS) $(LIBS)
 
-server: objDir $(OBJS)
-	$(CC) $(CFLAGS) -o server server.c $(OBJS)
+server: server.c $(SERV_OBJS)
+	$(CC) $(CFLAGS) -o server server.c $(OBJS) $(LIBS)
 
-objDir:
-	mkdir -p ./obj
-
-%.c.o:
-	gcc -c $(CFLAGS) $< -o $@
+.c.o:
+	gcc -c $(CFLAGS) $< -o $@ $(LIBS)
 
 cleano:
-	rm -rf src/*.o lib/*.o *.dSYM
+	rm -rf *.o *.dSYM
 
-clean: cleano
-	rm -f server cclient
+clean:
+	rm -rf server cclient *.o *.dSYM
+
+
+
 

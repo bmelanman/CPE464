@@ -77,3 +77,38 @@ int recvPDU(int socketNumber, uint8_t dataBuffer[], int bufferSize) {
 
     return (int) bytesReceived;
 }
+
+void checkSocketDisconnected(int bytesSent, serverTable_t *serverTable, char *clientHandle, int clientSocket) {
+
+    if (bytesSent < 1) {
+
+        if (serverTable == NULL) {
+
+            /* Server disconnected from client */
+            fprintf(stderr, "\nServer unexpectedly disconnected! \n");
+            close(clientSocket);
+            exit(EXIT_FAILURE);
+
+        }
+
+        if (clientHandle != NULL) {
+
+            /* Client disconnected from server */
+            fprintf(stderr, "\nClient unexpectedly disconnected! \n");
+            removeClient(serverTable, clientHandle);
+
+        } else if (clientSocket > -1) {
+
+            /* Client disconnected from server */
+            fprintf(stderr, "\nClient unexpectedly disconnected! \n");
+            removeClientSocket(serverTable, clientSocket);
+
+        } else {
+
+            /* Function inout error handling */
+            fprintf(stderr, "\ncheckSocketDisconnected() input error! Terminating...\n");
+            exit(EXIT_FAILURE);
+        }
+    }
+}
+

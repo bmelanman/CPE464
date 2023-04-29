@@ -6,8 +6,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stddef.h>
-#include <poll.h>
+#include <string.h>
 #include <unistd.h>
+#include <errno.h>
+#include <poll.h>
 
 #define POLL_SET_SIZE 10
 

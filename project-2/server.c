@@ -1,6 +1,12 @@
 
 #include "server.h"
 
+int checkArgs(int argc, char *argv[]);
+
+int tcpServerSetup(int serverPort);
+
+void serverControl(int mainServerSocket);
+
 static volatile int shutdownServer = 0;
 
 void intHandler(void) {
@@ -9,17 +15,14 @@ void intHandler(void) {
 }
 
 int main(int argc, char *argv[]) {
-    int mainServerSocket;
-    int portNumber;
+
+    int mainServerSocket, portNumber;
 
     /* Check inout arguments */
     portNumber = checkArgs(argc, argv);
 
     /* Catch for ^C */
     signal(SIGINT, (void (*)(int)) intHandler);
-
-    /* Set up poll */
-    newPollSet();
 
     /* Create the server socket */
     mainServerSocket = tcpServerSetup(portNumber);
@@ -160,10 +163,8 @@ void processNewClient(int clientSocket, uint8_t dataBuff[], serverTable_t *serve
         /* Accept the client connection */
         bytesSent = sendPDU(clientSocket, NULL, 0, CONN_ACK_PKT);
 
-        if (bytesSent < 1) {
-            /* Client disconnected before the server could respond */
-            removeClient(serverTable, clientHandle);
-        }
+        /* Check if the client disconnected */
+        checkSocketDisconnected(bytesSent, serverTable, clientHandle, -1);
 
     } else {
 
@@ -208,12 +209,7 @@ void sendToAll(serverTable_t *serverTable, int clientSocket, int flag, uint8_t s
         }
 
         bytesSent = sendPDU(sock, &sendBuff[1], sendLen, flag);
-        if (bytesSent < 1) {
-            printf("Client unexpectedly disconnected\n");
-            removeClientSocket(serverTable, clientSocket);
-            return;
-
-        }
+        checkSocketDisconnected(bytesSent, serverTable, NULL, clientSocket);
     }
 }
 
@@ -260,9 +256,7 @@ void routeMulticast(int clientSocket, serverTable_t *serverTable, uint8_t dataBu
     uint8_t offset = handleLen + 2;
     uint8_t numDests = dataBuff[offset++];
     int dstSocket;
-    char handle[MAX_HDL] = "1111111111111";
-
-    printf("\nMulticast packet addressed to %d recipients\n", numDests);
+    char handle[MAX_HDL];
 
     for (int i = 0; i < numDests; ++i) {
 
@@ -309,21 +303,16 @@ void sendList(serverTable_t *serverTable, int clientSocket) {
     /* Send a packet 11 containing the number of clients in the serverTable */
     memcpy(sendBuff, &numClients, 4);
     bytesSent = sendPDU(clientSocket, sendBuff, 4, ACK_LIST_PKT);
-    if (bytesSent < 1) {
-        printf("Client unexpectedly disconnected\n");
-        removeClientSocket(serverTable, clientSocket);
-        return;
-    }
 
+    /* Verify connection status */
+    checkSocketDisconnected(bytesSent, serverTable, NULL, clientSocket);
+
+    /* Send packet 12s for all client handles */
     sendToAll(serverTable, clientSocket, HDL_LIST_PKT, sendBuff, 0);
 
     /* Finish with a packet 13 */
     bytesSent = sendPDU(clientSocket, NULL, 0, FIN_LIST_PKT);
-    if (bytesSent < 1) {
-        printf("Client unexpectedly disconnected\n");
-        removeClientSocket(serverTable, clientSocket);
-        return;
-    }
+    checkSocketDisconnected(bytesSent, serverTable, NULL, clientSocket);
 
 }
 
@@ -344,16 +333,16 @@ void processClient(int clientSocket, serverTable_t *serverTable) {
         case 1:     /* New client handshake */
             processNewClient(clientSocket, recvBuffer, serverTable);
             break;
-        case 4:   /* Broadcast packet */
+        case 4:     /* Broadcast packet */
             routeBroadcast(serverTable, recvBuffer, messageLen);
             break;
         case 5:     /* Message packet */
             routeMessage(clientSocket, serverTable, recvBuffer, messageLen);
             break;
-        case 6:   /* Multicast packet */
+        case 6:     /* Multicast packet */
             routeMulticast(clientSocket, serverTable, recvBuffer, messageLen);
             break;
-        case 8:     /* Exit request */
+        case 8:     /* Close request */
             sendClose(serverTable, clientSocket);
             break;
         case 10:    /* List request */
