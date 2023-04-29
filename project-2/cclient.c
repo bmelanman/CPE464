@@ -1,7 +1,7 @@
 
 #include "cclient.h"
 
-#include <_ctype.h>
+#include <ctype.h>
 #include <unistd.h>
 
 /* Private prototypes */
@@ -505,7 +505,7 @@ int checkValidInput(uint8_t usrInput[]) {
     }
 
     /* Check multicast numDestinations */
-    if (cmd == 'c' && (!isnumber(usrInput[CMD_DEST]) || usrInput[CMD_DEST] < '2' || usrInput[CMD_DEST] > '9')) {
+    if (cmd == 'c' && (!isdigit(πusrInput[CMD_DEST]) || usrInput[CMD_DEST] < '2' || usrInput[CMD_DEST] > '9')) {
         fprintf(stderr, "Invalid command format, number of destinations must be between 2 and 9 (inclusive)\n");
         return 1;
     }
