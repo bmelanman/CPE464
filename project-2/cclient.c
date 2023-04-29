@@ -430,7 +430,7 @@ void packMulticast(int socket, char *handle, uint8_t usrInput[]) {
 
         /* Check for valid input */
         if (dstHandle == NULL) {
-            fprintf(stderr, "Invalid command format: Requested %d destinations but only %d given.\n$: ",
+            fprintf(stderr, "Invalid command format: Requested %d destinations but only %d given.\n",
                     numDestinations, i);
             fflush(stdout);
             return;
