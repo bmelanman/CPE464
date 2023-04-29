@@ -1,6 +1,9 @@
 
 #include "cclient.h"
 
+#include <ctype.h>
+#include <unistd.h>
+
 /* Private prototypes */
 void checkArgs(int argc, char *argv[]);
 
@@ -126,7 +129,7 @@ int clientInitTCP(char *handle, char *server_name, char *server_port) {
             SOCK_STREAM,
             IPPROTO_IP,
             0,
-            server_name,
+            NULL,
             NULL,
             NULL
     };
@@ -407,7 +410,7 @@ void packBroadcast(int socket, char *handle, char *msg) {
 
 void packMulticast(int socket, char *handle, uint8_t usrInput[]) {
 
-    uint8_t sendBuff[MAX_BUF] = {0}, handleLen, buffLen = 1, numDestinations, msgOffset = 5;
+    uint8_t i, sendBuff[MAX_BUF] = {0}, handleLen, buffLen = 1, numDestinations, msgOffset = 5;
     char *dstHandle = NULL, msg[MAX_MSG];
 
     /* Add source handle and length */
@@ -420,7 +423,7 @@ void packMulticast(int socket, char *handle, uint8_t usrInput[]) {
     numDestinations = strtol(strtok((char *) &usrInput[3], " "), NULL, 10);
     memcpy(&sendBuff[buffLen++], &numDestinations, 1);
 
-    for (int i = 0; i < numDestinations; i++) {
+    for (i = 0; i < numDestinations; i++) {
 
         /* Get the next dst handle */
         dstHandle = strtok(NULL, " ");
