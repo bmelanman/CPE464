@@ -19,5 +19,4 @@ target_link_libraries(cclient networkUtils)
 add_executable(server server.c server.h)
 target_link_libraries(server networkUtils serverTable)
 
-
-
+add_executable(test test.c)
