@@ -89,7 +89,7 @@ int pollCall(pollSet_t *pollSet, int timeInMilliSeconds) {
 
     if (pollValue < 0 ) {
         if (errno == EINTR) {
-            fprintf(stderr, "poll() was interrupted!");
+            fprintf(stderr, "poll() was interrupted!\n");
         } else {
             perror("pollCall");
             exit(EXIT_FAILURE);
