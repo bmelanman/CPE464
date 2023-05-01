@@ -373,7 +373,7 @@ int chopUsrMessage(char usrMessage[], char messages[][MAX_MSG]) {
 void packMessage(int socket, char *clientHandle, char usrInput[]) {
 
     uint8_t sendBuff[MAX_USR] = {0};
-    uint8_t dataBuffLen = 0, strLen, numDests = 1, numPackets;
+    uint8_t i, dataBuffLen = 0, strLen, numDests = 1, numPackets;
     char *dstHandle = NULL, usrMsg[MAX_USR], messages[MAX_PKTS][MAX_MSG];
 
     /* Get the handle */
@@ -411,7 +411,7 @@ void packMessage(int socket, char *clientHandle, char usrInput[]) {
     dataBuffLen += strLen;
 
     /* Send as many packets as necessary depending on message length */
-    for (int i = 0; i < numPackets; i++) {
+    for (i = 0; i < numPackets; i++) {
 
         /* 1 Byte: Message length */
         strLen = (uint8_t) strnlen(messages[i], MAX_MSG) + 1;
@@ -426,7 +426,7 @@ void packMessage(int socket, char *clientHandle, char usrInput[]) {
 
 void packBroadcast(int socket, char *handle, char *msg) {
 
-    uint8_t sendBuff[MAX_USR], numPackets, strLen;
+    uint8_t sendBuff[MAX_USR], numPackets, strLen, i;
     char messages[MAX_PKTS][MAX_MSG];
 
     /* Add handle length and handle */
@@ -445,7 +445,7 @@ void packBroadcast(int socket, char *handle, char *msg) {
     }
 
     /* Send as many packets as necessary depending on message length */
-    for (int i = 0; i < numPackets; i++) {
+    for (i = 0; i < numPackets; i++) {
 
         /* Add the message */
         strLen = (int) strnlen(messages[i], MAX_MSG) + 1;
