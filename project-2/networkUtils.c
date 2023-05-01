@@ -1,6 +1,32 @@
 
 #include "networkUtils.h"
 
+void *srealloc(void *ptr, size_t size) {
+void *retVal = NULL;
+
+retVal = realloc(ptr, size);
+
+if (retVal == NULL) {
+printf("Error on realloc, tried for size: %d\n", (int) size);
+exit(EXIT_FAILURE);
+}
+
+return retVal;
+}
+
+void *scalloc(size_t nmemb, size_t size) {
+    void *retVal = NULL;
+
+    retVal = calloc(nmemb, size);
+
+    if (retVal == NULL) {
+        perror("calloc");
+        exit(EXIT_FAILURE);
+    }
+
+    return retVal;
+}
+
 int sendPDU(int clientSocket, uint8_t dataBuffer[], int lengthOfData, uint8_t pduFlag) {
 
     /* Calculate PDU length */
@@ -77,38 +103,3 @@ int recvPDU(int socketNumber, uint8_t dataBuffer[], int bufferSize) {
 
     return (int) bytesReceived;
 }
-
-void checkSocketDisconnected(int bytesSent, serverTable_t *serverTable, char *clientHandle, int clientSocket) {
-
-    if (bytesSent < 1) {
-
-        if (serverTable == NULL) {
-
-            /* Server disconnected from client */
-            fprintf(stderr, "\nServer unexpectedly disconnected! \n");
-            close(clientSocket);
-            exit(EXIT_FAILURE);
-
-        }
-
-        if (clientHandle != NULL) {
-
-            /* Client disconnected from server */
-            fprintf(stderr, "\nClient unexpectedly disconnected! \n");
-            removeClient(serverTable, clientHandle);
-
-        } else if (clientSocket > -1) {
-
-            /* Client disconnected from server */
-            fprintf(stderr, "\nClient unexpectedly disconnected! \n");
-            removeClientSocket(serverTable, clientSocket);
-
-        } else {
-
-            /* Function inout error handling */
-            fprintf(stderr, "\ncheckSocketDisconnected() input error! Terminating...\n");
-            exit(EXIT_FAILURE);
-        }
-    }
-}
-

@@ -3,9 +3,7 @@ project(project-2 C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_compile_options(-g -Wall -std=c99 -pedantic)
-
-include_directories(src lib)
+add_compile_options(-g -Wall)
 
 # Libraries
 add_library(serverTable serverTable.c serverTable.h)
@@ -17,6 +15,6 @@ add_executable(cclient cclient.c cclient.h)
 target_link_libraries(cclient networkUtils)
 
 add_executable(server server.c server.h)
-target_link_libraries(server networkUtils serverTable)
+target_link_libraries(server networkUtils)
 
 add_executable(test test.c)

@@ -8,32 +8,6 @@
  * which could cause higher file descriptors to never be processed
  * */
 
-void *srealloc(void *ptr, size_t size) {
-    void *retVal = NULL;
-
-    retVal = realloc(ptr, size);
-
-    if (retVal == NULL) {
-        printf("Error on realloc, tried for size: %d\n", (int) size);
-        exit(EXIT_FAILURE);
-    }
-
-    return retVal;
-}
-
-void *scalloc(size_t nmemb, size_t size) {
-    void *retVal = NULL;
-
-    retVal = calloc(nmemb, size);
-
-    if (retVal == NULL) {
-        perror("calloc");
-        exit(EXIT_FAILURE);
-    }
-
-    return retVal;
-}
-
 static void growPollSet(pollSet_t *pollSet, int newSetSize) {
     int i;
 

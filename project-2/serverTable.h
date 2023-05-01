@@ -2,7 +2,13 @@
 #ifndef PROJECT_2_SERVERTABLE_H
 #define PROJECT_2_SERVERTABLE_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+
 #include "libPoll.h"
+#include "networkUtils.h"
 
 /* ENOMEM definition taken from sys/errno.h */
 #define ENOMEM 12

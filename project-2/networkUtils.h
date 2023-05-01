@@ -6,15 +6,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <netdb.h>
 #include <arpa/inet.h>
-#include <sys/poll.h>
 
-#include "serverTable.h"
-
-#define MAX_BUF 1400
+#define MAX_USR 1400
 #define MAX_HDL 100
 #define MAX_MSG 200
+/* Max input / Max message len = 1400 / 200 = 7 */
+#define MAX_PKTS 7
+
 #define LISTEN_BACKLOG  10
 
 #define PDU_MSG_LEN     2
@@ -37,10 +36,12 @@
 #define HDL_LIST_PKT    12
 #define FIN_LIST_PKT    13
 
+void *srealloc(void *ptr, size_t size);
+
+void *scalloc(size_t nmemb, size_t size);
+
 int sendPDU(int clientSocket, uint8_t dataBuffer[], int lengthOfData, uint8_t pduFlag);
 
 int recvPDU(int socketNumber, uint8_t dataBuffer[], int bufferSize);
-
-void checkSocketDisconnected(int bytesSent, serverTable_t *serverTable, char *clientHandle, int clientSocket);
 
 #endif /* PROJECT_2_NETWORKUTILS_H */

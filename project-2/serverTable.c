@@ -24,10 +24,10 @@ serverTable_t *newServerTable(int size) {
     if (size < 1) return NULL;
 
     /* Allocate the requested amount of memory */
-    newTable = malloc(sizeof(serverTable_t));
+    newTable = scalloc(1, sizeof(serverTable_t));
     if (newTable == NULL) { MEM_ERR("serverTable.c") }
 
-    newTable->nodes = malloc(sizeof(tableNode_t) * size);
+    newTable->nodes = scalloc(size, sizeof(tableNode_t));
     if (newTable->nodes == NULL) { MEM_ERR("serverTable.c") }
 
     /* Make a new pollSet */
@@ -50,7 +50,7 @@ tableNode_t *newTableNode(char *handle, int socket, tableNode_t *next) {
     if (handle == NULL || handle[0] == '\0') return NULL;
 
     /* Init a new node */
-    tableNode_t *node = malloc(sizeof(tableNode_t));
+    tableNode_t *node = scalloc(1, sizeof(tableNode_t));
     if (node == NULL) { MEM_ERR("dictionary.c") }
 
     /* Check for NULL input */
@@ -129,7 +129,7 @@ int addClient(serverTable_t *serverTable, int socket, char *handle) {
     idx = hash(handle) % serverTable->tableCap;
     node = serverTable->nodes[idx];
 
-    /* Traverse the linked list */
+    /* Traverse the linked list for duplicates */
     while (node != NULL) {
 
         if (strcmp(handle, node->handle) == 0) return 1;
@@ -138,13 +138,8 @@ int addClient(serverTable_t *serverTable, int socket, char *handle) {
         node = node->next;
     }
 
-    if (node == NULL) {
-        /* Add the new node at the top of the list */
-        serverTable->nodes[idx] = newTableNode(handle, socket, NULL);
-    } else {
-        /* Add a new node to the end of the linked list */
-        node->next = newTableNode(handle, socket, NULL);
-    }
+    /* Add the new node at the top of the list */
+    serverTable->nodes[idx] = newTableNode(handle, socket, serverTable->nodes[idx]);
 
     /* Increase the table size */
     serverTable->size++;
@@ -193,7 +188,8 @@ int getClient(serverTable_t *serverTable, char *handle) {
 
 int removeClient(serverTable_t *table, char *handle) {
 
-    int removedSocket, hashedHandle;
+    int oldSocket, hashedHandle;
+    tableNode_t *oldNode;
 
     /* Check input */
     if (table == NULL || handle == NULL) return NOT_FOUND;
@@ -211,29 +207,26 @@ int removeClient(serverTable_t *table, char *handle) {
     if (strcmp(handle, node->handle) == 0) {
 
         /* Copy the socket to be removed */
-        removedSocket = node->socket;
+        oldNode = node;
+        oldSocket = oldNode->socket;
 
         /* Remove the node from the linked list */
-        if (node->next != NULL) {
-            table->nodes[hashedHandle] = node->next;
-        } else {
-            table->nodes[hashedHandle] = NULL;
-        }
-
-        /* Clean up */
-        free(node->handle);
-        free(node);
+        table->nodes[hashedHandle] = node->next;
 
         /* Remove the node from the pollSet */
-        removeFromPollSet(table->pollSet, removedSocket);
+        removeFromPollSet(table->pollSet, oldSocket);
 
         /* Remove the handle from the handle array */
-        table->handleArr[removedSocket][0] = '\0';
+        table->handleArr[oldSocket][0] = '\0';
 
         /* Update the table size */
         table->size--;
 
-        return removedSocket;
+        /* Clean up */
+        free(oldNode->handle);
+        free(oldNode);
+
+        return oldSocket;
     }
 
     /* Check each node for the given handle */
@@ -243,24 +236,25 @@ int removeClient(serverTable_t *table, char *handle) {
         if (strcmp(handle, node->next->handle) == 0) {
 
             /* Copy the socket to be removed */
-            removedSocket = node->next->socket;
+            oldNode = node->next;
+            oldSocket = oldNode->socket;
             /* Remove the node from the linked list */
             node->next = node->next->next;
 
             /* Clean up */
-            free(node->handle);
-            free(node);
+            free(oldNode->handle);
+            free(oldNode);
 
             /* Remove the node from the pollSet */
-            removeFromPollSet(table->pollSet, removedSocket);
+            removeFromPollSet(table->pollSet, oldSocket);
 
             /* Remove the handle from the handle array */
-            table->handleArr[removedSocket][0] = '\0';
+            table->handleArr[oldSocket][0] = '\0';
 
             /* Update the table size */
             table->size--;
 
-            return removedSocket;
+            return oldSocket;
         }
 
         /* Go to the next node */

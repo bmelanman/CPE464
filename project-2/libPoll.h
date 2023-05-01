@@ -4,22 +4,20 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <stddef.h>
-#include <string.h>
 #include <unistd.h>
 #include <errno.h>
 #include <poll.h>
 
+#include "networkUtils.h"
+
 #define POLL_SET_SIZE 10
+#define POLL_WAIT_FOREVER (-1)
 
 typedef struct pollSetStruct {
     struct pollfd *pollFds;
     int maxFd;
     int pollSetSize;
 } pollSet_t;
-
-void *srealloc(void *ptr, size_t size);
 
 pollSet_t * newPollSet(void);
 

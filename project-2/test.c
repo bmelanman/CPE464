@@ -1,49 +1,45 @@
-//
-// Created by Bryce Melander on 4/29/23.
-//
 
 #include <printf.h>
 #include <stdlib.h>
+#include <string.h>
 
-#define ROLLING_AVG_LEN 5
-#define RNG_MAX 5
+#define MAX_MSG 20
+#define MAX_PKTS 7
 
-uint16_t movingAvg(uint16_t ptrArrNumbers[], uint16_t *sum, uint8_t *pos, uint8_t len, uint32_t nextNum) {
+int chopUsrMessage(char usrMessage[], char messages[][MAX_MSG]) {
 
-    /* Source: https://gist.github.com/bmccormack/d12f4bf0c96423d03f82 */
+    uint8_t i, packetLen;
+    uint16_t offset = 0;
 
-    //Subtract the oldest number from the prev sum, add the new number
-    *sum = *sum - ptrArrNumbers[*pos] + nextNum;
+    for (i = 0; i < MAX_PKTS; i++) {
+        packetLen = strnlen(&usrMessage[offset], MAX_MSG - 1);
 
-    //Assign the nextNum to the position in the array
-    ptrArrNumbers[*pos] = nextNum;
+        if (packetLen < 1) break;
 
-    if (++(*pos) >= len) {
-        *pos = 0;
+        snprintf(messages[i], MAX_MSG, "%s", &usrMessage[offset]);
+
+        offset += packetLen;
     }
 
-    //return the average
-    return (uint16_t) (*sum / len);
+    return i;
 }
 
 int main(void) {
 
-    // the size of this array represents how many numbers will be used
-    // to calculate the average
-    uint16_t rollingAvg[ROLLING_AVG_LEN] = {0};
-    uint16_t sum = 0, avgFreq;
-    uint8_t pos = 0;
+    char *input = "aaa bbb ccc ddd eee fff ggg";
+    char messages[MAX_PKTS][MAX_MSG];
 
-    int numLoops = 200;
+    int numMessages = chopUsrMessage(input, messages);
 
-    printf("\n");
-
-    for (int i = 0; i < numLoops; i++) {
-        printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
-        avgFreq = movingAvg(rollingAvg, &sum, &pos, ROLLING_AVG_LEN, 200 + (rand() % (RNG_MAX + 1)));
-        printf("The new average is %d\n", avgFreq);
-        for (int j = 0; j < 100000000; ++j);
+    for (int i = 0; i < numMessages; i++) {
+        printf("%s\n", messages[i]);
     }
 
     return 0;
+
+    //hello the
+    //re! my na
+    //me is bry
+    //ce :)
+
 }

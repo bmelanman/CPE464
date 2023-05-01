@@ -1,12 +1,6 @@
 
 #include "server.h"
 
-int checkArgs(int argc, char *argv[]);
-
-int tcpServerSetup(int serverPort);
-
-void serverControl(int mainServerSocket);
-
 static volatile int shutdownServer = 0;
 
 void intHandler(void) {
@@ -142,6 +136,30 @@ void addNewSocket(serverTable_t *serverTable, int socket) {
     addToPollTable(serverTable, clientSocket);
 }
 
+void checkSocketDisconnected(int bytesSent, serverTable_t *serverTable, char *clientHandle, int clientSocket) {
+
+    if (bytesSent < 1) {
+
+        /* Client disconnected from server */
+        fprintf(stderr, "\nClient unexpectedly disconnected! \n");
+
+        if (clientHandle != NULL) {
+
+            removeClient(serverTable, clientHandle);
+
+        } else if (clientSocket > -1) {
+
+            removeClientSocket(serverTable, clientSocket);
+
+        } else {
+
+            /* Function input error handling */
+            fprintf(stderr, "\ncheckSocketDisconnected() input error! Terminating...\n");
+            exit(EXIT_FAILURE);
+        }
+    }
+}
+
 void processNewClient(int clientSocket, uint8_t dataBuff[], serverTable_t *serverTable) {
 
     int bytesSent;
@@ -203,8 +221,12 @@ void sendToAll(serverTable_t *serverTable, int clientSocket, int flag, uint8_t s
             sendLen = handleLen + 1;
 
         } else {
+
             /* Send the broadcast to all valid sockets */
             sock = i;
+
+            /* Don't send broadcast back to self */
+            if (sock == clientSocket) continue;
 
         }
 
@@ -213,8 +235,8 @@ void sendToAll(serverTable_t *serverTable, int clientSocket, int flag, uint8_t s
     }
 }
 
-void routeBroadcast(serverTable_t *serverTable, uint8_t dataBuff[], int pduLen) {
-    sendToAll(serverTable, -1, BROADCAST_PKT, dataBuff, pduLen);
+void routeBroadcast(int clientSocket, serverTable_t *serverTable, uint8_t dataBuff[], int pduLen) {
+    sendToAll(serverTable, clientSocket, BROADCAST_PKT, dataBuff, pduLen);
 }
 
 void routeMessage(int clientSocket, serverTable_t *serverTable, uint8_t dataBuff[], int pduLen) {
@@ -297,7 +319,7 @@ void sendClose(serverTable_t *serverTable, int clientSocket) {
 
 void sendList(serverTable_t *serverTable, int clientSocket) {
 
-    uint8_t bytesSent, sendBuff[MAX_BUF];
+    uint8_t bytesSent, sendBuff[MAX_USR];
     uint32_t numClients = htonl(serverTable->size);
 
     /* Send a packet 11 containing the number of clients in the serverTable */
@@ -318,11 +340,11 @@ void sendList(serverTable_t *serverTable, int clientSocket) {
 
 void processClient(int clientSocket, serverTable_t *serverTable) {
 
-    uint8_t recvBuffer[MAX_BUF];
+    uint8_t recvBuffer[MAX_USR];
     int messageLen;
 
     /* Now get the data from the client_socket */
-    messageLen = recvPDU(clientSocket, recvBuffer, MAX_BUF);
+    messageLen = recvPDU(clientSocket, recvBuffer, MAX_USR);
 
     /* If the message length is -1, the client has disconnected */
     if (messageLen == 0) {
@@ -334,7 +356,7 @@ void processClient(int clientSocket, serverTable_t *serverTable) {
             processNewClient(clientSocket, recvBuffer, serverTable);
             break;
         case 4:     /* Broadcast packet */
-            routeBroadcast(serverTable, recvBuffer, messageLen);
+            routeBroadcast(clientSocket, serverTable, recvBuffer, messageLen);
             break;
         case 5:     /* Message packet */
             routeMessage(clientSocket, serverTable, recvBuffer, messageLen);
@@ -367,7 +389,7 @@ void serverControl(int mainServerSocket) {
     while (!shutdownServer) {
 
         /* Call poll() */
-        pollSocket = callTablePoll(serverTable, -1);
+        pollSocket = callTablePoll(serverTable, POLL_WAIT_FOREVER);
 
         /* No new packets (useful for debugging when 'poll() interrupted' errors can occur more frequently) */
         if (pollSocket == -1) continue;
