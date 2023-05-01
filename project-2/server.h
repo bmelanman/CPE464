@@ -7,7 +7,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include <signalπ.h>
+#include <signal.h>
 
 #include "networkUtils.h"
 #include "serverTable.h"
