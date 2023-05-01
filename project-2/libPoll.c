@@ -74,8 +74,6 @@ void removeFromPollSet(pollSet_t *pollSet, int socketNumber) {
 
 int pollCall(pollSet_t *pollSet, int timeInMilliSeconds) {
 
-    /* TODO: Implement static FIFO queue that keeps track of active sockets? */
-
     /* Calls poll() and returns the result after error checking
      *  - timeInMilliSeconds = -1 sets full blocking
      *  - timeInMilliSeconds = 0 sets non-blocking
