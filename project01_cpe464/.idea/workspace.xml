@@ -11,7 +11,8 @@
   </component>
   <component name="CMakeRunConfigurationManager">
     <generated>
-      <config projectName="Project" targetName="checksum" />
+      <config projectName="project-1" targetName="trace" />
+      <config projectName="project-1" targetName="checksum" />
     </generated>
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
@@ -21,136 +22,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="39bf8f42-fcb1-4656-a0a9-4f2d5e0986fa" name="Changes" comment="updated">
-      <change afterPath="$PROJECT_DIR$/../project-2/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/CMakeLists.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/Makefile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/given_files/Packing your structs.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/given_files/grade_sheet_Spring_2023.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/given_files/trace_prog_assignment_winter_2023_v6.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/libs/checksum.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/libs/checksum.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/ref_pcap/ArpTest.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/ref_pcap/Http.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/ref_pcap/IP_bad_checksum.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/ref_pcap/PingTest.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/ref_pcap/TCP_bad_checksum.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/ref_pcap/UDPfile.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/ref_pcap/largeMix.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/ref_pcap/largeMix2.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/ref_pcap/mix_withIPoptions.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/ref_pcap/smallTCP.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/submission/Makefile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/submission/README" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/submission/checksum.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/submission/checksum.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/submission/home_eth_high_traffic.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/submission/home_wifi_high_traffic.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/submission/trace" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/submission/trace.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/submission/trace.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/testing/p1_test.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/testing/results/ArpTest.pcap.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/testing/results/Http.pcap.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/testing/results/IP_bad_checksum.pcap.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/testing/results/PingTest.pcap.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/testing/results/TCP_bad_checksum.pcap.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/testing/results/UDPfile.pcap.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/testing/results/largeMix.pcap.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/testing/results/largeMix2.pcap.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/testing/results/mix_withIPoptions.pcap.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/testing/results/smallTCP.pcap.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/trace.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project01_cpe464/trace.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project02_cpe464/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project02_cpe464/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project02_cpe464/.idea/project-2.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project02_cpe464/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../project02_cpe464/test.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/project-1.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/given_files/Packing your structs.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/given_files/grade_sheet_Spring_2023.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/given_files/trace_prog_assignment_winter_2023_v6.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/checksum.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/checksum.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_output/ArpTest.pcap.out" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_output/Http.pcap.out" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_output/IP_bad_checksum.pcap.out" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_output/PingTest.pcap.out" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_output/TCP_bad_checksum.pcap.out" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_output/UDPfile.pcap.out" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_output/largeMix.pcap.out" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_output/largeMix2.pcap.out" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_output/mix_withIPoptions.pcap.out" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_output/smallTCP.pcap.out" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_pcap/ArpTest.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_pcap/Http.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_pcap/IP_bad_checksum.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_pcap/PingTest.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_pcap/TCP_bad_checksum.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_pcap/UDPfile.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_pcap/largeMix.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_pcap/largeMix2.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_pcap/mix_withIPoptions.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ref_pcap/smallTCP.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/submission/Makefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/submission/README" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/submission/checksum.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/submission/checksum.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/submission/home_eth_high_traffic.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/submission/home_wifi_high_traffic.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/submission/trace" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/submission/trace.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/submission/trace.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/p1_test.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/results/ArpTest.pcap.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/results/Http.pcap.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/results/IP_bad_checksum.pcap.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/results/PingTest.pcap.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/results/TCP_bad_checksum.pcap.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/results/UDPfile.pcap.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/results/largeMix.pcap.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/results/largeMix2.pcap.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/results/mix_withIPoptions.pcap.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/results/smallTCP.pcap.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/trace.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/trace.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/.idea/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../project01_cpe464/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/.idea/project-2.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../project01_cpe464/.idea/project-1.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../project01_cpe464/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/README" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/README" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/cclient.c" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/cclient.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/cclient.h" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/cclient.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/given_files/Detecting a Closed Connection on recv.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/given_files/Detecting a Closed Connection on recv.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/given_files/Prog2_chat_TCP_winter2023_v19.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/given_files/Prog2_chat_TCP_winter2023_v19.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/given_files/grade_sheet_chat_Winter_2023_v14.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/given_files/grade_sheet_chat_Winter_2023_v14.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/given_files/pseudoCode_manyHandles.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/given_files/pseudoCode_manyHandles.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/given_files/send_recv_PDU_and_program2.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/given_files/send_recv_PDU_and_program2.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/given_files/tcpUdpPollCode.tar" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/given_files/tcpUdpPollCode.tar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/libPoll.c" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/libPoll.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/libPoll.h" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/libPoll.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/networkUtils.c" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/networkUtils.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/networkUtils.h" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/networkUtils.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/server.c" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/server.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/server.h" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/server.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/serverTable.c" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/serverTable.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/serverTable.h" beforeDir="false" afterPath="$PROJECT_DIR$/../project02_cpe464/serverTable.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/test.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../project-2/test.c" beforeDir="false" afterPath="$PROJECT_DIR$/../project-2/test.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -225,12 +98,7 @@
       </texify-bibtex>
       <method v="2" />
     </configuration>
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="trace" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="../ref_pcap/ArpTest.pcap" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Project" TARGET_NAME="trace" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Project" RUN_TARGET_NAME="trace">
+    <configuration name="trace" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="../ref_pcap/ArpTest.pcap" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="project-1" TARGET_NAME="trace" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="project-1" RUN_TARGET_NAME="trace">
       <envs>
         <env name="DEBUG" value="1" />
       </envs>
@@ -361,7 +229,6 @@
       <workItem from="1682746834731" duration="4000" />
       <workItem from="1683239774887" duration="672000" />
       <workItem from="1683243321434" duration="1107000" />
-      <workItem from="1683572705218" duration="657000" />
     </task>
     <task id="LOCAL-00001" summary="updated">
       <created>1680799821406</created>

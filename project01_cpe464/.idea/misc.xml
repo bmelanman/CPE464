@@ -3,8 +3,8 @@
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
   <component name="CidrRootsConfiguration">
     <excludeRoots>
-      <file path="$PROJECT_DIR$/../project01_cpe464/testing/diff" />
-      <file path="$PROJECT_DIR$/../project01_cpe464/testing/results" />
+      <file path="$PROJECT_DIR$/testing/diff" />
+      <file path="$PROJECT_DIR$/testing/results" />
     </excludeRoots>
   </component>
 </project>
