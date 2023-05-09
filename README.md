@@ -1,4 +1,4 @@
-# CPE464 - Intro to Computer Networks
+# CPE 464 - Intro to Computer Networks
 
 Labs: 
 * Lab 1 - Intro to Networks and Wireshark
