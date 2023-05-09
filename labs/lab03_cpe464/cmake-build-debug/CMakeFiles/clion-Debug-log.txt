@@ -1,0 +1,4 @@
+/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/ninja -G Ninja -S /Users/brycemelander/Code/GitHub/CPE464/lab-3 -B /Users/brycemelander/Code/GitHub/CPE464/lab-3/cmake-build-debug
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /Users/brycemelander/Code/GitHub/CPE464/lab-3/cmake-build-debug

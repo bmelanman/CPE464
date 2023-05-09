@@ -1,8 +1,0 @@
-Bryce Melander
-CPE 464-01 (12:10PM - 3:00PM)
-
-Project 2: cclient & server
-Run:
-    $: make all
-    $: ./server <port>
-    $: ./cclient <handle> <host> <port>

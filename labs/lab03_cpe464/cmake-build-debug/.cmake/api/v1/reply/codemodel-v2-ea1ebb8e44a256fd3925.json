@@ -1,0 +1,87 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.25"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "lab_3",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "cclient::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-cclient-Debug-03cefbb8e0c85c64cef3.json",
+					"name" : "cclient",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "networkLibs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-networkLibs-Debug-6b01eafca5f5789e55fa.json",
+					"name" : "networkLibs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "server::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-server-Debug-1655e6aedd12423ffbdc.json",
+					"name" : "server",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "serverLibs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-serverLibs-Debug-fed9d0b5f78ec60c8003.json",
+					"name" : "serverLibs",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/Users/brycemelander/Code/GitHub/CPE464/lab-3/cmake-build-debug",
+		"source" : "/Users/brycemelander/Code/GitHub/CPE464/lab-3"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}
