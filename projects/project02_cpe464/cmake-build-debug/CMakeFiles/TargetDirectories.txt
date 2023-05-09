@@ -1,0 +1,7 @@
+/Users/brycemelander/Code/GitHub/CPE464/projects/project02_cpe464/cmake-build-debug/CMakeFiles/serverTable.dir
+/Users/brycemelander/Code/GitHub/CPE464/projects/project02_cpe464/cmake-build-debug/CMakeFiles/networkUtils.dir
+/Users/brycemelander/Code/GitHub/CPE464/projects/project02_cpe464/cmake-build-debug/CMakeFiles/cclient.dir
+/Users/brycemelander/Code/GitHub/CPE464/projects/project02_cpe464/cmake-build-debug/CMakeFiles/server.dir
+/Users/brycemelander/Code/GitHub/CPE464/projects/project02_cpe464/cmake-build-debug/CMakeFiles/test.dir
+/Users/brycemelander/Code/GitHub/CPE464/projects/project02_cpe464/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/brycemelander/Code/GitHub/CPE464/projects/project02_cpe464/cmake-build-debug/CMakeFiles/rebuild_cache.dir
