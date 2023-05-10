@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <memory.h>
+#include <arpa/inet.h>
 
 #include "cpe464.h"
 
