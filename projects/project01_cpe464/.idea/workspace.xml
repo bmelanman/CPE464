@@ -21,122 +21,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="39bf8f42-fcb1-4656-a0a9-4f2d5e0986fa" name="Changes" comment="updated">
-      <change afterPath="$PROJECT_DIR$/../labs/lab01_cpe464/Lab1_Worksheet_Spring_2023_online_v9.doc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab01_cpe464/Lab1_Worksheet_bryce_melander.docx.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab01_cpe464/dhcp_trace.pcapng" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab01_cpe464/largeMix2.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab01_cpe464/ping.pcap" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/.idea/.name" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/.idea/lab-3.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/CMakeLists.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/Makefile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/README" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cclient" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cclient.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/.cmake/api/v1/query/cache-v2" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/.cmake/api/v1/query/cmakeFiles-v1" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/.cmake/api/v1/query/codemodel-v2" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/.cmake/api/v1/query/toolchains-v1" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/.cmake/api/v1/reply/cache-v2-6583c85b25a3c6fc1532.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/.cmake/api/v1/reply/cmakeFiles-v1-b9245a2443cacec25853.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/.cmake/api/v1/reply/codemodel-v2-ea1ebb8e44a256fd3925.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/.cmake/api/v1/reply/directory-.-Debug-f5ebdc15457944623624.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/.cmake/api/v1/reply/index-2023-04-21T15-57-57-0732.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/.cmake/api/v1/reply/target-cclient-Debug-03cefbb8e0c85c64cef3.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/.cmake/api/v1/reply/target-networkLibs-Debug-6b01eafca5f5789e55fa.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/.cmake/api/v1/reply/target-server-Debug-1655e6aedd12423ffbdc.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/.cmake/api/v1/reply/target-serverLibs-Debug-fed9d0b5f78ec60c8003.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/.cmake/api/v1/reply/toolchains-v1-e12a0065daacfe8df7c8.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/.ninja_deps" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/.ninja_log" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/CMakeCache.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/CMakeFiles/3.25.2/CMakeCCompiler.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/CMakeFiles/3.25.2/CMakeDetermineCompilerABI_C.bin" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/CMakeFiles/3.25.2/CMakeSystem.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/CMakeFiles/3.25.2/CompilerIdC/CMakeCCompilerId.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/CMakeFiles/CMakeError.log" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/CMakeFiles/CMakeOutput.log" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/CMakeFiles/TargetDirectories.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/CMakeFiles/clion-Debug-log.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/CMakeFiles/clion-environment.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/CMakeFiles/cmake.check_cache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/CMakeFiles/rules.ninja" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/build.ninja" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/cclient" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/cmake_install.cmake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/cmake-build-debug/server" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/gethostbyname.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/gethostbyname.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/libPDU.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/libPDU.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/networks.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/networks.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/pollLib.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/pollLib.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/safeUtil.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/safeUtil.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/server.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../labs/lab03_cpe464/server.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-1/Lab1_Worksheet_Spring_2023_online_v9.doc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-1/Lab1_Worksheet_bryce_melander.docx.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-1/dhcp_trace.pcapng" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-1/largeMix2.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-1/ping.pcap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/.idea/.name" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/.idea/lab-3.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/Makefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/README" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/cclient" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/cclient.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/gethostbyname.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/gethostbyname.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/libPDU.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/libPDU.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/networks.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/networks.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/pollLib.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/pollLib.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/safeUtil.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/safeUtil.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/server.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../lab-3/server.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-0/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-0/.idea/.name" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-0/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-0/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-0/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-0/.idea/p0.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-0/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-0/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-0/main.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-1/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-1/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-1/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-1/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../project-2/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../untitled/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../untitled/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../untitled/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../untitled/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../untitled/.idea/untitled.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../untitled/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../untitled/CMakeLists.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../untitled/main.c" beforeDir="false" />
-    </list>
+    <list default="true" id="39bf8f42-fcb1-4656-a0a9-4f2d5e0986fa" name="Changes" comment="updated" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -147,7 +32,7 @@
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -175,7 +60,7 @@
     "WebServerToolWindowFactoryState": "false",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "last_opened_file_path": "/Users/brycemelander/Code/GitHub/CPE464/project01_cpe464",
+    "last_opened_file_path": "/Users/brycemelander/Code/GitHub/CPE464/projects/project01_cpe464",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -210,9 +95,9 @@
       </texify-bibtex>
       <method v="2" />
     </configuration>
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
     <configuration name="trace" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="../ref_pcap/ArpTest.pcap" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="project01_cpe464" TARGET_NAME="trace" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="project01_cpe464" RUN_TARGET_NAME="trace">
@@ -347,6 +232,7 @@
       <workItem from="1683239774887" duration="672000" />
       <workItem from="1683243321434" duration="1107000" />
       <workItem from="1683575017410" duration="490000" />
+      <workItem from="1683590707328" duration="3842000" />
     </task>
     <task id="LOCAL-00001" summary="updated">
       <created>1680799821406</created>
@@ -523,7 +409,14 @@
       <option name="project" value="LOCAL" />
       <updated>1683575063065</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="updated">
+      <created>1683590716440</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1683590716440</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
