@@ -62,6 +62,12 @@ void checkArgs(int argc, char *argv[], int *port, float *errRate) {
     /* Get the error rate */
     *errRate = strtof(argv[1], NULL);
 
+    /* Check that error rate is in a valid range */
+    if (*errRate >= 1.0 || *errRate < 0) {
+        fprintf(stderr, "\nErr: error-rate must be 0 ≤ r < 1 \n");
+        exit(EXIT_FAILURE);
+    }
+
     /* Get the port */
     if (argc == 3) *port = (int) strtol(argv[2], NULL, 10);
     else *port = 0;
