@@ -22,7 +22,7 @@ server: server.c $(OBJS)
 	gcc -c $(CFLAGS) $< -o $@ $(LIBS)
 
 cleandSYM:
-	rm -r *.dSYM || TRUE
+	rm -r *.dSYM || true
 
 cleano: cleandSYM
 	rm -f *.o
