@@ -5,7 +5,7 @@ BUILD_MINOR=21
 TEST=test
 
 CC = g++
-CFLAGS = -g -Wall
+CFLAGS =
 
 LIBPATH=libcpe464
 NETWORK=libcpe464/networks
@@ -29,7 +29,7 @@ test_setup:
 	$(eval CPE464_VER = libcpe464.$(TEST))
 	$(eval CPE464_LIB = $(CPE464_VER).a)
 
-	
+
 partial: header $(OBJS)
 	@echo "-------------------------------"
 
@@ -40,7 +40,7 @@ echo:
 	@echo "CPE464_LIB: $(CPE464_LIB) "
 
 version:
-	@echo $(BUILD_MAJOR).$(BUILD_MINOR) 
+	@echo $(BUILD_MAJOR).$(BUILD_MINOR)
 
 header:
 	@echo "-------------------------------"

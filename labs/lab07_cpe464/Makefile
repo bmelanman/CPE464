@@ -10,7 +10,11 @@ LIBS = libcpe464.2.21.a -lstdc++ -ldl
 
 OBJS = networks.o gethostbyname.o safeUtil.o udpPDU.o
 
-all: rcopy server cleano
+all: libcpe rcopy server cleano
+
+libcpe:
+	make -C ./given_files/ -f ./build464Lib.mk all
+	mv ./given_files/*.a ./
 
 rcopy: rcopy.c $(OBJS)
 	$(CC) $(CFLAGS) -o rcopy rcopy.c $(OBJS) $(LIBS)
@@ -28,7 +32,7 @@ cleano: cleandSYM
 	rm -f *.o
 
 clean: cleano
-	rm -f rcopy server
+	rm -f rcopy server *.a
 
 
 
