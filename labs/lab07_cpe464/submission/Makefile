@@ -1,16 +1,18 @@
 # Makefile to extract the project and compile everything
 
+TOP_DIR = lab07_submission
+
 all:
 	mkdir -p lab07_submission
-	tar -xf submission.tar -C submission
-	make -C submission -f Makefile all
-	cp ./submission/rcopy ./submission/server ./
+	tar -C $(TOP_DIR) -xf submission.tar
+	make -C $(TOP_DIR) -f Makefile all
+	cp $(TOP_DIR)/rcopy $(TOP_DIR)/server ./
 
 new_tar:
 	tar -cf submission.tar ../*.c ../*.h ../Makefile ../given_files
 
 clean_project:
-	make -C submission -f Makefile clean
+	make -C $(TOP_DIR) -f Makefile clean
 
 clean:
-	rm -rf submission rcopy server
+	rm -rf $(TOP_DIR) rcopy server
