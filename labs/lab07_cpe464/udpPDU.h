@@ -3,6 +3,7 @@
 #define LAB07_CPE464_UDPPDU_H
 
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include <memory.h>
