@@ -80,11 +80,17 @@ void checkArgs(int argc, char *argv[], int *port, float *errRate) {
 
     /* check command line arguments  */
     if (argc != 4) {
-        printf("\nusage: ./rcopy error-rate host-name port-number \n");
+        fprintf(stderr, "\nusage: ./rcopy error-rate host-name port-number \n");
         exit(EXIT_FAILURE);
     }
 
     *errRate = strtof(argv[1], NULL);
+
+    /* Check that error rate is in a valid range */
+    if (*errRate >= 1.0 || *errRate < 0) {
+        fprintf(stderr, "\nErr: error-rate must be 0 ≤ r < 1 \n");
+        exit(EXIT_FAILURE);
+    }
 
     *port = (int) strtol(argv[3], NULL, 10);
 }
