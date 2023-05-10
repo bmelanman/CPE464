@@ -11,8 +11,5 @@ all:
 new_tar:
 	tar -cf submission.tar ../*.c ../*.h ../Makefile ../given_files
 
-clean_project:
-	make -C $(TOP_DIR) -f Makefile clean
-
 clean:
 	rm -rf $(TOP_DIR) rcopy server
