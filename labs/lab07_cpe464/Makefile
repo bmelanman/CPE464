@@ -1,5 +1,5 @@
 # Makefile for CPE464 tcp and udp test code
-# Created by Hugh Smith
+# Created by Hugh Smith - April 2023
 # Updated by Bryce Melander - May 2023
 
 # all target makes UDP test code
