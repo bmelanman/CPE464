@@ -1,0 +1,105 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.25"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "lab07_cpe464",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "getHostByName::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-getHostByName-Debug-365e49447b917ef9cc87.json",
+					"name" : "getHostByName",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "networks::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-networks-Debug-a25e2d5630a81109b68f.json",
+					"name" : "networks",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "rcopy::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-rcopy-Debug-e42b7c55bccf93168b4b.json",
+					"name" : "rcopy",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "safeUtil::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-safeUtil-Debug-756d72f001ff0a9bc075.json",
+					"name" : "safeUtil",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "server::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-server-Debug-daed5f96f799bef5038f.json",
+					"name" : "server",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "udpPDU::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-udpPDU-Debug-9ad2dd465dd8d576adcc.json",
+					"name" : "udpPDU",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/Users/brycemelander/Code/GitHub/CPE464/labs/lab07_cpe464/cmake-build-debug",
+		"source" : "/Users/brycemelander/Code/GitHub/CPE464/labs/lab07_cpe464"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}

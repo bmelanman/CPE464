@@ -1,0 +1,8 @@
+/Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/cmake-build-debug/CMakeFiles/getHostByName.dir
+/Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/cmake-build-debug/CMakeFiles/networks.dir
+/Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/cmake-build-debug/CMakeFiles/safeUtil.dir
+/Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/cmake-build-debug/CMakeFiles/udpPDU.dir
+/Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/cmake-build-debug/CMakeFiles/rcopy.dir
+/Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/cmake-build-debug/CMakeFiles/server.dir
+/Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/cmake-build-debug/CMakeFiles/rebuild_cache.dir
