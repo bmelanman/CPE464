@@ -11,15 +11,24 @@
 #include <netinet/in.h>
 
 #include "gethostbyname.h"
-#include "networks.h"
-#include "safeUtil.h"
+#include "networkUtils.h"
 
-#define MAXBUF 80
+#define ARGV_FROM_FILENAME  1
+#define ARGV_TO_FILENAME    2
+#define ARGV_WINDOW_SIZE    3
+#define ARGV_BUFFER_SIZE    4
+#define ARGV_ERR_RATE       5
+#define ARGV_HOST_NAME      6
+#define ARGV_HOST_PORT      7
 
-void talkToServer(int socketNum, struct sockaddr_in6 *server);
-
-int readFromStdin(char *buffer, int buffLen);
-
-void checkArgs(int argc, char *argv[], int *port, float *errRate);
+typedef struct argsStruct {
+    char *from_filename;
+    char *to_filename;
+    uint32_t window_size;
+    uint16_t buffer_size;
+    float error_rate;
+    char *host_name;
+    uint16_t host_port;
+} runtimeArgs_t;
 
 #endif //LAB07_CPE464_RCOPY_H

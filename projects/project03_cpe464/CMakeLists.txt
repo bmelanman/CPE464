@@ -5,22 +5,22 @@ set(CMAKE_C_STANDARD 11)
 
 # Various supporting libraries
 add_library(getHostByName gethostbyname.c gethostbyname.h)
-add_library(networks networks.c networks.h)
-add_library(safeUtil safeUtil.c safeUtil.h)
-add_library(udpPDU udpPDU.c udpPDU.h)
+add_library(networkUtils networkUtils.c networkUtils.h)
+add_library(libPoll libPoll.c libPoll.h)
+add_library(windowLib windowLib.c windowLib.h)
 
 # Add the libraries to the project
 link_libraries(
         getHostByName
-        networks
-        safeUtil
-        udpPDU
+        networkUtils
+        libPoll
+        windowLib
 )
 
 # Adding the given custom library
 add_definitions(-D__LIBCPE464_)
 link_libraries(
-        ${PROJECT_SOURCE_DIR}/libcpe464.2.21.a stdc++ dl
+        ${PROJECT_SOURCE_DIR}/given_files/libcpe464.2.21.a stdc++ dl
 )
 
 # UDP Client

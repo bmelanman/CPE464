@@ -33,7 +33,7 @@ rule C_STATIC_LIBRARY_LINKER__getHostByName_Debug
 #############################################
 # Rule for compiling C files.
 
-rule C_COMPILER__networks_Debug
+rule C_COMPILER__networkUtils_Debug
   depfile = $DEP_FILE
   deps = gcc
   command = /Library/Developer/CommandLineTools/usr/bin/cc $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
@@ -43,7 +43,7 @@ rule C_COMPILER__networks_Debug
 #############################################
 # Rule for linking C static library.
 
-rule C_STATIC_LIBRARY_LINKER__networks_Debug
+rule C_STATIC_LIBRARY_LINKER__networkUtils_Debug
   command = $PRE_LINK && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E rm -f $TARGET_FILE && /Library/Developer/CommandLineTools/usr/bin/ar qc $TARGET_FILE $LINK_FLAGS $in && /Library/Developer/CommandLineTools/usr/bin/ranlib $TARGET_FILE && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E touch $TARGET_FILE && $POST_BUILD
   description = Linking C static library $TARGET_FILE
   restat = $RESTAT
@@ -52,7 +52,7 @@ rule C_STATIC_LIBRARY_LINKER__networks_Debug
 #############################################
 # Rule for compiling C files.
 
-rule C_COMPILER__safeUtil_Debug
+rule C_COMPILER__libPoll_Debug
   depfile = $DEP_FILE
   deps = gcc
   command = /Library/Developer/CommandLineTools/usr/bin/cc $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
@@ -62,7 +62,7 @@ rule C_COMPILER__safeUtil_Debug
 #############################################
 # Rule for linking C static library.
 
-rule C_STATIC_LIBRARY_LINKER__safeUtil_Debug
+rule C_STATIC_LIBRARY_LINKER__libPoll_Debug
   command = $PRE_LINK && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E rm -f $TARGET_FILE && /Library/Developer/CommandLineTools/usr/bin/ar qc $TARGET_FILE $LINK_FLAGS $in && /Library/Developer/CommandLineTools/usr/bin/ranlib $TARGET_FILE && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E touch $TARGET_FILE && $POST_BUILD
   description = Linking C static library $TARGET_FILE
   restat = $RESTAT
@@ -71,7 +71,7 @@ rule C_STATIC_LIBRARY_LINKER__safeUtil_Debug
 #############################################
 # Rule for compiling C files.
 
-rule C_COMPILER__udpPDU_Debug
+rule C_COMPILER__windowLib_Debug
   depfile = $DEP_FILE
   deps = gcc
   command = /Library/Developer/CommandLineTools/usr/bin/cc $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
@@ -81,7 +81,7 @@ rule C_COMPILER__udpPDU_Debug
 #############################################
 # Rule for linking C static library.
 
-rule C_STATIC_LIBRARY_LINKER__udpPDU_Debug
+rule C_STATIC_LIBRARY_LINKER__windowLib_Debug
   command = $PRE_LINK && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E rm -f $TARGET_FILE && /Library/Developer/CommandLineTools/usr/bin/ar qc $TARGET_FILE $LINK_FLAGS $in && /Library/Developer/CommandLineTools/usr/bin/ranlib $TARGET_FILE && /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E touch $TARGET_FILE && $POST_BUILD
   description = Linking C static library $TARGET_FILE
   restat = $RESTAT

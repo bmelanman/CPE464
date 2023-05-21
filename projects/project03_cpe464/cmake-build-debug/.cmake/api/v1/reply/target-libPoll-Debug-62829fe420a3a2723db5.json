@@ -3,7 +3,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "libsafeUtil.a"
+			"path" : "liblibPoll.a"
 		}
 	],
 	"backtrace" : 1,
@@ -71,9 +71,9 @@
 			]
 		}
 	],
-	"id" : "safeUtil::@6890427a1f51a3e7e1df",
-	"name" : "safeUtil",
-	"nameOnDisk" : "libsafeUtil.a",
+	"id" : "libPoll::@6890427a1f51a3e7e1df",
+	"name" : "libPoll",
+	"nameOnDisk" : "liblibPoll.a",
 	"paths" : 
 	{
 		"build" : ".",
@@ -101,12 +101,12 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "safeUtil.c",
+			"path" : "libPoll.c",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
-			"path" : "safeUtil.h",
+			"path" : "libPoll.h",
 			"sourceGroupIndex" : 1
 		}
 	],

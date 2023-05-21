@@ -78,15 +78,15 @@
 		},
 		{
 			"backtrace" : 1,
-			"id" : "networks::@6890427a1f51a3e7e1df"
+			"id" : "networkUtils::@6890427a1f51a3e7e1df"
 		},
 		{
 			"backtrace" : 1,
-			"id" : "safeUtil::@6890427a1f51a3e7e1df"
+			"id" : "libPoll::@6890427a1f51a3e7e1df"
 		},
 		{
 			"backtrace" : 1,
-			"id" : "udpPDU::@6890427a1f51a3e7e1df"
+			"id" : "windowLib::@6890427a1f51a3e7e1df"
 		}
 	],
 	"id" : "rcopy::@6890427a1f51a3e7e1df",
@@ -109,22 +109,22 @@
 			},
 			{
 				"backtrace" : 1,
-				"fragment" : "libnetworks.a",
+				"fragment" : "libnetworkUtils.a",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 1,
-				"fragment" : "libsafeUtil.a",
+				"fragment" : "liblibPoll.a",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 1,
-				"fragment" : "libudpPDU.a",
+				"fragment" : "libwindowLib.a",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 1,
-				"fragment" : "/Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/libcpe464.2.21.a",
+				"fragment" : "/Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/given_files/libcpe464.2.21.a",
 				"role" : "libraries"
 			},
 			{

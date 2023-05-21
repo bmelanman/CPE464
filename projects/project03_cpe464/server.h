@@ -6,19 +6,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
 
 #include "gethostbyname.h"
-#include "networks.h"
-#include "safeUtil.h"
+#include "networkUtils.h"
 
-#define MAXBUF 80
-
-void processClient(int socketNum);
-
-void checkArgs(int argc, char *argv[], int *port, float *errRate);
+#define ARGV_ERR_RATE 1
+#define ARGV_PORT_NUM 2
 
 #endif //LAB07_CPE464_SERVER_H

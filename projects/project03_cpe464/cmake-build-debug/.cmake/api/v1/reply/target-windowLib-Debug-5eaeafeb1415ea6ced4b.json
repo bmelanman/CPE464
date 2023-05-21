@@ -3,7 +3,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "libudpPDU.a"
+			"path" : "libwindowLib.a"
 		}
 	],
 	"backtrace" : 1,
@@ -71,9 +71,9 @@
 			]
 		}
 	],
-	"id" : "udpPDU::@6890427a1f51a3e7e1df",
-	"name" : "udpPDU",
-	"nameOnDisk" : "libudpPDU.a",
+	"id" : "windowLib::@6890427a1f51a3e7e1df",
+	"name" : "windowLib",
+	"nameOnDisk" : "libwindowLib.a",
 	"paths" : 
 	{
 		"build" : ".",
@@ -101,12 +101,12 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "udpPDU.c",
+			"path" : "windowLib.c",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
-			"path" : "udpPDU.h",
+			"path" : "windowLib.h",
 			"sourceGroupIndex" : 1
 		}
 	],

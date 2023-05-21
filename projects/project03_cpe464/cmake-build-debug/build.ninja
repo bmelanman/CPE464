@@ -74,103 +74,103 @@ build libgetHostByName.a: C_STATIC_LIBRARY_LINKER__getHostByName_Debug CMakeFile
   TARGET_PDB = getHostByName.a.dbg
 
 # =============================================================================
-# Object build statements for STATIC_LIBRARY target networks
+# Object build statements for STATIC_LIBRARY target networkUtils
 
 
 #############################################
-# Order-only phony target for networks
+# Order-only phony target for networkUtils
 
-build cmake_object_order_depends_target_networks: phony || CMakeFiles/networks.dir
+build cmake_object_order_depends_target_networkUtils: phony || CMakeFiles/networkUtils.dir
 
-build CMakeFiles/networks.dir/networks.c.o: C_COMPILER__networks_Debug /Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/networks.c || cmake_object_order_depends_target_networks
+build CMakeFiles/networkUtils.dir/networkUtils.c.o: C_COMPILER__networkUtils_Debug /Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/networkUtils.c || cmake_object_order_depends_target_networkUtils
   DEFINES = -D__LIBCPE464_
-  DEP_FILE = CMakeFiles/networks.dir/networks.c.o.d
+  DEP_FILE = CMakeFiles/networkUtils.dir/networkUtils.c.o.d
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fcolor-diagnostics -std=gnu11
-  OBJECT_DIR = CMakeFiles/networks.dir
-  OBJECT_FILE_DIR = CMakeFiles/networks.dir
+  OBJECT_DIR = CMakeFiles/networkUtils.dir
+  OBJECT_FILE_DIR = CMakeFiles/networkUtils.dir
 
 
 # =============================================================================
-# Link build statements for STATIC_LIBRARY target networks
+# Link build statements for STATIC_LIBRARY target networkUtils
 
 
 #############################################
-# Link the static library libnetworks.a
+# Link the static library libnetworkUtils.a
 
-build libnetworks.a: C_STATIC_LIBRARY_LINKER__networks_Debug CMakeFiles/networks.dir/networks.c.o
+build libnetworkUtils.a: C_STATIC_LIBRARY_LINKER__networkUtils_Debug CMakeFiles/networkUtils.dir/networkUtils.c.o
   ARCH_FLAGS = -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk
   LANGUAGE_COMPILE_FLAGS = -g
-  OBJECT_DIR = CMakeFiles/networks.dir
+  OBJECT_DIR = CMakeFiles/networkUtils.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_FILE = libnetworks.a
-  TARGET_PDB = networks.a.dbg
+  TARGET_FILE = libnetworkUtils.a
+  TARGET_PDB = networkUtils.a.dbg
 
 # =============================================================================
-# Object build statements for STATIC_LIBRARY target safeUtil
+# Object build statements for STATIC_LIBRARY target libPoll
 
 
 #############################################
-# Order-only phony target for safeUtil
+# Order-only phony target for libPoll
 
-build cmake_object_order_depends_target_safeUtil: phony || CMakeFiles/safeUtil.dir
+build cmake_object_order_depends_target_libPoll: phony || CMakeFiles/libPoll.dir
 
-build CMakeFiles/safeUtil.dir/safeUtil.c.o: C_COMPILER__safeUtil_Debug /Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/safeUtil.c || cmake_object_order_depends_target_safeUtil
+build CMakeFiles/libPoll.dir/libPoll.c.o: C_COMPILER__libPoll_Debug /Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/libPoll.c || cmake_object_order_depends_target_libPoll
   DEFINES = -D__LIBCPE464_
-  DEP_FILE = CMakeFiles/safeUtil.dir/safeUtil.c.o.d
+  DEP_FILE = CMakeFiles/libPoll.dir/libPoll.c.o.d
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fcolor-diagnostics -std=gnu11
-  OBJECT_DIR = CMakeFiles/safeUtil.dir
-  OBJECT_FILE_DIR = CMakeFiles/safeUtil.dir
+  OBJECT_DIR = CMakeFiles/libPoll.dir
+  OBJECT_FILE_DIR = CMakeFiles/libPoll.dir
 
 
 # =============================================================================
-# Link build statements for STATIC_LIBRARY target safeUtil
+# Link build statements for STATIC_LIBRARY target libPoll
 
 
 #############################################
-# Link the static library libsafeUtil.a
+# Link the static library liblibPoll.a
 
-build libsafeUtil.a: C_STATIC_LIBRARY_LINKER__safeUtil_Debug CMakeFiles/safeUtil.dir/safeUtil.c.o
+build liblibPoll.a: C_STATIC_LIBRARY_LINKER__libPoll_Debug CMakeFiles/libPoll.dir/libPoll.c.o
   ARCH_FLAGS = -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk
   LANGUAGE_COMPILE_FLAGS = -g
-  OBJECT_DIR = CMakeFiles/safeUtil.dir
+  OBJECT_DIR = CMakeFiles/libPoll.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_FILE = libsafeUtil.a
-  TARGET_PDB = safeUtil.a.dbg
+  TARGET_FILE = liblibPoll.a
+  TARGET_PDB = libPoll.a.dbg
 
 # =============================================================================
-# Object build statements for STATIC_LIBRARY target udpPDU
+# Object build statements for STATIC_LIBRARY target windowLib
 
 
 #############################################
-# Order-only phony target for udpPDU
+# Order-only phony target for windowLib
 
-build cmake_object_order_depends_target_udpPDU: phony || CMakeFiles/udpPDU.dir
+build cmake_object_order_depends_target_windowLib: phony || CMakeFiles/windowLib.dir
 
-build CMakeFiles/udpPDU.dir/udpPDU.c.o: C_COMPILER__udpPDU_Debug /Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/udpPDU.c || cmake_object_order_depends_target_udpPDU
+build CMakeFiles/windowLib.dir/windowLib.c.o: C_COMPILER__windowLib_Debug /Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/windowLib.c || cmake_object_order_depends_target_windowLib
   DEFINES = -D__LIBCPE464_
-  DEP_FILE = CMakeFiles/udpPDU.dir/udpPDU.c.o.d
+  DEP_FILE = CMakeFiles/windowLib.dir/windowLib.c.o.d
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fcolor-diagnostics -std=gnu11
-  OBJECT_DIR = CMakeFiles/udpPDU.dir
-  OBJECT_FILE_DIR = CMakeFiles/udpPDU.dir
+  OBJECT_DIR = CMakeFiles/windowLib.dir
+  OBJECT_FILE_DIR = CMakeFiles/windowLib.dir
 
 
 # =============================================================================
-# Link build statements for STATIC_LIBRARY target udpPDU
+# Link build statements for STATIC_LIBRARY target windowLib
 
 
 #############################################
-# Link the static library libudpPDU.a
+# Link the static library libwindowLib.a
 
-build libudpPDU.a: C_STATIC_LIBRARY_LINKER__udpPDU_Debug CMakeFiles/udpPDU.dir/udpPDU.c.o
+build libwindowLib.a: C_STATIC_LIBRARY_LINKER__windowLib_Debug CMakeFiles/windowLib.dir/windowLib.c.o
   ARCH_FLAGS = -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk
   LANGUAGE_COMPILE_FLAGS = -g
-  OBJECT_DIR = CMakeFiles/udpPDU.dir
+  OBJECT_DIR = CMakeFiles/windowLib.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_FILE = libudpPDU.a
-  TARGET_PDB = udpPDU.a.dbg
+  TARGET_FILE = libwindowLib.a
+  TARGET_PDB = windowLib.a.dbg
 
 # =============================================================================
 # Object build statements for EXECUTABLE target rcopy
@@ -179,7 +179,7 @@ build libudpPDU.a: C_STATIC_LIBRARY_LINKER__udpPDU_Debug CMakeFiles/udpPDU.dir/u
 #############################################
 # Order-only phony target for rcopy
 
-build cmake_object_order_depends_target_rcopy: phony || cmake_object_order_depends_target_getHostByName cmake_object_order_depends_target_networks cmake_object_order_depends_target_safeUtil cmake_object_order_depends_target_udpPDU
+build cmake_object_order_depends_target_rcopy: phony || cmake_object_order_depends_target_getHostByName cmake_object_order_depends_target_libPoll cmake_object_order_depends_target_networkUtils cmake_object_order_depends_target_windowLib
 
 build CMakeFiles/rcopy.dir/rcopy.c.o: C_COMPILER__rcopy_Debug /Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/rcopy.c || cmake_object_order_depends_target_rcopy
   DEFINES = -D__LIBCPE464_
@@ -196,9 +196,9 @@ build CMakeFiles/rcopy.dir/rcopy.c.o: C_COMPILER__rcopy_Debug /Users/brycemeland
 #############################################
 # Link the executable rcopy
 
-build rcopy: C_EXECUTABLE_LINKER__rcopy_Debug CMakeFiles/rcopy.dir/rcopy.c.o | libgetHostByName.a libnetworks.a libsafeUtil.a libudpPDU.a /Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/libcpe464.2.21.a || libgetHostByName.a libnetworks.a libsafeUtil.a libudpPDU.a
+build rcopy: C_EXECUTABLE_LINKER__rcopy_Debug CMakeFiles/rcopy.dir/rcopy.c.o | libgetHostByName.a libnetworkUtils.a liblibPoll.a libwindowLib.a /Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/given_files/libcpe464.2.21.a || libgetHostByName.a liblibPoll.a libnetworkUtils.a libwindowLib.a
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk
-  LINK_LIBRARIES = libgetHostByName.a  libnetworks.a  libsafeUtil.a  libudpPDU.a  /Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/libcpe464.2.21.a  -lstdc++  -ldl
+  LINK_LIBRARIES = libgetHostByName.a  libnetworkUtils.a  liblibPoll.a  libwindowLib.a  /Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/given_files/libcpe464.2.21.a  -lstdc++  -ldl
   OBJECT_DIR = CMakeFiles/rcopy.dir
   POST_BUILD = :
   PRE_LINK = :
@@ -212,7 +212,7 @@ build rcopy: C_EXECUTABLE_LINKER__rcopy_Debug CMakeFiles/rcopy.dir/rcopy.c.o | l
 #############################################
 # Order-only phony target for server
 
-build cmake_object_order_depends_target_server: phony || cmake_object_order_depends_target_getHostByName cmake_object_order_depends_target_networks cmake_object_order_depends_target_safeUtil cmake_object_order_depends_target_udpPDU
+build cmake_object_order_depends_target_server: phony || cmake_object_order_depends_target_getHostByName cmake_object_order_depends_target_libPoll cmake_object_order_depends_target_networkUtils cmake_object_order_depends_target_windowLib
 
 build CMakeFiles/server.dir/server.c.o: C_COMPILER__server_Debug /Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/server.c || cmake_object_order_depends_target_server
   DEFINES = -D__LIBCPE464_
@@ -229,9 +229,9 @@ build CMakeFiles/server.dir/server.c.o: C_COMPILER__server_Debug /Users/brycemel
 #############################################
 # Link the executable server
 
-build server: C_EXECUTABLE_LINKER__server_Debug CMakeFiles/server.dir/server.c.o | libgetHostByName.a libnetworks.a libsafeUtil.a libudpPDU.a /Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/libcpe464.2.21.a || libgetHostByName.a libnetworks.a libsafeUtil.a libudpPDU.a
+build server: C_EXECUTABLE_LINKER__server_Debug CMakeFiles/server.dir/server.c.o | libgetHostByName.a libnetworkUtils.a liblibPoll.a libwindowLib.a /Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/given_files/libcpe464.2.21.a || libgetHostByName.a liblibPoll.a libnetworkUtils.a libwindowLib.a
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk
-  LINK_LIBRARIES = libgetHostByName.a  libnetworks.a  libsafeUtil.a  libudpPDU.a  /Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/libcpe464.2.21.a  -lstdc++  -ldl
+  LINK_LIBRARIES = libgetHostByName.a  libnetworkUtils.a  liblibPoll.a  libwindowLib.a  /Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/given_files/libcpe464.2.21.a  -lstdc++  -ldl
   OBJECT_DIR = CMakeFiles/server.dir
   POST_BUILD = :
   PRE_LINK = :
@@ -266,11 +266,11 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 
 build getHostByName: phony libgetHostByName.a
 
-build networks: phony libnetworks.a
+build libPoll: phony liblibPoll.a
 
-build safeUtil: phony libsafeUtil.a
+build networkUtils: phony libnetworkUtils.a
 
-build udpPDU: phony libudpPDU.a
+build windowLib: phony libwindowLib.a
 
 # =============================================================================
 # Folder targets.
@@ -280,7 +280,7 @@ build udpPDU: phony libudpPDU.a
 #############################################
 # Folder: /Users/brycemelander/Code/GitHub/CPE464/projects/project03_cpe464/cmake-build-debug
 
-build all: phony libgetHostByName.a libnetworks.a libsafeUtil.a libudpPDU.a rcopy server
+build all: phony libgetHostByName.a libnetworkUtils.a liblibPoll.a libwindowLib.a rcopy server
 
 # =============================================================================
 # Built-in targets
