@@ -83,42 +83,109 @@ int udpServerSetup(int serverPort) {
 
 }
 
-void recvSetup(int socket) {
+uint8_t *recvSetupInfo(pollSet_t *pollSet) {
 
-}
-
-void runServer(int socket) {
-
-    uint16_t pduLen, seq, transferComplete = 0;
-
+    int pollSock, count = 0;
+    uint8_t *recvPayload;
+    uint16_t seq = 0, clientAddrLen = sizeof(struct sockaddr_in6);
     struct sockaddr_in6 client;
-    int clientAddrLen = sizeof(client);
     udpPacket_t dataPDU = {0};
 
-    while (!transferComplete) {
+    while (1) {
 
-        pduLen = safeRecvFrom(socket, &dataPDU, MAX_PDU_LEN, 0, (struct sockaddr *) &client, &clientAddrLen);
+        if (count > 10) return NULL;
+        else count++;
 
-        printf("IP: %s Port: %d\n", ipAddressToString(&client), ntohs(client.sin6_port));
+        pollSock = pollCall(pollSet, POLL_1_SEC);
 
-        printf("Received PDU from client\n\n");
+        if (pollSock <= 0) continue;
 
-        printPDU(&dataPDU, pduLen);
+        /* Receive the connection info packet */
+        safeRecvFrom(pollSock, &dataPDU, MAX_PDU_LEN, 0,
+                     (struct sockaddr *) &client, clientAddrLen);
 
-        seq = ntohl(dataPDU.seq_NO);
+        /* Verify checksum */
+        if (in_cksum((unsigned short *) &dataPDU, dataPDU.pduLen) != 0) continue;
+
+        /* Verify correct packet type */
+        if (dataPDU.flag != INFO_PKT) continue;
+
+        /* Save the payload info */
+        recvPayload = malloc(dataPDU.pduLen - PDU_HEADER_LEN + 1);
+        memcpy(recvPayload, dataPDU.payload, dataPDU.pduLen - PDU_HEADER_LEN);
 
         /* Send an ACK after receiving */
-        pduLen = createPDU(&dataPDU, 0, DATA_ACK_PKT, (uint8_t *) &seq, sizeof(uint16_t));
+        createPDU(&dataPDU, 0, INFO_ACK_PKT, (uint8_t *) &seq, sizeof(uint16_t));
+        safeSendTo(pollSock, (void *) &dataPDU, dataPDU.pduLen,
+                   (struct sockaddr *) &client, clientAddrLen);
 
-        safeSendTo(socket, dataBuff, pduLen, (struct sockaddr *) &client, clientAddrLen);
-
-        printf("\n");
+        return recvPayload;
     }
+}
+
+char *getTransferInfo(uint8_t *data, uint16_t *bufferLen, uint32_t *windowSize) {
+
+    *bufferLen = *((uint16_t *) data);
+    *windowSize = *((uint32_t *) &data[2]);
+    char *to_filename = strndup((char *) &data[6], 100);
+
+    printf(
+            "Setup Complete!        \n"
+            "\tBuffer Size: %d      \n"
+            "\tWindow Size: %d      \n"
+            "\tto-filename: %s      \n"
+            "\n",
+            *bufferLen, *windowSize, to_filename
+    );
+
+    return to_filename;
+}
+
+int runServer(pollSet_t *pollSet) {
+
+    int pollSock;
+    uint8_t *transferInfo;
+    uint16_t bufferLen;
+    uint32_t windowSize;
+    char *to_filename;
+    FILE *newFile = NULL;
+    udpPacket_t dataPDU = {0};
+
+    /* TODO: Free + fclose */
+
+    /* Receive setup info from the client */
+    transferInfo = recvSetupInfo(pollSet);
+    to_filename = getTransferInfo(transferInfo, &bufferLen, &windowSize);
+
+    /* Check for invalid data */
+    if (transferInfo == NULL || to_filename == NULL) return 1;
+
+    /* Open the new file */
+    newFile = fopen(to_filename, "w");
+
+    /* TODO: Setup response */
+
+    /* Make sure the file opened */
+    if (newFile == NULL) return 1;
+
+    printf("Waiting for data from client...\n");
+
+    /* Receive file data from client */
+    while (1) {
+
+        pollSock = pollCall(pollSet, POLL_10_SEC);
+
+        if (pollSock == POLL_TIMEOUT) return 1;
+
+        if (dataPDU.flag == DATA_EOF_PKT) break;
+    }
+
+    return 0;
 }
 
 void runServerController(int serverSocket) {
 
-    int pollSocket;
+    int pollSocket, stat;
     pollSet_t *pollSet = newPollSet();
 
     addToPollSet(pollSet, serverSocket);
@@ -130,7 +197,9 @@ void runServerController(int serverSocket) {
 
         if (pollSocket == serverSocket) {
             /* Fork children here in the future */
-            runServer(serverSocket);
+            stat = runServer(pollSet);
+
+            if (stat != 0) printf("Client has become disconnected!\n");
         }
 
     }

@@ -6,7 +6,7 @@ void *srealloc(void *ptr, size_t size) {
 
     if ((returnValue = realloc(ptr, size)) == NULL) {
         printf("Error on realloc (tried for size: %d\n", (int) size);
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
 
     return returnValue;
@@ -16,20 +16,20 @@ void *scalloc(size_t nmemb, size_t size) {
     void *returnValue = NULL;
     if ((returnValue = calloc(nmemb, size)) == NULL) {
         perror("calloc");
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
     return returnValue;
 }
 
-int safeRecvFrom(int socketNum, void *buf, int len, int flags, struct sockaddr *srcAddr, int *addrLen) {
+int safeRecvFrom(int socketNum, void *buf, int len, int flags, struct sockaddr *srcAddr, int addrLen) {
 
     /* Receive a packet */
-    int ret = recvfrom(socketNum, buf, (size_t) len, flags, srcAddr, (socklen_t *) addrLen);
+    int ret = recvfrom(socketNum, buf, (size_t) len, flags, srcAddr, (socklen_t *) &addrLen);
 
     /* Check for errors */
     if (ret < 0) {
         perror("recvFrom: ");
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
 
     return ret;
@@ -42,22 +42,25 @@ int safeSendTo(int socketNum, void *buf, int len, struct sockaddr *srcAddr, int 
 
     /* Check for errors */
     if (ret < 0) {
-        perror("sendTo: ");
-        exit(-1);
+        perror("sendTo");
+        exit(EXIT_FAILURE);
     }
 
     return (int) ret;
 }
 
-int createPDU(udpPacket_t *pduPacket, uint32_t seqNum, uint8_t flag, uint8_t *payload, int payloadLen) {
+void createPDU(udpPacket_t *pduPacket, uint32_t seqNum, uint8_t flag, uint8_t *payload, int payloadLen) {
 
-    uint16_t checksum, pduLen = PDU_HEADER_LEN;
+    uint16_t checksum;
 
     /* Check inputs */
     if (pduPacket == NULL || payload == NULL || payloadLen > 1400) {
         fprintf(stderr, "createPDU() err! Null buffers\n");
         exit(EXIT_FAILURE);
     }
+
+    /* Add the PDU header length */
+    pduPacket->pduLen = PDU_HEADER_LEN;
 
     /* Add the sequence in network order (4 bytes) */
     pduPacket->seq_NO = htonl(seqNum);
@@ -70,15 +73,13 @@ int createPDU(udpPacket_t *pduPacket, uint32_t seqNum, uint8_t flag, uint8_t *pa
 
     /* Add in the payload */
     memcpy(pduPacket->payload, payload, payloadLen);
-    pduLen += payloadLen;
+    pduPacket->pduLen += payloadLen;
 
     /* Calculate the payload checksum */
-    checksum = in_cksum((unsigned short *) pduPacket, pduLen);
+    checksum = in_cksum((unsigned short *) pduPacket, pduPacket->pduLen);
 
     /* Put the checksum into the PDU */
     pduPacket->checksum = checksum;
-
-    return pduLen;
 }
 
 void unpackPDU(uint8_t pduBuff[], int pduLength, uint32_t *seqNum, uint16_t *checksum, uint8_t *flag, uint8_t payload[],

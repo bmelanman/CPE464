@@ -4,11 +4,11 @@
 
 #include "networkUtils.h"
 
-#define BUFF_SIZE 100
+#define CIRC_BUFF_SIZE 32
 
 typedef struct circularQueueStruct {
-    udpPacket_t queue[BUFF_SIZE];
-    uint16_t packetSize;
+    udpPacket_t *queue[CIRC_BUFF_SIZE];
+    uint16_t currentIdx;
 }circularQueue_t;
 
 typedef struct windowStruct {
@@ -17,6 +17,16 @@ typedef struct windowStruct {
     uint16_t current;
     uint16_t upper;
     circularQueue_t *circQueue;
-} windowQueue_t;
+} circularWindow_t;
+
+circularQueue_t *createBuffer();
+
+circularWindow_t *createWindow(uint32_t windowSize, uint16_t bufferSize);
+
+void addPacket(circularQueue_t *buffer, udpPacket_t *packet);
+
+int checkWindowSpace(circularWindow_t *window);
+
+//int checkSendSpace(circularWindow_t *window);
 
 #endif /* PROJECT03_CPE464_WINDOWLIB_H */

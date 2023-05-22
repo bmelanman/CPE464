@@ -12,6 +12,8 @@
 
 #include "gethostbyname.h"
 #include "networkUtils.h"
+#include "libPoll.h"
+#include "windowLib.h"
 
 #define ARGV_FROM_FILENAME  1
 #define ARGV_TO_FILENAME    2

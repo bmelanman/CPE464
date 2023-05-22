@@ -1,20 +1,20 @@
 
 #include "windowLib.h"
 
-circularQueue_t *createBuffer(uint16_t size) {
+circularQueue_t *createBuffer() {
 
     circularQueue_t *newQueue = malloc(sizeof(circularQueue_t));
 
-    newQueue->packetSize = size;
+    newQueue->currentIdx = 0;
 
     return newQueue;
 }
 
-windowQueue_t *createWindow(uint32_t windowSize, uint16_t bufferSize) {
+circularWindow_t *createWindow(uint32_t windowSize, uint16_t bufferSize) {
 
-    windowQueue_t *newWindow = malloc(windowSize * sizeof(windowQueue_t));
+    circularWindow_t *newWindow = malloc(windowSize * sizeof(circularWindow_t));
 
-    newWindow->circQueue = createBuffer(bufferSize);
+    newWindow->circQueue = createBuffer();
 
     newWindow->lower = 0;
     newWindow->current = 0;
@@ -25,15 +25,16 @@ windowQueue_t *createWindow(uint32_t windowSize, uint16_t bufferSize) {
     return newWindow;
 }
 
-int addPackets(circularQueue_t *buffer, uint8_t numPackets, FILE *fd) {
+void addPacket(circularQueue_t *buffer, udpPacket_t *packet) {
 
+    buffer->queue[buffer->currentIdx] = packet;
+//    memcpy(buffer->queue[buffer->currentIdx], packet, sizeof(*packet));
 
+    buffer->currentIdx = (buffer->currentIdx + 1) % CIRC_BUFF_SIZE;
 
-    return 0;
 }
 
-int moveWindow(windowQueue_t *window, uint16_t newLower, FILE *fd) {
-
+int moveWindow(circularWindow_t *window, uint16_t newLower, FILE *fd) {
 
 
     return 0;
@@ -42,25 +43,31 @@ int moveWindow(windowQueue_t *window, uint16_t newLower, FILE *fd) {
 void flushBuffer(circularQueue_t *buffer, FILE *fd) {
 
 
-
 }
 
-udpPacket_t getPacket(circularQueue_t *buffer, uint16_t idx) {
+udpPacket_t *getPacket(circularQueue_t *buffer, uint16_t idx) {
 
     return buffer->queue[idx];
 }
 
-void incrementCurrent(windowQueue_t *window) {
+void incrementCurrent(circularWindow_t *window) {
     window->current++;
 }
 
-uint16_t getCurrent(windowQueue_t *window) {
+uint16_t getCurrent(circularWindow_t *window) {
     return window->current;
 }
 
-int checkWindowClosed(windowQueue_t *window) {
+int checkWindowSpace(circularWindow_t *window) {
 
-    if (window->current == window->upper) return 1;
+    if (window->circQueue->currentIdx < window->upper) return 1;
 
     return 0;
+}
+
+int checkSendSpace(circularWindow_t *window) {
+
+    if (window->current >= window->upper) return 0;
+
+    return 1;
 }

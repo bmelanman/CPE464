@@ -20,7 +20,8 @@
 #define PDU_HEADER_LEN 7
 #define MAX_PAYLOAD_LEN 1400
 
-#define MAX_PDU_LEN (MAX_PAYLOAD_LEN + PDU_HEADER_LEN)
+/* pduLen is technically a part of the payload, but we're using it as a part of the header */
+#define MAX_PDU_LEN (MAX_PAYLOAD_LEN + PDU_HEADER_LEN - sizeof(uint16_t))
 
 #define SETUP_PKT       1
 #define SETUP_ACK_PKT   2
@@ -40,6 +41,7 @@ typedef struct pduPacketStruct {
     uint32_t seq_NO;
     uint16_t checksum;
     uint8_t flag;
+    uint16_t pduLen;
     uint8_t payload[MAX_PAYLOAD_LEN];
 } udpPacket_t;
 
@@ -49,11 +51,11 @@ void *srealloc(void *ptr, size_t size);
 
 void *scalloc(size_t nmemb, size_t size);
 
-int safeRecvFrom(int socketNum, void *buf, int len, int flags, struct sockaddr *srcAddr, int *addrLen);
+int safeRecvFrom(int socketNum, void *buf, int len, int flags, struct sockaddr *srcAddr, int addrLen);
 
 int safeSendTo(int socketNum, void *buf, int len, struct sockaddr *srcAddr, int addrLen);
 
-int createPDU(udpPacket_t *pduPacket, uint32_t seqNum, uint8_t flag, uint8_t *payload, int payloadLen);
+void createPDU(udpPacket_t *pduPacket, uint32_t seqNum, uint8_t flag, uint8_t *payload, int payloadLen);
 
 void printPDU(udpPacket_t *pduPacket, int pduLength);
 
