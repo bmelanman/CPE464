@@ -14,8 +14,9 @@
 #define POLL_TIMEOUT (-1)
 
 #define POLL_BLOCK (-1)
-#define POLL_1_SEC 1000
-#define POLL_10_SEC 10000
+/* TODO: Revert */
+#define POLL_1_SEC (-1)
+#define POLL_10_SEC (-1)
 
 typedef struct pollSetStruct {
     struct pollfd *pollFds;

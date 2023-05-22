@@ -4,6 +4,7 @@
  * using modified code from Dr. Hugh Smith
  *  */
 
+#include <sys/file.h>
 #include "server.h"
 #include "libPoll.h"
 
@@ -145,7 +146,7 @@ int runServer(pollSet_t *pollSet) {
     int pollSock;
     uint8_t *transferInfo;
     uint16_t bufferLen;
-    uint32_t windowSize;
+    uint32_t windowSize, seq;
     char *to_filename;
     FILE *newFile = NULL;
     udpPacket_t dataPDU = {0};
@@ -162,7 +163,7 @@ int runServer(pollSet_t *pollSet) {
     if (transferInfo == NULL || to_filename == NULL) return 1;
 
     /* Open the new file */
-    newFile = fopen(to_filename, "w");
+    newFile = fopen(to_filename, "w+");
 
     /* Make sure the file opened */
     if (newFile == NULL) return 1;
@@ -180,8 +181,17 @@ int runServer(pollSet_t *pollSet) {
 
         if (dataPDU.flag == DATA_EOF_PKT) break;
 
-        printf("Packet %d received\n", ntohl(dataPDU.seq_NO));
+        seq = ntohl(dataPDU.seq_NO);
+
+        createPDU(&dataPDU, seq, DATA_ACK_PKT, NULL, 0);
+
+        safeSendTo(pollSock, &dataPDU, dataPDU.pduLen, (struct sockaddr *) &client, clientAddrLen);
+
+        fwrite(dataPDU.payload, sizeof(uint8_t), dataPDU.pduLen - PDU_HEADER_LEN, newFile);
+        fflush(newFile);
     }
+
+    fclose(newFile);
 
     printf("File transfer has successfully completed!\n");
 

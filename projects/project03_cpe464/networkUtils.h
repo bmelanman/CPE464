@@ -10,11 +10,13 @@
 
 #include "cpe464.h"
 
+/* pduLen is technically a part of the payload,
+ * but we're using it as a part of the header
+ * */
 #define PDU_HEADER_LEN 9
-#define MAX_PAYLOAD_LEN 1400
+#define MAX_PAYLOAD_LEN 1391
 
-/* pduLen is technically a part of the payload, but we're using it as a part of the header */
-#define MAX_PDU_LEN (MAX_PAYLOAD_LEN + PDU_HEADER_LEN - sizeof(uint16_t))
+#define MAX_PDU_LEN (MAX_PAYLOAD_LEN + PDU_HEADER_LEN)
 
 #define SETUP_PKT       1
 #define SETUP_ACK_PKT   2

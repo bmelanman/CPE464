@@ -1,4 +1,5 @@
 
+#include <errno.h>
 #include "networkUtils.h"
 
 void *srealloc(void *ptr, size_t size) {
@@ -27,7 +28,7 @@ int safeRecvFrom(int socketNum, void *buf, int len, int flags, struct sockaddr *
     int ret = recvfrom(socketNum, buf, (size_t) len, flags, srcAddr, (socklen_t *) &addrLen);
 
     /* Check for errors */
-    if (ret < 0) {
+    if (ret < 0 && errno != EINTR) {
         perror("recvFrom: ");
         exit(EXIT_FAILURE);
     }
@@ -54,7 +55,12 @@ void createPDU(udpPacket_t *pduPacket, uint32_t seqNum, uint8_t flag, uint8_t *p
     uint16_t checksum;
 
     /* Check inputs */
-    if (pduPacket == NULL || payload == NULL || payloadLen > 1400) {
+    if (pduPacket == NULL || payloadLen > 1400) {
+        fprintf(stderr, "createPDU() err! Null buffers\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if (payload == NULL && payloadLen > 0) {
         fprintf(stderr, "createPDU() err! Null buffers\n");
         exit(EXIT_FAILURE);
     }
