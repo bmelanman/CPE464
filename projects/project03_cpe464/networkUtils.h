@@ -10,14 +10,7 @@
 
 #include "cpe464.h"
 
-#define MAX_BUFF_LEN 80
-
-#define PDU_SEQ 0
-#define PDU_CHK 4
-#define PDU_FLG 6
-#define PDU_PLD 7
-
-#define PDU_HEADER_LEN 7
+#define PDU_HEADER_LEN 9
 #define MAX_PAYLOAD_LEN 1400
 
 /* pduLen is technically a part of the payload, but we're using it as a part of the header */
@@ -56,7 +49,5 @@ int safeRecvFrom(int socketNum, void *buf, int len, int flags, struct sockaddr *
 int safeSendTo(int socketNum, void *buf, int len, struct sockaddr *srcAddr, int addrLen);
 
 void createPDU(udpPacket_t *pduPacket, uint32_t seqNum, uint8_t flag, uint8_t *payload, int payloadLen);
-
-void printPDU(udpPacket_t *pduPacket, int pduLength);
 
 #endif /* SAFEUTIL_H */

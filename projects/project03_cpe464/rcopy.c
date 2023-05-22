@@ -10,7 +10,7 @@ void checkArgs(int argc, char *argv[], FILE **fp, runtimeArgs_t *usrArgs);
 
 int setupUdpClientToServer(struct sockaddr_in6 *serverAddress, char *hostName, int hostPort);
 
-int setupTransfer(int socket, struct sockaddr_in6 *srcAddr, runtimeArgs_t *usrArgs, pollSet_t *pollSet);
+int setupTransfer(int socket, struct sockaddr_in6 *srcAddr, int addrLen, runtimeArgs_t *usrArgs, pollSet_t *pollSet);
 
 void runClient(int socket, struct sockaddr_in6 *serverInfo, runtimeArgs_t *usrArgs, FILE *fp);
 
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
             "\thostName:     %s         \n"
             "\thostPort:     %d         \n"
             "\n"
-            "Press ENTER key to Continue... \n\n",
+            "Press ENTER key to Continue... \n",
             usrArgs.from_filename, usrArgs.to_filename,
             usrArgs.window_size, usrArgs.buffer_size, (usrArgs.error_rate * 100),
             usrArgs.host_name, usrArgs.host_port
@@ -190,9 +190,9 @@ void teardown(int socket, runtimeArgs_t *usrArgs, pollSet_t *pollSet, FILE *fp) 
     fclose(fp);
 }
 
-int setupTransfer(int socket, struct sockaddr_in6 *srcAddr, runtimeArgs_t *usrArgs, pollSet_t *pollSet) {
+int setupTransfer(int socket, struct sockaddr_in6 *srcAddr, int addrLen, runtimeArgs_t *usrArgs, pollSet_t *pollSet) {
 
-    int pollSocket = -1, addrLen = sizeof(struct sockaddr_in6);
+    int pollSocket = -1;
     udpPacket_t handshakePacket = {0};
     uint16_t count = 0, payloadLen = 0, filenameLen = strlen(usrArgs->to_filename) + 1;
     uint8_t handshakePayload[110] = {0};
@@ -247,8 +247,9 @@ int setupTransfer(int socket, struct sockaddr_in6 *srcAddr, runtimeArgs_t *usrAr
 
 void runClient(int socket, struct sockaddr_in6 *serverInfo, runtimeArgs_t *usrArgs, FILE *fp) {
 
+    int addrLen = sizeof(struct sockaddr_in6), pollSock;
     uint32_t seq = 0;
-    uint8_t ret, buffLen = usrArgs->buffer_size, *dataBuff = malloc(buffLen);
+    uint8_t ret, count = 0, sent = 0, buffLen = usrArgs->buffer_size, *dataBuff = malloc(buffLen);
 
     pollSet_t *pollSet = newPollSet();
     circularWindow_t *windowBuff = NULL;
@@ -258,7 +259,7 @@ void runClient(int socket, struct sockaddr_in6 *serverInfo, runtimeArgs_t *usrAr
     addToPollSet(pollSet, socket);
 
     /* Send the server the necessary transfer details */
-    ret = setupTransfer(socket, serverInfo, usrArgs, pollSet);
+    ret = setupTransfer(socket, serverInfo, addrLen, usrArgs, pollSet);
 
     if (ret != 0) {
         teardown(socket, usrArgs, pollSet, fp);
@@ -269,6 +270,11 @@ void runClient(int socket, struct sockaddr_in6 *serverInfo, runtimeArgs_t *usrAr
 
     /* Transfer data */
     while (1) {
+
+        if (count > 9) {
+            teardown(socket, usrArgs, pollSet, fp);
+            return;
+        }
 
         /* Fill any space in the window */
         while (checkWindowSpace(windowBuff)) {
@@ -284,9 +290,28 @@ void runClient(int socket, struct sockaddr_in6 *serverInfo, runtimeArgs_t *usrAr
         }
 
         /* Check if we can send more packets */
-//        while (checkSendSpace(windowBuff)) {
-//
-//        }
+        while (checkSendSpace(windowBuff)) {
+
+            dataPDU = *getCurrentPacket(windowBuff);
+
+            safeSendTo(socket, (void *) &dataPDU, dataPDU.pduLen, (struct sockaddr *) serverInfo, addrLen);
+
+            incrementCurrent(windowBuff);
+            sent++;
+        }
+
+        /* TODO: Receive ACK here */
+
+        moveWindow(windowBuff, sent);
+        sent = 0;
+
+        pollSock = pollCall(pollSet, POLL_1_SEC);
+
+        if (pollSock < 0) {
+            count++;
+            resetCurrent(windowBuff);
+            continue;
+        }
 
         /* Check if the file is empty */
         if (feof(fp)) break;

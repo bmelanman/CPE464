@@ -9,7 +9,7 @@
 typedef struct circularQueueStruct {
     udpPacket_t *queue[CIRC_BUFF_SIZE];
     uint16_t currentIdx;
-}circularQueue_t;
+} circularQueue_t;
 
 typedef struct windowStruct {
     uint32_t size;
@@ -25,8 +25,16 @@ circularWindow_t *createWindow(uint32_t windowSize, uint16_t bufferSize);
 
 void addPacket(circularQueue_t *buffer, udpPacket_t *packet);
 
+udpPacket_t *getCurrentPacket(circularWindow_t *window);
+
+void moveWindow(circularWindow_t *window, uint16_t n);
+
+void resetCurrent(circularWindow_t *window);
+
+void incrementCurrent(circularWindow_t *window);
+
 int checkWindowSpace(circularWindow_t *window);
 
-//int checkSendSpace(circularWindow_t *window);
+int checkSendSpace(circularWindow_t *window);
 
 #endif /* PROJECT03_CPE464_WINDOWLIB_H */

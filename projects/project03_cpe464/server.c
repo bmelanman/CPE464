@@ -83,12 +83,11 @@ int udpServerSetup(int serverPort) {
 
 }
 
-uint8_t *recvSetupInfo(pollSet_t *pollSet) {
+uint8_t *recvSetupInfo(pollSet_t *pollSet, struct sockaddr_in6 *client, int clientAddrLen) {
 
     int pollSock, count = 0;
     uint8_t *recvPayload;
-    uint16_t seq = 0, clientAddrLen = sizeof(struct sockaddr_in6);
-    struct sockaddr_in6 client;
+    uint16_t seq = 0;
     udpPacket_t dataPDU = {0};
 
     while (1) {
@@ -102,7 +101,7 @@ uint8_t *recvSetupInfo(pollSet_t *pollSet) {
 
         /* Receive the connection info packet */
         safeRecvFrom(pollSock, &dataPDU, MAX_PDU_LEN, 0,
-                     (struct sockaddr *) &client, clientAddrLen);
+                     (struct sockaddr *) client, clientAddrLen);
 
         /* Verify checksum */
         if (in_cksum((unsigned short *) &dataPDU, dataPDU.pduLen) != 0) continue;
@@ -117,7 +116,7 @@ uint8_t *recvSetupInfo(pollSet_t *pollSet) {
         /* Send an ACK after receiving */
         createPDU(&dataPDU, 0, INFO_ACK_PKT, (uint8_t *) &seq, sizeof(uint16_t));
         safeSendTo(pollSock, (void *) &dataPDU, dataPDU.pduLen,
-                   (struct sockaddr *) &client, clientAddrLen);
+                   (struct sockaddr *) client, clientAddrLen);
 
         return recvPayload;
     }
@@ -150,11 +149,13 @@ int runServer(pollSet_t *pollSet) {
     char *to_filename;
     FILE *newFile = NULL;
     udpPacket_t dataPDU = {0};
+    int clientAddrLen = sizeof(struct sockaddr_in6);
+    struct sockaddr_in6 client;
 
     /* TODO: Free + fclose */
 
     /* Receive setup info from the client */
-    transferInfo = recvSetupInfo(pollSet);
+    transferInfo = recvSetupInfo(pollSet, &client, clientAddrLen);
     to_filename = getTransferInfo(transferInfo, &bufferLen, &windowSize);
 
     /* Check for invalid data */
@@ -162,8 +163,6 @@ int runServer(pollSet_t *pollSet) {
 
     /* Open the new file */
     newFile = fopen(to_filename, "w");
-
-    /* TODO: Setup response */
 
     /* Make sure the file opened */
     if (newFile == NULL) return 1;
@@ -177,8 +176,14 @@ int runServer(pollSet_t *pollSet) {
 
         if (pollSock == POLL_TIMEOUT) return 1;
 
+        safeRecvFrom(pollSock, &dataPDU, MAX_PDU_LEN, 0, (struct sockaddr *) &client, clientAddrLen);
+
         if (dataPDU.flag == DATA_EOF_PKT) break;
+
+        printf("Packet %d received\n", ntohl(dataPDU.seq_NO));
     }
+
+    printf("File transfer has successfully completed!\n");
 
     return 0;
 }
