@@ -7,6 +7,7 @@
 #include <sys/file.h>
 #include "server.h"
 #include "libPoll.h"
+#include "windowLib.h"
 
 static volatile int shutdownServer = 0;
 
@@ -144,14 +145,15 @@ char *getTransferInfo(uint8_t *data, uint16_t *bufferLen, uint32_t *windowSize) 
 int runServer(pollSet_t *pollSet) {
 
     int pollSock;
-    uint8_t *transferInfo;
+    uint8_t *transferInfo, count = 0;
     uint16_t bufferLen;
-    uint32_t windowSize, seq;
+    uint32_t windowSize, txSeq = 0, nextPkt = 0;
     char *to_filename;
     FILE *newFile = NULL;
     udpPacket_t dataPDU = {0};
     int clientAddrLen = sizeof(struct sockaddr_in6);
     struct sockaddr_in6 client;
+    circularQueue_t packetQueue = {0};
 
     /* TODO: Free + fclose */
 
@@ -173,25 +175,78 @@ int runServer(pollSet_t *pollSet) {
     /* Receive file data from client */
     while (1) {
 
-        pollSock = pollCall(pollSet, POLL_10_SEC);
+        /* Prioritize getting packets form the queue if possible */
+        if (readQueuePacketSeq(&packetQueue) == nextPkt) {
 
-        if (pollSock == POLL_TIMEOUT) return 1;
+            dataPDU = *getQueuePacket(&packetQueue);
 
-        safeRecvFrom(pollSock, &dataPDU, MAX_PDU_LEN, 0, (struct sockaddr *) &client, clientAddrLen);
+        } else {
+            /* Wait for new data */
+            pollSock = pollCall(pollSet, POLL_10_SEC);
 
-        if (dataPDU.flag == DATA_EOF_PKT) break;
+            /* Check if client disconnected */
+            if (pollSock == POLL_TIMEOUT) return 1;
 
-        seq = ntohl(dataPDU.seq_NO);
+            /* Get the packet */
+            safeRecvFrom(pollSock, &dataPDU, MAX_PDU_LEN, 0, (struct sockaddr *) &client, clientAddrLen);
+        }
 
-        createPDU(&dataPDU, seq, DATA_ACK_PKT, NULL, 0);
+        /* Validate checksum and packet sequence */
+        if (in_cksum((unsigned short *) &dataPDU, dataPDU.pduLen)) {
 
+            /* Selective reject the corrupt packet */
+            createPDU(&dataPDU, txSeq++, DATA_REJ_PKT, (uint8_t *) &nextPkt, sizeof(nextPkt));
+
+        } else if (ntohl(dataPDU.seq_NO) != nextPkt) {
+
+            /* Save the received packet */
+            addPacket(&packetQueue, &dataPDU);
+
+            /* Selective reject the missing packet */
+            createPDU(&dataPDU, txSeq++, DATA_REJ_PKT, (uint8_t *) &nextPkt, sizeof(nextPkt));
+
+        } else {
+
+            /* Write the data to the file */
+            fwrite(dataPDU.payload, sizeof(uint8_t), dataPDU.pduLen - PDU_HEADER_LEN, newFile);
+
+            /* Check for EOF flag */
+            if (dataPDU.flag == DATA_EOF_PKT) break;
+
+            /* Create an ACK packet */
+            createPDU(&dataPDU, txSeq++, DATA_ACK_PKT, NULL, 0);
+
+            /* Increment next expected packet sequence */
+            nextPkt++;
+        }
+
+        /* Send the packet */
         safeSendTo(pollSock, &dataPDU, dataPDU.pduLen, (struct sockaddr *) &client, clientAddrLen);
-
-        fwrite(dataPDU.payload, sizeof(uint8_t), dataPDU.pduLen - PDU_HEADER_LEN, newFile);
-        fflush(newFile);
     }
 
+    /* Close new file */
     fclose(newFile);
+
+    /* Make an EOF ACK to terminate the connection */
+    createPDU(&dataPDU, txSeq, TERM_CONN_PKT, NULL, 0);
+
+    while (1) {
+
+        /* Send packet */
+        safeSendTo(pollSock, &dataPDU, dataPDU.pduLen, (struct sockaddr *) &client, clientAddrLen);
+
+        /* Wait for client ACK */
+        pollSock = pollCall(pollSet, POLL_1_SEC);
+
+        if (pollSock != POLL_TIMEOUT) {
+
+
+
+            break;
+        }
+
+        count++;
+    }
 
     printf("File transfer has successfully completed!\n");
 

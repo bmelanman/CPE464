@@ -24,25 +24,6 @@ int main(int argc, char *argv[]) {
     /* Verify user arguments */
     checkArgs(argc, argv, &fp, &usrArgs);
 
-//    /* TODO: Remove user prompt */
-//    printf(
-//            "\n"
-//            "Arguments:                 \n"
-//            "\tfromFilename: %s         \n"
-//            "\ttoFilename:   %s         \n"
-//            "\twindowSize:   %u         \n"
-//            "\tbufferSize:   %u         \n"
-//            "\terrorRate:    %3.2f%%    \n"
-//            "\thostName:     %s         \n"
-//            "\thostPort:     %d         \n"
-//            "\n"
-//            "Press ENTER key to Continue... \n",
-//            usrArgs.from_filename, usrArgs.to_filename,
-//            usrArgs.window_size, usrArgs.buffer_size, (usrArgs.error_rate * 100),
-//            usrArgs.host_name, usrArgs.host_port
-//    );
-//    getchar();
-
     /* Set up the UDP connection */
     socket = setupUdpClientToServer(&serverInfo, usrArgs.host_name, usrArgs.host_port);
 

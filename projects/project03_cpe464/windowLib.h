@@ -8,7 +8,8 @@
 
 typedef struct circularQueueStruct {
     udpPacket_t *queue[CIRC_BUFF_SIZE];
-    uint16_t currentIdx;
+    uint16_t inputIdx;
+    uint16_t outputIdx;
 } circularQueue_t;
 
 typedef struct windowStruct {
@@ -25,7 +26,13 @@ circularWindow_t *createWindow(uint32_t windowSize, uint16_t bufferSize);
 
 void addPacket(circularQueue_t *buffer, udpPacket_t *packet);
 
+udpPacket_t *getQueuePacket(circularQueue_t *buffer);
+
 udpPacket_t *getCurrentPacket(circularWindow_t *window);
+
+int bufferEmpty(circularQueue_t *buffer);
+
+int readQueuePacketSeq(circularQueue_t *buffer);
 
 void moveWindow(circularWindow_t *window, uint16_t n);
 

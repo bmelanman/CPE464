@@ -5,7 +5,7 @@ circularQueue_t *createBuffer() {
 
     circularQueue_t *newQueue = malloc(sizeof(circularQueue_t));
 
-    newQueue->currentIdx = 0;
+    newQueue->inputIdx = 0;
 
     return newQueue;
 }
@@ -29,22 +29,33 @@ void addPacket(circularQueue_t *buffer, udpPacket_t *packet) {
 
     uint16_t packetLen = packet->pduLen + 1;
 
-    buffer->queue[buffer->currentIdx % CIRC_BUFF_SIZE] = malloc(packetLen);
+    buffer->queue[buffer->inputIdx % CIRC_BUFF_SIZE] = malloc(packetLen);
 
-    memcpy(buffer->queue[buffer->currentIdx % CIRC_BUFF_SIZE], packet, packetLen);
+    memcpy(buffer->queue[buffer->inputIdx % CIRC_BUFF_SIZE], packet, packetLen);
 
-    buffer->currentIdx++;
-
-}
-
-void flushBuffer(circularQueue_t *buffer, FILE *fd) {
-
+    buffer->inputIdx++;
 
 }
 
-udpPacket_t *getPacket(circularQueue_t *buffer, uint16_t idx) {
+udpPacket_t *getQueuePacket(circularQueue_t *buffer) {
 
-    return buffer->queue[idx];
+    buffer->outputIdx++;
+
+    return buffer->queue[(buffer->outputIdx - 1) % CIRC_BUFF_SIZE];
+}
+
+int readQueuePacketSeq(circularQueue_t *buffer) {
+
+    if (buffer->queue[buffer->inputIdx % CIRC_BUFF_SIZE] == NULL) return -1;
+
+    return ntohl(buffer->queue[buffer->inputIdx % CIRC_BUFF_SIZE]->seq_NO);
+}
+
+int bufferEmpty(circularQueue_t *buffer) {
+
+    if (buffer->inputIdx == 0 && buffer->queue[0] == NULL) return 1;
+
+    return 0;
 }
 
 udpPacket_t *getCurrentPacket(circularWindow_t *window) {
@@ -82,7 +93,7 @@ int getIncrement(circularWindow_t *window) {
 
 int getWindowSpace(circularWindow_t *window) {
 
-    if (window->circQueue->currentIdx < window->upper) return 1;
+    if (window->circQueue->inputIdx < window->upper) return 1;
 
     return 0;
 }
