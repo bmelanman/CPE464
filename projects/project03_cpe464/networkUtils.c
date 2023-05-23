@@ -50,9 +50,21 @@ int safeSendTo(int socketNum, void *buf, int len, struct sockaddr *srcAddr, int 
     return (int) ret;
 }
 
-void createPDU(udpPacket_t *pduPacket, uint32_t seqNum, uint8_t flag, uint8_t *payload, int payloadLen) {
+//udpPacket_t *createPacket(uint16_t bufferLen) {
+//
+//    udpPacket_t *p = NULL;
+//
+//    p->seq_NO = 0;
+//    p->flag = 0;
+//    p->checksum = 0;
+//    p->payload = malloc(bufferLen);
+//
+//    return p;
+//}
 
-    uint16_t checksum;
+int createPDU(udpPacket_t *pduPacket, uint32_t seqNum, uint8_t flag, uint8_t *payload, int payloadLen) {
+
+    uint16_t checksum, pduLen;
 
     /* Check inputs */
     if (pduPacket == NULL || payloadLen > 1400) {
@@ -66,7 +78,7 @@ void createPDU(udpPacket_t *pduPacket, uint32_t seqNum, uint8_t flag, uint8_t *p
     }
 
     /* Add the PDU header length */
-    pduPacket->pduLen = PDU_HEADER_LEN;
+    pduLen = PDU_HEADER_LEN;
 
     /* Add the sequence in network order (4 bytes) */
     pduPacket->seq_NO = htonl(seqNum);
@@ -77,13 +89,18 @@ void createPDU(udpPacket_t *pduPacket, uint32_t seqNum, uint8_t flag, uint8_t *p
     /* Add in the flag (1 byte) */
     pduPacket->flag = flag;
 
+    /* Clear extraneous data from payload */
+    memset(pduPacket->payload, 0, MAX_PAYLOAD_LEN);
+
     /* Add in the payload */
     memcpy(pduPacket->payload, payload, payloadLen);
-    pduPacket->pduLen += payloadLen;
+    pduLen += payloadLen;
 
     /* Calculate the payload checksum */
-    checksum = in_cksum((unsigned short *) pduPacket, pduPacket->pduLen);
+    checksum = in_cksum((unsigned short *) pduPacket, pduLen);
 
     /* Put the checksum into the PDU */
     pduPacket->checksum = checksum;
+
+    return pduLen;
 }

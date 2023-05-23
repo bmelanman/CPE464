@@ -13,8 +13,10 @@
 #define POLL_SET_SIZE 10
 #define POLL_TIMEOUT (-1)
 
+/* TODO */
 #define POLL_BLOCK (-1)
-/* TODO: Revert */
+//#define POLL_1_SEC 1000
+//#define POLL_10_SEC 10000
 #define POLL_1_SEC (-1)
 #define POLL_10_SEC (-1)
 

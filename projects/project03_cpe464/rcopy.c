@@ -14,6 +14,38 @@ int setupTransfer(int socket, struct sockaddr_in6 *srcAddr, int addrLen, runtime
 
 void runClient(int socket, struct sockaddr_in6 *serverInfo, runtimeArgs_t *usrArgs, FILE *fp);
 
+/* TODO: REMOVE */
+int diff(char *to_filename, char *from_filename) {
+
+    FILE *to = fopen(to_filename, "r");
+    FILE *from = fopen(from_filename, "r");
+    int t = fgetc(to), f = fgetc(from);
+
+    while (t != EOF && f != EOF) {
+
+        t = fgetc(to);
+        f = fgetc(from);
+
+        if (fgetc(to) != fgetc(from)) return 1;
+    }
+
+    if (t != EOF || f != EOF) return 1;
+
+    return 0;
+
+}
+
+void teardown(int socket, runtimeArgs_t *usrArgs, FILE *fp) {
+
+    close(socket);
+
+    free(usrArgs->to_filename);
+    free(usrArgs->from_filename);
+    free(usrArgs->host_name);
+
+    fclose(fp);
+}
+
 int main(int argc, char *argv[]) {
 
     struct sockaddr_in6 serverInfo = {0};
@@ -34,13 +66,17 @@ int main(int argc, char *argv[]) {
     /* Start the transfer process */
     runClient(socket, &serverInfo, &usrArgs, fp);
 
-    return 0;
-}
+    if (diff(usrArgs.to_filename, usrArgs.from_filename)) {
+        printf("\nDIFF ERROR!!!\n");
+        printf("DIFF ERROR!!!\n");
+        printf("DIFF ERROR!!!\n");
+        exit(EXIT_FAILURE);
+    }
 
-int fpeek(FILE *stream) {
-    int c = fgetc(stream);
-    ungetc(c, stream);
-    return c;
+    /* Clean up */
+    teardown(socket, &usrArgs, fp);
+
+    return 0;
 }
 
 void checkArgs(int argc, char *argv[], FILE **fp, runtimeArgs_t *usrArgs) {
@@ -72,7 +108,7 @@ void checkArgs(int argc, char *argv[], FILE **fp, runtimeArgs_t *usrArgs) {
     *fp = fopen(usrArgs->from_filename, "r");
 
     /* Check if the given file exists */
-    if (*fp == NULL || fpeek(*fp) == EOF) {
+    if (*fp == NULL) {
         fprintf(stderr, "\nError: file %s not found. \n", usrArgs->from_filename);
         exit(EXIT_FAILURE);
     }
@@ -162,26 +198,11 @@ int setupUdpClientToServer(struct sockaddr_in6 *serverAddress, char *hostName, i
     return clientSocket;
 }
 
-void teardown(int socket, runtimeArgs_t *usrArgs, pollSet_t *pollSet, FILE *fp) {
-
-    printf("Server has disconnected, shutting down...\n");
-
-    close(socket);
-
-    free(usrArgs->to_filename);
-    free(usrArgs->from_filename);
-    free(usrArgs->host_name);
-
-    freePollSet(pollSet);
-
-    fclose(fp);
-}
-
 int setupTransfer(int socket, struct sockaddr_in6 *srcAddr, int addrLen, runtimeArgs_t *usrArgs, pollSet_t *pollSet) {
 
-    int pollSocket = -1;
+    int pollSocket;
     udpPacket_t handshakePacket = {0};
-    uint16_t count = 1, payloadLen = 0, filenameLen = strlen(usrArgs->to_filename) + 1;
+    uint16_t pduLen, count = 1, payloadLen = 0, filenameLen = strlen(usrArgs->to_filename) + 1;
     uint8_t handshakePayload[110] = {0};
 
     /* Add the buffer length to the payload */
@@ -197,7 +218,7 @@ int setupTransfer(int socket, struct sockaddr_in6 *srcAddr, int addrLen, runtime
     payloadLen += filenameLen;
 
     /* Fill the PDU */
-    createPDU(&handshakePacket, 0, INFO_PKT, handshakePayload, payloadLen);
+    pduLen = createPDU(&handshakePacket, 0, INFO_PKT, handshakePayload, payloadLen);
 
     /* Wait for the server to respond */
     while (1) {
@@ -207,17 +228,19 @@ int setupTransfer(int socket, struct sockaddr_in6 *srcAddr, int addrLen, runtime
         else count++;
 
         /* Send the PDU */
-        safeSendTo(socket, (void *) &handshakePacket, handshakePacket.pduLen, (struct sockaddr *) srcAddr, addrLen);
+        safeSendTo(socket, (void *) &handshakePacket, pduLen,
+                   (struct sockaddr *) srcAddr, addrLen);
 
         /* Check poll */
         pollSocket = pollCall(pollSet, POLL_1_SEC);
         if (pollSocket < 0) continue;
 
         /* Receive packet */
-        safeRecvFrom(pollSocket, (void *) &handshakePacket, MAX_PDU_LEN, 0, (struct sockaddr *) srcAddr, addrLen);
+        pduLen = safeRecvFrom(pollSocket, (void *) &handshakePacket, MAX_PDU_LEN, 0,
+                     (struct sockaddr *) srcAddr, addrLen);
 
         /* Check for ACK flag */
-        if (handshakePacket.flag == INFO_ACK_PKT) break;
+        if (pduLen > 0 && handshakePacket.flag == INFO_ACK_PKT) break;
     }
 
     return 0;
@@ -225,109 +248,136 @@ int setupTransfer(int socket, struct sockaddr_in6 *srcAddr, int addrLen, runtime
 
 void runClient(int socket, struct sockaddr_in6 *serverInfo, runtimeArgs_t *usrArgs, FILE *fp) {
 
-    int addrLen = sizeof(struct sockaddr_in6), pollSock, inc, payloadLen;
-    uint32_t currentSeq = 0, i;
-    uint8_t ret, count = 0, packetsSent = 0,
-            buffLen = usrArgs->buffer_size, *dataBuff = malloc(buffLen);
+    int addrLen = sizeof(struct sockaddr_in6), pollSock;
+    uint8_t count = 0, buffLen = usrArgs->buffer_size + PDU_HEADER_LEN, *dataBuff = malloc(
+            buffLen + 1);
+    uint16_t readLen, pduLen;
+    uint32_t currentSeq = 0, rejPkt, recvPkt;
 
     pollSet_t *pollSet = newPollSet();
-    circularWindow_t *windowBuff = NULL;
+    circularWindow_t *packetWindow = NULL;
     udpPacket_t dataPDU = {0};
 
     /* Set up the pollSet */
     addToPollSet(pollSet, socket);
 
     /* Send the server the necessary transfer details */
-    ret = setupTransfer(socket, serverInfo, addrLen, usrArgs, pollSet);
-
-    if (ret != 0) {
-        teardown(socket, usrArgs, pollSet, fp);
+    if (setupTransfer(socket, serverInfo, addrLen, usrArgs, pollSet) != 0) {
+        printf("Server has disconnected, shutting down...\n");
+        freePollSet(pollSet);
         return;
     }
 
-    windowBuff = createWindow(usrArgs->window_size, usrArgs->buffer_size);
+    packetWindow = createWindow(usrArgs->window_size);
 
     /* Transfer data */
     while (1) {
 
         if (count > 9) {
-            teardown(socket, usrArgs, pollSet, fp);
+            printf("Server has disconnected, shutting down...\n");
+            freePollSet(pollSet);
             return;
         }
 
         /* Fill any space in the window */
-        while (getWindowSpace(windowBuff)) {
+        while (getWindowSpace(packetWindow)) {
 
             /* Read from the input file */
-            fread(dataBuff, sizeof(uint8_t), buffLen, fp);
+            readLen = fread(dataBuff, sizeof(uint8_t), buffLen - PDU_HEADER_LEN, fp);
 
-            /* Check if the file is empty */
-            if (feof(fp)) break;
+            /* Check EOF */
+            if (feof(fp)) {
 
-            /* Make a packet */
-            createPDU(&dataPDU, currentSeq++, DATA_PKT, dataBuff, buffLen);
+                /* Make an EOF packet */
+                pduLen = createPDU(&dataPDU, currentSeq++, DATA_EOF_PKT, dataBuff, readLen);
 
-            /* Add it to the window */
-            addPacket(windowBuff->circQueue, &dataPDU);
-        }
+                /* Add it to the window */
+                addWindowPacket(packetWindow, &dataPDU, pduLen);
 
-        /* Check if the file is empty */
-        if (feof(fp)) break;
-
-        /* Check if we can send more packets */
-        while (checkSendSpace(windowBuff)) {
-
-            dataPDU = *getCurrentPacket(windowBuff);
-
-            safeSendTo(socket, (void *) &dataPDU, dataPDU.pduLen, (struct sockaddr *) serverInfo, addrLen);
-
-            incrementCurrent(windowBuff);
-            packetsSent++;
-        }
-
-        pollSock = pollCall(pollSet, POLL_1_SEC);
-
-        if (pollSock < 0) {
-            count++;
-            decrementCurrent(windowBuff, packetsSent);
-            continue;
-        }
-
-        /* Wait for ACKs */
-        while (packetsSent) {
-
-            /* Get the header, then the rest of the data */
-            safeRecvFrom(pollSock, &dataPDU, MAX_PDU_LEN, 0, (struct sockaddr *) serverInfo, addrLen);
-
-//            payloadLen = dataPDU.pduLen - PDU_HEADER_LEN;
-//
-//            if (payloadLen) {
-//                safeRecvFrom(pollSock, &dataPDU.payload, payloadLen, 0, (struct sockaddr *) serverInfo, addrLen);
-//            }
-
-            if (in_cksum((unsigned short *) &dataPDU, dataPDU.pduLen) != 0) {
-                continue;
+                break;
             }
 
-            inc = (int) ntohl(dataPDU.seq_NO) - getIncrement(windowBuff) + 1;
+            /* Make a packet */
+            pduLen = createPDU(&dataPDU, currentSeq++, DATA_PKT, dataBuff, readLen);
 
-            moveWindow(windowBuff, inc);
-            packetsSent -= inc;
+            /* Add it to the window */
+            addWindowPacket(packetWindow, &dataPDU, pduLen);
         }
+
+        /* Check if we can send more packets */
+        while (checkSendSpace(packetWindow)) {
+
+            pduLen = getCurrentPacket(packetWindow, &dataPDU);
+
+            safeSendTo(socket, (void *) &dataPDU, pduLen, (struct sockaddr *) serverInfo, addrLen);
+
+            incrementCurrent(packetWindow);
+        }
+
+        /* Recv data */
+        while (1) {
+
+            /* Wait for a packet */
+            pollSock = pollCall(pollSet, POLL_1_SEC);
+
+            /* Check if poll timed out */
+            if (pollSock < 0) {
+
+                /* If poll times out, the whole window must be reset to lowest */
+                moveCurrentToSeq(packetWindow, 0);
+
+                /* Keep track of timeouts */
+                count++;
+                break;
+            }
+
+            /* Get the header, then the rest of the data */
+            pduLen = safeRecvFrom(pollSock, &dataPDU, buffLen, 0, (struct sockaddr *) serverInfo, addrLen);
+
+            /* Verify checksum */
+            if (in_cksum((unsigned short *) &dataPDU, pduLen)) {
+
+                /* If a server's reply becomes corrupt, we don't know what it wanted,
+                 * so we'll send the lowest packet in the window to get back on track */
+
+                /* Reset the window to lower */
+                moveCurrentToSeq(packetWindow, 0);
+                break;
+            }
+
+            /* Check for SRej */
+            if (dataPDU.flag == DATA_REJ_PKT) {
+
+                rejPkt = htonl(*((uint32_t *) dataPDU.payload));
+
+                /* Get the requested packet */
+                dataPDU = *getSeqPacket(packetWindow, rejPkt);
+
+                /* Send the packet */
+                safeSendTo(pollSock, (void *) &dataPDU, MAX_PDU_LEN, (struct sockaddr *) serverInfo, addrLen);
+
+            } else {
+
+                recvPkt = htonl(*((uint32_t *) dataPDU.payload));
+
+                /* Move the window to the new lower value */
+                moveWindow(packetWindow, recvPkt);
+
+                /* Once the window moves, we can send another packet */
+                break;
+            }
+        }
+
+        /* Check for EOF and that all packets have been RR'ed */
+        if (feof(fp) && recvPkt == (currentSeq - 1)) break;
 
     }
 
-    /* Read the last of the data */
-    fread(dataBuff, sizeof(uint8_t), buffLen, fp);
-
-    /* Make an EOF packet */
-    createPDU(&dataPDU, currentSeq, DATA_EOF_PKT, dataBuff, buffLen);
+    /* Send a termination ACK */
+    pduLen = createPDU(&dataPDU, currentSeq, TERM_ACK_PKT, NULL, 0);
 
     /* Send the packet */
-    safeSendTo(pollSock, &dataPDU, dataPDU.pduLen, (struct sockaddr *) serverInfo, addrLen);
+    safeSendTo(pollSock, &dataPDU, pduLen, (struct sockaddr *) serverInfo, addrLen);
 
     printf("File transfer has successfully completed!\n");
-
-    /* Clean up */
-    teardown(socket, usrArgs, pollSet, fp);
 }
