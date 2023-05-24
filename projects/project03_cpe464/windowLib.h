@@ -37,7 +37,7 @@ udpPacket_t *peekQueuePacket(circularQueue_t *queue);
 
 int readQueuePacketSeq(circularQueue_t *queue);
 
-void moveWindow(circularWindow_t *window, uint16_t n);
+void moveWindow(circularWindow_t *window, uint16_t newLowerIdx);
 
 void moveCurrentToSeq(circularWindow_t *window, uint16_t seq);
 

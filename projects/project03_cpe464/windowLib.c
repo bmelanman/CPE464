@@ -18,14 +18,6 @@ circularQueue_t *createQueue(uint32_t len) {
     return newQueue;
 }
 
-// Tree complexity
-// A -> The width of the tree
-// m -> The length of the tree
-// g -> The work done at each node
-
-// 0, 1, 2, 3
-// o        i
-
 void addQueuePacket(circularQueue_t *queue, udpPacket_t *packet, uint16_t packetLen) {
 
     uint16_t idx = queue->inputIdx % queue->size;
@@ -49,7 +41,6 @@ void addQueuePacket(circularQueue_t *queue, udpPacket_t *packet, uint16_t packet
 
     /* Increment the index */
     queue->inputIdx++;
-
 }
 
 udpPacket_t *peekQueuePacket(circularQueue_t *queue) {
@@ -62,7 +53,7 @@ uint16_t getQueuePacket(circularQueue_t *queue, udpPacket_t *packet) {
     uint16_t len = queue->lenQueue[(queue->outputIdx - 1) % queue->size];
 
     /* Check if buffer is empty */
-    if ((queue->inputIdx + 1) > queue->outputIdx) return 0;
+    if ((queue->outputIdx + 1) > queue->inputIdx) return 0;
 
     /* Return the packet at the queue output, then move on to the next */
     queue->outputIdx++;
@@ -104,6 +95,8 @@ uint16_t getCurrentPacket(circularWindow_t *window, udpPacket_t *packet) {
 
     memcpy(packet, window->circQueue->pktQueue[window->current % window->circQueue->size], len);
 
+    window->circQueue->outputIdx++;
+
     return len;
 }
 
@@ -127,10 +120,10 @@ udpPacket_t *getSeqPacket(circularWindow_t *window, uint32_t seqNum) {
     return p;
 }
 
-void moveWindow(circularWindow_t *window, uint16_t n) {
+void moveWindow(circularWindow_t *window, uint16_t newLowerIdx) {
 
-    window->lower = n + 1;
-    window->upper = window->lower + window->circQueue->size;
+    window->lower = newLowerIdx;
+    window->upper = newLowerIdx + window->circQueue->size;
 }
 
 void moveCurrentToSeq(circularWindow_t *window, uint16_t seq) {

@@ -145,9 +145,9 @@ char *getTransferInfo(uint8_t *data, uint16_t *bufferLen, uint32_t *windowSize) 
 int runServer(pollSet_t *pollSet) {
 
     int pollSock;
-    uint8_t *transferInfo, count = 0;
+    uint8_t *transferInfo, count = 0, sentRej = 0;
     uint16_t bufferLen, pduLen;
-    uint32_t windowSize, txSeq = 0, nextPkt = 0, tempNetOrd;
+    uint32_t windowSize, txSeq = 0, nextPkt = 0, temp;
     char *to_filename;
     FILE *newFile = NULL;
     udpPacket_t dataPDU = {0};
@@ -181,13 +181,28 @@ int runServer(pollSet_t *pollSet) {
     /* Receive file data from client */
     while (1) {
 
+        temp = htonl(nextPkt);
+
         /* Prioritize getting packets form the queue if possible */
         if (readQueuePacketSeq(packetQueue) == nextPkt) {
 
             /* Grab a packet from the queue */
             pduLen = getQueuePacket(packetQueue, &dataPDU);
 
-        } else {
+        } else if (sentRej && dataPDU.flag == DATA_ACK_PKT){
+
+            /* Create an ACK packet */
+            createPDU(&dataPDU, txSeq++, DATA_ACK_PKT,
+                      (uint8_t *) &temp, sizeof(temp));
+
+            /* If the buffer didn't have the next packet, send the RR */
+            safeSendTo(pollSock, &dataPDU, bufferLen, (struct sockaddr *) &client, clientAddrLen);
+
+            nextPkt++;
+            sentRej = 0;
+
+            continue;
+        }else {
             /* Wait for new data */
             pollSock = pollCall(pollSet, POLL_10_SEC);
 
@@ -204,16 +219,27 @@ int runServer(pollSet_t *pollSet) {
 
             /* Selective reject the corrupt packet */
             createPDU(&dataPDU, txSeq++, DATA_REJ_PKT,
-                      (uint8_t *) &tempNetOrd, sizeof(tempNetOrd));
+                      (uint8_t *) &temp, sizeof(temp));
 
-        } else if (ntohl(dataPDU.seq_NO) != nextPkt) {
+            sentRej = 1;
 
-            /* Save the received packet if there's room for it */
+        } else if (ntohl(dataPDU.seq_NO) < nextPkt) {
+
+            /* If it's a lower sequence, reply with an RR for the highest recv'd packet */
+            temp = htonl(nextPkt - 1);
+
+            createPDU(&dataPDU, txSeq++, DATA_ACK_PKT,
+                      (uint8_t *) &temp, sizeof(temp));
+
+        } else if (ntohl(dataPDU.seq_NO) > nextPkt) {
+            /* If it's a higher sequence, save it and send a SRej */
             addQueuePacket(packetQueue, &dataPDU, pduLen);
 
-            /* Selective reject the missing packet */
+            /* SRej the missing packet */
             createPDU(&dataPDU, txSeq++, DATA_REJ_PKT,
-                      (uint8_t *) &tempNetOrd, sizeof(tempNetOrd));
+                      (uint8_t *) &temp, sizeof(temp));
+
+            sentRej = 1;
 
         } else {
 
@@ -225,11 +251,13 @@ int runServer(pollSet_t *pollSet) {
 
             /* Create an ACK packet */
             createPDU(&dataPDU, txSeq++, DATA_ACK_PKT,
-                      (uint8_t *) &tempNetOrd, sizeof(tempNetOrd));
+                      (uint8_t *) &temp, sizeof(temp));
 
             /* Increment next expected packet sequence */
             nextPkt++;
-            tempNetOrd = htonl(nextPkt);
+
+            /* If a SRej was prev. sent, check the buffer before sending an RR */
+            if (sentRej) continue;
         }
 
         /* Send the packet */
@@ -243,15 +271,18 @@ int runServer(pollSet_t *pollSet) {
     createPDU(&dataPDU, txSeq, TERM_CONN_PKT, NULL, 0);
     addQueuePacket(packetQueue, &dataPDU, PDU_HEADER_LEN);
 
+    /* Copy the socket */
+    temp = pollSock;
+
     while (1) {
 
         if (++count > 10) break;
 
         /* Send packet */
-        safeSendTo(pollSock, &dataPDU, bufferLen, (struct sockaddr *) &client, clientAddrLen);
+        safeSendTo((int) temp, &dataPDU, bufferLen, (struct sockaddr *) &client, clientAddrLen);
 
         /* Wait for client ACK */
-        pollSock = pollCall(pollSet, POLL_1_SEC);
+        pollSock = pollCall(pollSet, 1000);
 
         if (pollSock != POLL_TIMEOUT) {
 

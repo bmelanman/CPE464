@@ -248,11 +248,11 @@ int setupTransfer(int socket, struct sockaddr_in6 *srcAddr, int addrLen, runtime
 
 void runClient(int socket, struct sockaddr_in6 *serverInfo, runtimeArgs_t *usrArgs, FILE *fp) {
 
-    int addrLen = sizeof(struct sockaddr_in6), pollSock;
+    int addrLen = sizeof(struct sockaddr_in6), pollSock, rejPkt = -1;
     uint8_t count = 0, buffLen = usrArgs->buffer_size + PDU_HEADER_LEN, *dataBuff = malloc(
             buffLen + 1);
     uint16_t readLen, pduLen;
-    uint32_t currentSeq = 0, rejPkt, recvPkt;
+    uint32_t currentSeq = 0, recvPkt;
 
     pollSet_t *pollSet = newPollSet();
     circularWindow_t *packetWindow = NULL;
@@ -360,8 +360,16 @@ void runClient(int socket, struct sockaddr_in6 *serverInfo, runtimeArgs_t *usrAr
 
                 recvPkt = htonl(*((uint32_t *) dataPDU.payload));
 
-                /* Move the window to the new lower value */
-                moveWindow(packetWindow, recvPkt);
+                /* If we received a SRej, move current to the RRs next packet */
+                if (rejPkt != -1) {
+
+                    moveCurrentToSeq(packetWindow, recvPkt + 1);
+
+                    rejPkt = -1;
+                }
+
+                /* Move the window to the packet after the received packet sequence */
+                moveWindow(packetWindow, recvPkt + 1);
 
                 /* Once the window moves, we can send another packet */
                 break;
@@ -369,7 +377,13 @@ void runClient(int socket, struct sockaddr_in6 *serverInfo, runtimeArgs_t *usrAr
         }
 
         /* Check for EOF and that all packets have been RR'ed */
-        if (feof(fp) && recvPkt == (currentSeq - 1)) break;
+        if (feof(fp) && recvPkt == (currentSeq - 3)) {
+
+            pollSock = pollCall(pollSet, 1000);
+
+            /* Check for any extra packets */
+            if (pollSock == POLL_TIMEOUT) break;
+        }
 
     }
 

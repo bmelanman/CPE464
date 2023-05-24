@@ -55,12 +55,6 @@ build CMakeFiles/checksum.dir/libs/checksum.c.o: C_COMPILER__checksum_Debug /Use
   OBJECT_DIR = CMakeFiles/checksum.dir
   OBJECT_FILE_DIR = CMakeFiles/checksum.dir/libs
 
-build CMakeFiles/checksum.dir/midterm.c.o: C_COMPILER__checksum_Debug /Users/brycemelander/Code/GitHub/CPE464/projects/project01_cpe464/midterm.c || cmake_object_order_depends_target_checksum
-  DEP_FILE = CMakeFiles/checksum.dir/midterm.c.o.d
-  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fcolor-diagnostics -g -Wall -std=gnu99
-  OBJECT_DIR = CMakeFiles/checksum.dir
-  OBJECT_FILE_DIR = CMakeFiles/checksum.dir
-
 
 # =============================================================================
 # Link build statements for STATIC_LIBRARY target checksum
@@ -69,7 +63,7 @@ build CMakeFiles/checksum.dir/midterm.c.o: C_COMPILER__checksum_Debug /Users/bry
 #############################################
 # Link the static library libchecksum.a
 
-build libchecksum.a: C_STATIC_LIBRARY_LINKER__checksum_Debug CMakeFiles/checksum.dir/libs/checksum.c.o CMakeFiles/checksum.dir/midterm.c.o
+build libchecksum.a: C_STATIC_LIBRARY_LINKER__checksum_Debug CMakeFiles/checksum.dir/libs/checksum.c.o
   ARCH_FLAGS = -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk
   LANGUAGE_COMPILE_FLAGS = -g
   OBJECT_DIR = CMakeFiles/checksum.dir

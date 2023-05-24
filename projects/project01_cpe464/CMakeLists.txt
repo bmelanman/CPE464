@@ -10,7 +10,7 @@ find_library(PCAP
         HINTS "/opt/homebrew/opt/libpcap/lib"
         )
 
-add_library(checksum libs/checksum.c libs/checksum.h midterm.c)
+add_library(checksum libs/checksum.c libs/checksum.h)
 
 add_executable(trace trace.c)
 target_link_libraries(trace checksum PCAP)
