@@ -35,7 +35,7 @@ udpPacket_t *getSeqPacket(circularWindow_t *window, uint32_t seqNum);
 
 udpPacket_t *peekQueuePacket(circularQueue_t *queue);
 
-int readQueuePacketSeq(circularQueue_t *queue);
+uint8_t peekNextSeq_NO(circularQueue_t *queue, uint32_t seq_NO);
 
 void moveWindow(circularWindow_t *window, uint16_t newLowerIdx);
 

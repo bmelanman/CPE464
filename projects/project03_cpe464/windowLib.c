@@ -63,13 +63,33 @@ uint16_t getQueuePacket(circularQueue_t *queue, udpPacket_t *packet) {
     return len;
 }
 
-int readQueuePacketSeq(circularQueue_t *queue) {
+uint8_t peekNextSeq_NO(circularQueue_t *queue, uint32_t seq_NO) {
+
+    uint32_t start = queue->outputIdx % queue->size;
 
     /* Make sure there is a packet to read */
-    if (queue->pktQueue[queue->inputIdx % queue->size] == NULL) return -1;
+    if (queue->pktQueue[start] == NULL) return 0;
 
-    /* Return the packet's sequence number in host order */
-    return ntohl(queue->pktQueue[queue->inputIdx % queue->size]->seq_NO);
+    /* Go through the queue to remove any packets lower than the requested sequence */
+    while (queue->outputIdx < queue->inputIdx) {
+
+        if (queue->pktQueue[start]->seq_NO == seq_NO) {
+            /* Return true if the packet is found */
+            return 1;
+
+        } else if (queue->pktQueue[start]->seq_NO < seq_NO) {
+            /* Flush the packet if it is lower */
+            queue->outputIdx++;
+            start = queue->outputIdx % queue->size;
+
+        } else {
+            /* The packet was not found */
+            return 0;
+        }
+    }
+
+    /* The packet was not found, and all packets in the queue have been flushed */
+    return 0;
 }
 
 circularWindow_t *createWindow(uint32_t windowSize) {
