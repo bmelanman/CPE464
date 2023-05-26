@@ -120,24 +120,30 @@ uint16_t getCurrentPacket(circularWindow_t *window, udpPacket_t *packet) {
     return len;
 }
 
-udpPacket_t *getSeqPacket(circularWindow_t *window, uint32_t seqNum) {
+uint16_t getLowestPacket(circularWindow_t *window, udpPacket_t *packet) {
 
-    udpPacket_t *p;
+    uint16_t len = window->circQueue->lenQueue[window->lower % window->circQueue->size];
 
+    memcpy(packet, window->circQueue->pktQueue[window->lower % window->circQueue->size], len);
+
+    return len;
+}
+
+void getSeqPacket(circularWindow_t *window, uint32_t seqNum, udpPacket_t *packet) {
+
+    // TODO: REMOVE
     if (seqNum < window->lower || window->upper < seqNum) {
-        // TODO: Error checking, remove
         fprintf(stderr,
                 "\nPacket %d has been requested, however lower is %d and upper is %d\n",
                 seqNum, window->lower, window->upper);
         exit(EXIT_FAILURE);
     }
 
-    p = malloc(MAX_PDU_LEN);
+    /* Clear the packet */
+    memset(packet, 0, MAX_PDU_LEN);
 
-    memset(p, 0, MAX_PDU_LEN);
-    memcpy(p, window->circQueue->pktQueue[seqNum % window->circQueue->size], MAX_PDU_LEN);
-
-    return p;
+    /* Copy the packet contents */
+    memcpy(packet, window->circQueue->pktQueue[seqNum % window->circQueue->size], MAX_PDU_LEN);
 }
 
 void moveWindow(circularWindow_t *window, uint16_t newLowerIdx) {
@@ -152,6 +158,10 @@ void moveCurrentToSeq(circularWindow_t *window, uint16_t seq) {
     if (seq < window->lower) window->current = window->lower;
     else if (window->upper < seq) window->current = window->upper;
     else window->current = seq;
+}
+
+void resetCurrent(circularWindow_t *window) {
+    moveCurrentToSeq(window, 0);
 }
 
 void incrementCurrent(circularWindow_t *window) {

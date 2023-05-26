@@ -31,7 +31,9 @@ void addWindowPacket(circularWindow_t *window, udpPacket_t *packet, uint16_t pac
 
 uint16_t getCurrentPacket(circularWindow_t *window, udpPacket_t *packet);
 
-udpPacket_t *getSeqPacket(circularWindow_t *window, uint32_t seqNum);
+uint16_t getLowestPacket(circularWindow_t *window, udpPacket_t *packet);
+
+void getSeqPacket(circularWindow_t *window, uint32_t seqNum, udpPacket_t *packet);
 
 udpPacket_t *peekQueuePacket(circularQueue_t *queue);
 
@@ -46,5 +48,7 @@ void incrementCurrent(circularWindow_t *window);
 int getWindowSpace(circularWindow_t *window);
 
 int checkSendSpace(circularWindow_t *window);
+
+void resetCurrent(circularWindow_t *window);
 
 #endif /* PROJECT03_CPE464_WINDOWLIB_H */
