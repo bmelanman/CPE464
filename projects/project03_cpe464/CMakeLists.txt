@@ -6,7 +6,7 @@ set(CMAKE_C_STANDARD 11)
 # Various supporting libraries
 add_library(getHostByName gethostbyname.c gethostbyname.h)
 add_library(networkUtils networkUtils.c networkUtils.h)
-add_library(libPoll libPoll.c libPoll.h)
+add_library(libPoll pollLib.c pollLib.h)
 add_library(windowLib windowLib.c windowLib.h)
 
 # Add the libraries to the project

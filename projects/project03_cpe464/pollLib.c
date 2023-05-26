@@ -1,5 +1,5 @@
 
-#include "libPoll.h"
+#include "pollLib.h"
 
 /* Easy to use poll library
  * Written by Hugh Smith - April 2022
@@ -65,7 +65,7 @@ void addToPollSet(pollSet_t *pollSet, int socketNumber) {
     pollSet->pollFds[socketNumber].events = POLLIN;
 }
 
-void removeFromPollSet(pollSet_t *pollSet, int socketNumber) {
+__attribute__((unused)) void removeFromPollSet(pollSet_t *pollSet, int socketNumber) {
     /* Clear out the old info */
     pollSet->pollFds[socketNumber].fd = -1;
     pollSet->pollFds[socketNumber].events = -1;

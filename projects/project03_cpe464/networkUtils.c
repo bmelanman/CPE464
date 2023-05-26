@@ -1,5 +1,13 @@
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <memory.h>
+#include <sys/socket.h>
 #include <errno.h>
+#include <netinet/in.h>
+
+#include "cpe464.h"
+
 #include "networkUtils.h"
 
 void *srealloc(void *ptr, size_t size) {
@@ -22,10 +30,14 @@ void *scalloc(size_t nmemb, size_t size) {
     return returnValue;
 }
 
-int safeRecvFrom(int socketNum, void *buf, int len, int flags, struct sockaddr *srcAddr, int addrLen) {
+int safeRecvFrom(int socketNum, void *buf, int len, addrInfo_t *srcAddr) {
 
     /* Receive a packet */
-    int ret = recvfrom(socketNum, buf, (size_t) len, flags, srcAddr, (socklen_t *) &addrLen);
+    ssize_t ret = recvfromErr(
+            socketNum, buf, (size_t) len, 0,
+            (struct sockaddr *) srcAddr->dstInfo,
+            (socklen_t *) &srcAddr->addrLen
+    );
 
     /* Check for errors */
     if (ret < 0 && errno != EINTR) {
@@ -33,13 +45,17 @@ int safeRecvFrom(int socketNum, void *buf, int len, int flags, struct sockaddr *
         exit(EXIT_FAILURE);
     }
 
-    return ret;
+    return (int) ret;
 }
 
-int safeSendTo(int socketNum, void *buf, int len, struct sockaddr *srcAddr, int addrLen) {
+int safeSendTo(int socketNum, void *buf, int len, addrInfo_t *dstInfo) {
 
     /* Send the packet */
-    ssize_t ret = sendtoErr(socketNum, buf, len, 0, srcAddr, addrLen);
+    ssize_t ret = sendtoErr(
+            socketNum, buf, len, 0,
+            (const struct sockaddr *) dstInfo->dstInfo,
+            dstInfo->addrLen
+    );
 
     /* Check for errors */
     if (ret < 0) {
@@ -50,17 +66,27 @@ int safeSendTo(int socketNum, void *buf, int len, struct sockaddr *srcAddr, int 
     return (int) ret;
 }
 
-//udpPacket_t *createPacket(uint16_t bufferLen) {
-//
-//    udpPacket_t *p = NULL;
-//
-//    p->seq_NO = 0;
-//    p->flag = 0;
-//    p->checksum = 0;
-//    p->payload = malloc(bufferLen);
-//
-//    return p;
-//}
+addrInfo_t *initAddrInfo(void) {
+
+    addrInfo_t *a = malloc(sizeof(addrInfo_t));
+
+    a->dstInfo = malloc(sizeof(struct sockaddr_in6));
+    a->addrLen = 0;
+
+    return a;
+}
+
+udpPacket_t *createPacket(uint16_t bufferLen) {
+
+    udpPacket_t *p = NULL;
+
+    p->seq_NO = 0;
+    p->flag = 0;
+    p->checksum = 0;
+    p->payload = malloc(bufferLen);
+
+    return p;
+}
 
 int createPDU(udpPacket_t *pduPacket, uint32_t seqNum, uint8_t flag, uint8_t *payload, int payloadLen) {
 

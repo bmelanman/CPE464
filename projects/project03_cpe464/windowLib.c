@@ -139,8 +139,9 @@ void getSeqPacket(circularWindow_t *window, uint32_t seqNum, udpPacket_t *packet
         exit(EXIT_FAILURE);
     }
 
+//    TODO: change 1 to 0
     /* Clear the packet */
-    memset(packet, 0, MAX_PDU_LEN);
+    memset(packet, 1, MAX_PDU_LEN);
 
     /* Copy the packet contents */
     memcpy(packet, window->circQueue->pktQueue[seqNum % window->circQueue->size], MAX_PDU_LEN);
@@ -158,11 +159,12 @@ void resetCurrent(circularWindow_t *window) {
 
 void incrementCurrent(circularWindow_t *window) {
 
-    /* Increment the current index */
-    window->current++;
-
     /* Don't go above the upper index */
-    if (window->current > window->upper) window->current = window->upper;
+    if (window->current == window->upper) return;
+    else if (window->current > window->upper) window->current = window->upper;
+
+    /* Increment current index */
+    window->current++;
 }
 
 int getWindowSpace(circularWindow_t *window) {
@@ -178,3 +180,4 @@ int checkSendSpace(circularWindow_t *window) {
 
     return 0;
 }
+

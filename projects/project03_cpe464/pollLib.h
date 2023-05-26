@@ -30,7 +30,7 @@ pollSet_t * newPollSet(void);
 
 void addToPollSet(pollSet_t *pollSet, int socketNumber);
 
-void removeFromPollSet(pollSet_t *pollSet, int socketNumber);
+__attribute__((unused)) void removeFromPollSet(pollSet_t *pollSet, int socketNumber);
 
 int pollCall(pollSet_t *pollSet, int timeInMilliSeconds);
 

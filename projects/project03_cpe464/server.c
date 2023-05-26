@@ -4,10 +4,19 @@
  * using modified code from Dr. Hugh Smith
  *  */
 
-#include <sys/file.h>
-#include "server.h"
-#include "libPoll.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+#include "networkUtils.h"
+#include "pollLib.h"
 #include "windowLib.h"
+
+#include "server.h"
 
 static volatile int shutdownServer = 0;
 
@@ -85,7 +94,7 @@ int udpServerSetup(int serverPort) {
 
 }
 
-uint8_t *recvSetupInfo(pollSet_t *pollSet, struct sockaddr_in6 *client, int clientAddrLen) {
+uint8_t *recvSetupInfo(pollSet_t *pollSet, addrInfo_t *clientInfo) {
 
     int pollSock, count = 0;
     uint8_t *recvPayload;
@@ -102,8 +111,7 @@ uint8_t *recvSetupInfo(pollSet_t *pollSet, struct sockaddr_in6 *client, int clie
         if (pollSock <= 0) continue;
 
         /* Receive the connection info packet */
-        pduLen = safeRecvFrom(pollSock, &dataPDU, MAX_PDU_LEN, 0,
-                              (struct sockaddr *) client, clientAddrLen);
+        pduLen = safeRecvFrom(pollSock, &dataPDU, MAX_PDU_LEN, clientInfo);
 
         /* Verify checksum */
         if (in_cksum((unsigned short *) &dataPDU, pduLen) != 0) continue;
@@ -121,8 +129,7 @@ uint8_t *recvSetupInfo(pollSet_t *pollSet, struct sockaddr_in6 *client, int clie
         /* Send an ACK after receiving */
         createPDU(&dataPDU, 0, INFO_ACK_PKT, (uint8_t *) &seq, sizeof(uint16_t));
 
-        safeSendTo(pollSock, (void *) &dataPDU, pduLen,
-                   (struct sockaddr *) client, clientAddrLen);
+        safeSendTo(pollSock, (void *) &dataPDU, pduLen, clientInfo);
 
         /* TODO: Wait for data packet first? Then maybe put it in the queue? Or maybe do the ACK in runServer() */
 
@@ -159,14 +166,15 @@ FILE *getTransferInfo(uint8_t *data, uint16_t *bufferLen, circularQueue_t **queu
     return fd;
 }
 
-int runServer(pollSet_t *pollSet) {
+//int sendMessagePacket
 
-    int pollSock, clientAddrLen = sizeof(struct sockaddr_in6);
+int runServer(int serverSocket, pollSet_t *pollSet) {
+
     uint8_t *transferInfo, count = 0;
     uint16_t bufferLen, pduLen;
     uint32_t serverSeq = 0, nextPkt = 0, nextPkt_NO = 0;
 
-    struct sockaddr_in6 client;
+    addrInfo_t *client;
     FILE *newFile = NULL;
     circularQueue_t *packetQueue = NULL;
     udpPacket_t dataPDU = {0};
@@ -174,7 +182,7 @@ int runServer(pollSet_t *pollSet) {
     /* TODO: Free + fclose */
 
     /* Receive setup info from the client */
-    transferInfo = recvSetupInfo(pollSet, &client, clientAddrLen);
+    transferInfo = recvSetupInfo(pollSet, client);
 
     /* Check for disconnection */
     if (transferInfo == NULL) return 1;
@@ -199,14 +207,11 @@ int runServer(pollSet_t *pollSet) {
 
         } else {
 
-            /* Wait for new data */
-            pollSock = pollCall(pollSet, POLL_10_SEC);
-
-            /* Check if client disconnected */
-            if (pollSock == POLL_TIMEOUT) return 1;
+            /* Check client connection */
+            if (pollCall(pollSet, POLL_10_SEC) == POLL_TIMEOUT) return 1;
 
             /* Get the packet */
-            pduLen = safeRecvFrom(pollSock, &dataPDU, bufferLen, 0, (struct sockaddr *) &client, clientAddrLen);
+            pduLen = safeRecvFrom(serverSocket, &dataPDU, bufferLen, (struct sockaddr *) &client);
 
             /* Validate checksum and packet sequence */
             if (in_cksum((unsigned short *) &dataPDU, pduLen)) {
@@ -260,7 +265,7 @@ int runServer(pollSet_t *pollSet) {
         if (!peekNextSeq_NO(packetQueue, nextPkt_NO)) {
 
             /* Send the ACK/SRej/RR */
-            safeSendTo(pollSock, &dataPDU, bufferLen, (struct sockaddr *) &client, clientAddrLen);
+            safeSendTo(serverSocket, &dataPDU, bufferLen, (struct sockaddr *) &client);
 
         }
     }
@@ -270,28 +275,29 @@ int runServer(pollSet_t *pollSet) {
 
     /* Ack the EOF packet by sending a termination request */
     createPDU(&dataPDU, serverSeq, TERM_CONN_PKT, NULL, 0);
-    addQueuePacket(packetQueue, &dataPDU, PDU_HEADER_LEN);
 
-    /* Copy the socket */
-    nextPkt_NO = pollSock;
+    /* Add the packet to the queue in case we need to re-send it */
+    addQueuePacket(packetQueue, &dataPDU, PDU_HEADER_LEN);
 
     while (1) {
 
         /* Check for disconnection */
         if (count > 9) return 1;
 
+        /* Get the termination packet */
+        dataPDU = *peekQueuePacket(packetQueue);
+
         /* Send packet */
-        safeSendTo((int) nextPkt_NO, &dataPDU, bufferLen, (struct sockaddr *) &client, clientAddrLen);
+        safeSendTo((int) nextPkt_NO, &dataPDU, bufferLen, (struct sockaddr *) &client);
 
         /* Wait for client to reply */
         if (pollCall(pollSet, POLL_1_SEC) != POLL_TIMEOUT) {
 
             /* Receive packet */
-            safeRecvFrom(pollSock, &dataPDU, bufferLen, 0, (struct sockaddr *) &client, clientAddrLen);
+            safeRecvFrom(serverSocket, &dataPDU, bufferLen, (struct sockaddr *) &client);
 
-            /* Check for termination ACK, otherwise restore the termination packet */
+            /* Check for termination ACK */
             if (dataPDU.flag == TERM_ACK_PKT) break;
-            else dataPDU = *peekQueuePacket(packetQueue);
         } else count++;
     }
 
@@ -312,10 +318,10 @@ void runServerController(int serverSocket) {
 
         if (pollSocket == serverSocket) {
             /* Fork children here in the future */
-            stat = runServer(pollSet);
+            stat = runServer(serverSocket, pollSet);
 
-            if (stat != 0) printf("File transfer has successfully completed!\n");
-            else printf("\n");
+            if (stat != 0) printf("Client has disconnected! \n");
+            else printf("File transfer has successfully completed!\n");
         }
     }
 }

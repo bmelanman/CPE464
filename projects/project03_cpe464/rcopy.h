@@ -2,18 +2,7 @@
 #ifndef LAB07_CPE464_RCOPY_H
 #define LAB07_CPE464_RCOPY_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/uio.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-
-#include "gethostbyname.h"
-#include "networkUtils.h"
-#include "libPoll.h"
-#include "windowLib.h"
+#include <stdint.h>
 
 #define ARGV_FROM_FILENAME  1
 #define ARGV_TO_FILENAME    2
