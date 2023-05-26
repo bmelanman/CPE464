@@ -161,15 +161,15 @@ FILE *getTransferInfo(uint8_t *data, uint16_t *bufferLen, circularQueue_t **queu
 
 int runServer(pollSet_t *pollSet) {
 
-    int pollSock;
+    int pollSock, clientAddrLen = sizeof(struct sockaddr_in6);
     uint8_t *transferInfo, count = 0;
     uint16_t bufferLen, pduLen;
     uint32_t serverSeq = 0, nextPkt = 0, nextPkt_NO = 0;
-    FILE *newFile = NULL;
-    udpPacket_t dataPDU = {0};
-    int clientAddrLen = sizeof(struct sockaddr_in6);
+
     struct sockaddr_in6 client;
+    FILE *newFile = NULL;
     circularQueue_t *packetQueue = NULL;
+    udpPacket_t dataPDU = {0};
 
     /* TODO: Free + fclose */
 
@@ -228,7 +228,6 @@ int runServer(pollSet_t *pollSet) {
                 /* SRej the missing packet */
                 createPDU(&dataPDU, serverSeq++, DATA_REJ_PKT, (uint8_t *) &nextPkt_NO, sizeof(nextPkt_NO));
             }
-
         }
 
         /* Write data and make an RR */
@@ -254,9 +253,10 @@ int runServer(pollSet_t *pollSet) {
             break;
         }
 
-        nextPkt_NO = htonl(nextPkt); // 0x1000000
+        /* Update */
+        nextPkt_NO = htonl(nextPkt);
 
-        /* Don't ACK if there */
+        /* Don't ACK if the next packet is in the queue */
         if (!peekNextSeq_NO(packetQueue, nextPkt_NO)) {
 
             /* Send the ACK/SRej/RR */
@@ -277,25 +277,23 @@ int runServer(pollSet_t *pollSet) {
 
     while (1) {
 
-        if (++count > 10) break;
+        /* Check for disconnection */
+        if (count > 9) return 1;
 
         /* Send packet */
         safeSendTo((int) nextPkt_NO, &dataPDU, bufferLen, (struct sockaddr *) &client, clientAddrLen);
 
-        /* Wait for client ACK */
-        pollSock = pollCall(pollSet, POLL_1_SEC);
+        /* Wait for client to reply */
+        if (pollCall(pollSet, POLL_1_SEC) != POLL_TIMEOUT) {
 
-        if (pollSock != POLL_TIMEOUT) {
-
+            /* Receive packet */
             safeRecvFrom(pollSock, &dataPDU, bufferLen, 0, (struct sockaddr *) &client, clientAddrLen);
 
-            /* Check for termination ACK, otherwise restore the packet */
+            /* Check for termination ACK, otherwise restore the termination packet */
             if (dataPDU.flag == TERM_ACK_PKT) break;
             else dataPDU = *peekQueuePacket(packetQueue);
-        }
+        } else count++;
     }
-
-    printf("File transfer has successfully completed!\n");
 
     return 0;
 }
@@ -316,11 +314,10 @@ void runServerController(int serverSocket) {
             /* Fork children here in the future */
             stat = runServer(pollSet);
 
-            if (stat != 0) printf("Client has become disconnected!\n");
+            if (stat != 0) printf("File transfer has successfully completed!\n");
+            else printf("\n");
         }
-
     }
-
 }
 
 void checkArgs(int argc, char *argv[], float *errRate, int *port) {

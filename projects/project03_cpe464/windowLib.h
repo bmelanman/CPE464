@@ -41,8 +41,6 @@ uint8_t peekNextSeq_NO(circularQueue_t *queue, uint32_t seq_NO);
 
 void moveWindow(circularWindow_t *window, uint16_t newLowerIdx);
 
-void moveCurrentToSeq(circularWindow_t *window, uint16_t seq);
-
 void incrementCurrent(circularWindow_t *window);
 
 int getWindowSpace(circularWindow_t *window);

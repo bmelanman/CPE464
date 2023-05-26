@@ -247,7 +247,7 @@ int setupTransfer(int socket, struct sockaddr_in6 *srcAddr, int addrLen, runtime
 
 void runClient(int socket, struct sockaddr_in6 *serverInfo, runtimeArgs_t *usrArgs, FILE *fp) {
 
-    int addrLen = sizeof(struct sockaddr_in6), pollSock;
+    int addrLen = sizeof(struct sockaddr_in6);
     uint8_t count = 0, buffLen = usrArgs->buffer_size + PDU_HEADER_LEN, *dataBuff = malloc(
             buffLen + 1);
     uint16_t readLen, pduLen;
@@ -267,6 +267,7 @@ void runClient(int socket, struct sockaddr_in6 *serverInfo, runtimeArgs_t *usrAr
         return;
     }
 
+    /* Set up the packet window */
     packetWindow = createWindow(usrArgs->window_size);
 
     /* Transfer data */
@@ -293,7 +294,7 @@ void runClient(int socket, struct sockaddr_in6 *serverInfo, runtimeArgs_t *usrAr
                 /* Add it to the window */
                 addWindowPacket(packetWindow, &dataPDU, pduLen);
 
-                break;
+                continue;
             }
 
             /* Make a packet */
@@ -322,11 +323,8 @@ void runClient(int socket, struct sockaddr_in6 *serverInfo, runtimeArgs_t *usrAr
             /* Check count */
             if (count > 9) break;
 
-            /* Wait for a packet */
-            pollSock = pollCall(pollSet, POLL_1_SEC);
-
             /* Check if poll timed out */
-            if (pollSock < 0) {
+            if (pollCall(pollSet, POLL_1_SEC) < 0) {
 
                 /* If poll times out, current is reset to the lowest packet */
                 resetCurrent(packetWindow);
@@ -334,12 +332,12 @@ void runClient(int socket, struct sockaddr_in6 *serverInfo, runtimeArgs_t *usrAr
                 /* Keep track of timeouts */
                 count++;
 
-                /* Retry */
+                /* Try resending */
                 break;
             }
 
             /* Receive the packet */
-            pduLen = safeRecvFrom(pollSock, &dataPDU, buffLen, 0, (struct sockaddr *) serverInfo, addrLen);
+            pduLen = safeRecvFrom(socket, &dataPDU, buffLen, 0, (struct sockaddr *) serverInfo, addrLen);
 
             /* Verify checksum */
             if (in_cksum((unsigned short *) &dataPDU, pduLen)) {
@@ -360,18 +358,18 @@ void runClient(int socket, struct sockaddr_in6 *serverInfo, runtimeArgs_t *usrAr
                 getSeqPacket(packetWindow, recvSeq, &dataPDU);
 
                 /* Send the packet */
-                safeSendTo(pollSock, (void *) &dataPDU, MAX_PDU_LEN, (struct sockaddr *) serverInfo, addrLen);
+                safeSendTo(socket, (void *) &dataPDU, MAX_PDU_LEN, (struct sockaddr *) serverInfo, addrLen);
 
             } else {
+
+                /* EOF waits until all RRs are received */
+                if (feof(fp) && dataPDU.flag != TERM_CONN_PKT) continue;
 
                 /* Get the RRs sequence number */
                 recvSeq = htonl(*((uint32_t *) dataPDU.payload));
 
                 /* Move the window to the packet after the received packet sequence */
                 moveWindow(packetWindow, recvSeq + 1);
-
-                /* EOF waits until all RRs are received */
-                if (feof(fp) && dataPDU.flag != TERM_CONN_PKT) continue;
 
                 /* Once the window moves, we can send another packet */
                 break;
@@ -384,7 +382,7 @@ void runClient(int socket, struct sockaddr_in6 *serverInfo, runtimeArgs_t *usrAr
     /* Send a termination ACK */
     pduLen = createPDU(&dataPDU, currentSeq, TERM_ACK_PKT, NULL, 0);
 
-    safeSendTo(pollSock, &dataPDU, pduLen, (struct sockaddr *) serverInfo, addrLen);
+    safeSendTo(socket, &dataPDU, pduLen, (struct sockaddr *) serverInfo, addrLen);
 
     printf("File transfer has successfully completed!\n");
 }

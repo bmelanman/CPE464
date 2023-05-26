@@ -152,16 +152,8 @@ void moveWindow(circularWindow_t *window, uint16_t newLowerIdx) {
     window->upper = newLowerIdx + window->circQueue->size;
 }
 
-void moveCurrentToSeq(circularWindow_t *window, uint16_t seq) {
-
-    /* Make sure the given seq is within the current window boundaries */
-    if (seq < window->lower) window->current = window->lower;
-    else if (window->upper < seq) window->current = window->upper;
-    else window->current = seq;
-}
-
 void resetCurrent(circularWindow_t *window) {
-    moveCurrentToSeq(window, 0);
+    window->current = window->lower;
 }
 
 void incrementCurrent(circularWindow_t *window) {
