@@ -12,7 +12,7 @@ int setupUdpClientToServer(addrInfo_t *serverInfo, char *hostName, int hostPort)
 
 int setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, pollSet_t *pollSet);
 
-void runClient(int socket, pollSet_t *pollSet, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE *fp);
+void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE *fp);
 
 int diff(char *to_filename, char *from_filename) {
 
@@ -36,26 +36,12 @@ int diff(char *to_filename, char *from_filename) {
 
 }
 
-void teardown(int socket, runtimeArgs_t *usrArgs, pollSet_t *pollSet, FILE *fp) {
-
-    close(socket);
-
-    freePollSet(pollSet);
-
-    free(usrArgs->to_filename);
-    free(usrArgs->from_filename);
-    free(usrArgs->host_name);
-
-    fclose(fp);
-}
-
 int main(int argc, char *argv[]) {
 
     FILE *fp;
     runtimeArgs_t usrArgs = {0};
     int socket;
     addrInfo_t *serverInfo = initAddrInfo();
-    pollSet_t *pollSet = newPollSet();
 
     /* Verify user arguments */
     checkArgs(argc, argv, &fp, &usrArgs);
@@ -63,25 +49,12 @@ int main(int argc, char *argv[]) {
     /* Set up the UDP connection */
     socket = setupUdpClientToServer(serverInfo, usrArgs.host_name, usrArgs.host_port);
 
-    /* Add the socket to the poll set */
-    addToPollSet(pollSet, socket);
-
     /* Initialize the error rate library */
     sendErr_init(usrArgs.error_rate, DROP_ON, FLIP_ON, DEBUG_ON, RSEED_OFF);
     printf("\n");
 
     /* Start the transfer process */
-    runClient(socket, pollSet, serverInfo, &usrArgs, fp);
-
-    /* TODO: REMOVE */
-    if (diff(usrArgs.to_filename, usrArgs.from_filename)) {
-        printf("\nDIFF ERROR!!!\n");
-        printf("DIFF ERROR!!!\n");
-        printf("DIFF ERROR!!!\n");
-    }
-
-    /* Clean up */
-    teardown(socket, &usrArgs, pollSet, fp);
+    runClient(socket, serverInfo, &usrArgs, fp);
 
     return 0;
 }
@@ -214,7 +187,7 @@ int setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, po
     uint16_t count = 1, filenameLen = strlen(usrArgs->to_filename) + 1;
     uint16_t payloadLen = sizeof(uint16_t) + sizeof(uint32_t) + filenameLen;
     uint8_t *hsPayload = scalloc(1, payloadLen);
-    ssize_t pduLen;
+    size_t pduLen;
 
     packet_t *hsPkt = initPacket(payloadLen);
 
@@ -240,7 +213,7 @@ int setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, po
         } else count++;
 
         /* Send the PDU */
-        safeSendTo(socket, (void *) hsPkt, (int) pduLen, serverInfo);
+        safeSendTo(socket, (void *) hsPkt, pduLen, serverInfo);
 
         /* Check poll */
         pollSocket = pollCall(pollSet, POLL_1_SEC);
@@ -265,17 +238,36 @@ int setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, po
     }
 }
 
-void runClient(int socket, pollSet_t *pollSet, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE *fp) {
+void teardown(int socket, runtimeArgs_t *usrArgs, pollSet_t *pollSet, FILE *fp) {
+
+    close(socket);
+
+    freePollSet(pollSet);
+
+    free(usrArgs->to_filename);
+    free(usrArgs->from_filename);
+    free(usrArgs->host_name);
+
+    fclose(fp);
+}
+
+void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE *fp) {
 
     uint8_t count = 0, eof = 0, buffLen = usrArgs->buffer_size, *dataBuff = malloc(buffLen + 1);
     uint32_t currentSeq = 0, recvSeq;
-    ssize_t pduLen, readLen;
+    size_t pduLen, readLen;
 
     packet_t *packet = NULL;
     circularWindow_t *packetWindow = NULL;
 
+    pollSet_t *pollSet = newPollSet();
+
+    /* Add the socket to the poll set */
+    addToPollSet(pollSet, socket);
+
     /* Send the server the necessary transfer details */
     if (setupTransfer(socket, serverInfo, usrArgs, pollSet) != 0) {
+        teardown(socket, usrArgs, pollSet, fp);
         return;
     }
 
@@ -289,6 +281,7 @@ void runClient(int socket, pollSet_t *pollSet, addrInfo_t *serverInfo, runtimeAr
         /* Monitor connection */
         if (count > 9) {
             printf("Server has disconnected, shutting down...\n");
+            teardown(socket, usrArgs, pollSet, fp);
             return;
         }
 
@@ -324,13 +317,10 @@ void runClient(int socket, pollSet_t *pollSet, addrInfo_t *serverInfo, runtimeAr
         while (checkSendSpace(packetWindow)) {
 
             /* Get the packet at current */
-            pduLen = getCurrentPacket(packetWindow, packet);
+            pduLen = getWindowPacket(packetWindow, packet, WINDOW_CURRENT);
 
             /* Send the packet */
-            safeSendTo(socket, (void *) packet, (int) pduLen, serverInfo);
-
-            /* Increment the current packet index */
-            incrementCurrent(packetWindow);
+            safeSendTo(socket, (void *) packet, pduLen, serverInfo);
 
             /* Don't send anything in the window after the EOF packet */
             if (packet->flag == DATA_EOF_PKT) break;
@@ -362,10 +352,10 @@ void runClient(int socket, pollSet_t *pollSet, addrInfo_t *serverInfo, runtimeAr
 
                 /* If a server's reply becomes corrupt, we don't know what it wanted,
                  * so get the lowest packet in the window to get back on track */
-                pduLen = getLowestPacket(packetWindow, packet);
+                pduLen = getWindowPacket(packetWindow, packet, WINDOW_LOWER);
 
                 /* Send packet */
-                safeSendTo(socket, (void *) packet, (int) pduLen, serverInfo);
+                safeSendTo(socket, (void *) packet, pduLen, serverInfo);
 
             } else if (packet->flag == DATA_REJ_PKT) {
 
@@ -373,10 +363,10 @@ void runClient(int socket, pollSet_t *pollSet, addrInfo_t *serverInfo, runtimeAr
                 recvSeq = htonl(*((uint32_t *) packet->payload));
 
                 /* Get the requested packet */
-                pduLen = getSeqPacket(packetWindow, recvSeq, packet);
+                pduLen = getWindowPacket(packetWindow, packet, (int) recvSeq);
 
                 /* Send the packet */
-                safeSendTo(socket, (void *) packet, (int) pduLen, serverInfo);
+                safeSendTo(socket, (void *) packet, pduLen, serverInfo);
 
             } else {
 
@@ -408,7 +398,17 @@ void runClient(int socket, pollSet_t *pollSet, addrInfo_t *serverInfo, runtimeAr
     pduLen = buildPacket(packet, buffLen, currentSeq, TERM_ACK_PKT, NULL, 0);
 
     /* Send packet */
-    safeSendTo(socket, packet, (int) pduLen, serverInfo);
+    safeSendTo(socket, packet, pduLen, serverInfo);
 
     printf("File transfer has successfully completed!\n");
+
+    /* TODO: REMOVE */
+    if (diff(usrArgs->to_filename, usrArgs->from_filename)) {
+        printf("\nDIFF ERROR!!!\n");
+        printf("DIFF ERROR!!!\n");
+        printf("DIFF ERROR!!!\n");
+    }
+
+    /* Clean up! */
+    teardown(socket, usrArgs, pollSet, fp);
 }

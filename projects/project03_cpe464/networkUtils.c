@@ -27,11 +27,11 @@ void *scalloc(size_t count, size_t size) {
     return ret;
 }
 
-ssize_t safeRecvFrom(int socketNum, void *buf, int len, addrInfo_t *srcAddrInfo) {
+size_t safeRecvFrom(int socketNum, void *buf, size_t len, addrInfo_t *srcAddrInfo) {
 
     /* Receive a packet */
     ssize_t ret = recvfromErr(
-            socketNum, buf, (size_t) len, 0,
+            socketNum, buf, len, 0,
             srcAddrInfo->addrInfo,
             (socklen_t *) &srcAddrInfo->addrLen
     );
@@ -47,14 +47,14 @@ ssize_t safeRecvFrom(int socketNum, void *buf, int len, addrInfo_t *srcAddrInfo)
 
     }
 
-    return ret;
+    return (size_t) ret;
 }
 
-ssize_t safeSendTo(int socketNum, void *buf, int len, addrInfo_t *dstAddrInfo) {
+size_t safeSendTo(int socketNum, void *buf, size_t len, addrInfo_t *dstAddrInfo) {
 
     /* Send the packet */
     ssize_t ret = sendtoErr(
-            socketNum, buf, len, 0,
+            socketNum, buf, (int) len, 0,
             dstAddrInfo->addrInfo,
             dstAddrInfo->addrLen
     );
@@ -69,7 +69,7 @@ ssize_t safeSendTo(int socketNum, void *buf, int len, addrInfo_t *dstAddrInfo) {
         }
     }
 
-    return ret;
+    return (size_t) ret;
 }
 
 addrInfo_t *initAddrInfo() {
@@ -92,16 +92,8 @@ packet_t *initPacket(uint16_t payloadLen) {
     return (packet_t *) scalloc(1, sizeof(packet_t) + (sizeof(uint8_t) * payloadLen));
 }
 
-void freeAddrInfo(addrInfo_t *addrInfo) {
-    free(addrInfo->addrInfo);
-    free(addrInfo);
-}
-
-void freePacket(packet_t *packet) {
-    free(packet);
-}
-
-ssize_t buildPacket(packet_t *pduPacket, uint16_t payloadLen, uint32_t seqNum, uint8_t flag, uint8_t *data, ssize_t dataLen) {
+size_t
+buildPacket(packet_t *pduPacket, uint16_t payloadLen, uint32_t seqNum, uint8_t flag, uint8_t *data, size_t dataLen) {
 
     uint16_t checksum, pduLen = PDU_HEADER_LEN + dataLen;
 
@@ -139,4 +131,13 @@ ssize_t buildPacket(packet_t *pduPacket, uint16_t payloadLen, uint32_t seqNum, u
     pduPacket->checksum = checksum;
 
     return pduLen;
+}
+
+void freeAddrInfo(addrInfo_t *addrInfo) {
+    free(addrInfo->addrInfo);
+    free(addrInfo);
+}
+
+void freePacket(packet_t *packet) {
+    free(packet);
 }

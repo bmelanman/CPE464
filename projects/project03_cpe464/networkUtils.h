@@ -56,15 +56,19 @@ void *srealloc(void *ptr, size_t size);
 
 void *scalloc(size_t nmemb, size_t size);
 
-ssize_t safeRecvFrom(int socketNum, void *buf, int len, addrInfo_t *srcAddrInfo);
+size_t safeRecvFrom(int socketNum, void *buf, size_t len, addrInfo_t *srcAddrInfo);
 
-ssize_t safeSendTo(int socketNum, void *buf, int len, addrInfo_t *dstAddrInfo);
+size_t safeSendTo(int socketNum, void *buf, size_t len, addrInfo_t *dstAddrInfo);
 
 addrInfo_t *initAddrInfo(void);
 
 packet_t *initPacket(uint16_t payloadLen);
 
-ssize_t
-buildPacket(packet_t *pduPacket, uint16_t payloadLen, uint32_t seqNum, uint8_t flag, uint8_t *data, ssize_t dataLen);
+size_t
+buildPacket(packet_t *pduPacket, uint16_t payloadLen, uint32_t seqNum, uint8_t flag, uint8_t *data, size_t dataLen);
+
+void freeAddrInfo(addrInfo_t *addrInfo);
+
+void freePacket(packet_t *packet);
 
 #endif /* SAFEUTIL_H */

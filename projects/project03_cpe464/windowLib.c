@@ -96,6 +96,17 @@ uint8_t peekNextSeq_NO(circularQueue_t *queue, uint32_t seq_NO) {
     return 0;
 }
 
+void freeQueue(circularQueue_t *queue) {
+
+    /* Free each packet */
+    for (uint32_t i = 0; i < queue->size; ++i) {
+        free(queue->pktQueue[i]);
+    }
+
+    /* Free the queue struct */
+    free(queue);
+}
+
 circularWindow_t *createWindow(uint32_t windowSize, uint16_t bufferLen) {
 
     circularWindow_t *newWindow = scalloc(1, sizeof(circularWindow_t));
@@ -113,44 +124,6 @@ void addWindowPacket(circularWindow_t *window, packet_t *packet, uint16_t packet
     addQueuePacket(window->circQueue, packet, packetLen);
 }
 
-uint16_t getCurrentPacket(circularWindow_t *window, packet_t *packet) {
-
-    uint16_t len = window->circQueue->lenQueue[window->current % window->circQueue->size];
-
-    memcpy(packet, window->circQueue->pktQueue[window->current % window->circQueue->size], len);
-
-    window->circQueue->outputIdx++;
-
-    return len;
-}
-
-uint16_t getLowestPacket(circularWindow_t *window, packet_t *packet) {
-
-    uint16_t len = window->circQueue->lenQueue[window->lower % window->circQueue->size];
-
-    memcpy(packet, window->circQueue->pktQueue[window->lower % window->circQueue->size], len);
-
-    return len;
-}
-
-int getSeqPacket(circularWindow_t *window, uint32_t seqNum, packet_t *packet) {
-
-    uint16_t len = window->circQueue->lenQueue[seqNum % window->circQueue->size];
-
-    // TODO: REMOVE
-    if (seqNum < window->lower || window->upper < seqNum) {
-        fprintf(stderr,
-                "\nPacket %d has been requested, however lower is %d and upper is %d\n",
-                seqNum, window->lower, window->upper);
-        exit(EXIT_FAILURE);
-    }
-
-    /* Copy the packet contents */
-    memcpy(packet, window->circQueue->pktQueue[seqNum % window->circQueue->size], len);
-
-    return len;
-}
-
 uint16_t getWindowPacket(circularWindow_t *window, packet_t *packet, int pos) {
 
     uint16_t idx, len;
@@ -161,6 +134,8 @@ uint16_t getWindowPacket(circularWindow_t *window, packet_t *packet, int pos) {
 
     } else if (pos == WINDOW_CURRENT) {
         idx = window->current % window->circQueue->size;
+        window->circQueue->outputIdx++;
+        window->current++;
 
     } else if (pos < window->lower || window->upper < pos) {
         /* Error checking */
@@ -193,16 +168,6 @@ void resetCurrent(circularWindow_t *window) {
     window->current = window->lower;
 }
 
-void incrementCurrent(circularWindow_t *window) {
-
-    /* Don't go above the upper index */
-    if (window->current == window->upper) return;
-    else if (window->current > window->upper) window->current = window->upper;
-
-    /* Increment current index */
-    window->current++;
-}
-
 int getWindowSpace(circularWindow_t *window) {
 
     if (window->circQueue->inputIdx < window->upper) return 1;
@@ -215,5 +180,13 @@ int checkSendSpace(circularWindow_t *window) {
     if (window->current < window->upper) return 1;
 
     return 0;
+}
+
+void freeWindow(circularWindow_t *window) {
+
+    freeQueue(window->circQueue);
+
+    free(window);
+
 }
 
