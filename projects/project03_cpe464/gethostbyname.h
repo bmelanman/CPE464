@@ -8,15 +8,10 @@
 #define GETHOSTBYNAME_H
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include <netdb.h>
+#include <arpa/inet.h>
 
 unsigned char *gethostbyname6(const char *hostName, struct sockaddr_in6 *aSockaddr6);
-
-char *ipAddressToString(struct sockaddr_in6 *ipAddressStruct);
 
 #endif

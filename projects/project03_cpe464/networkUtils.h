@@ -3,9 +3,17 @@
 #ifndef SAFEUTIL_H
 #define SAFEUTIL_H
 
-/* pduLen is technically a part of the payload,
- * but we're using it as a part of the header
- * */
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <unistd.h>
+
+#include <memory.h>
+#include <errno.h>
+#include <netinet/in.h>
+
+#include "cpe464.h"
+
 #define PDU_HEADER_LEN 7
 #define MAX_PAYLOAD_LEN 1400
 
@@ -27,15 +35,15 @@
 #define TERM_ACK_PKT    12
 
 typedef struct addrInfo_s {
-    struct sockaddr_in6 *dstInfo;
     int addrLen;
+    struct sockaddr *addrInfo;
 } addrInfo_t;
 
 typedef struct pduPacket_s {
     uint32_t seq_NO;
     __attribute__((unused)) uint16_t checksum;
     uint8_t flag;
-    uint8_t *payload;
+    uint8_t payload[];
 } udpPacket_t;
 
 struct sockaddr;
@@ -48,6 +56,11 @@ int safeRecvFrom(int socketNum, void *buf, int len, addrInfo_t *srcAddr);
 
 int safeSendTo(int socketNum, void *buf, int len, addrInfo_t *dstInfo);
 
-int createPDU(udpPacket_t *pduPacket, uint32_t seqNum, uint8_t flag, uint8_t *payload, int payloadLen);
+addrInfo_t *initAddrInfo(void);
+
+udpPacket_t *initPacket(uint16_t bufferLen);
+
+int
+createPDU(udpPacket_t *pduPacket, uint16_t bufferLen, uint32_t seqNum, uint8_t flag, uint8_t *payload, int payloadLen);
 
 #endif /* SAFEUTIL_H */

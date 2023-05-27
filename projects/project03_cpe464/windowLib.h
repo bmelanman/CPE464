@@ -19,9 +19,9 @@ typedef struct windowStruct {
     circularQueue_t *circQueue;
 } circularWindow_t;
 
-circularQueue_t *createQueue(uint32_t len);
+circularQueue_t *createQueue(uint32_t len, uint16_t bufferLen);
 
-circularWindow_t *createWindow(uint32_t windowSize);
+circularWindow_t *createWindow(uint32_t windowSize, uint16_t bufferLen);
 
 void addQueuePacket(circularQueue_t *queue, udpPacket_t *packet, uint16_t packetLen);
 
@@ -33,7 +33,7 @@ uint16_t getCurrentPacket(circularWindow_t *window, udpPacket_t *packet);
 
 uint16_t getLowestPacket(circularWindow_t *window, udpPacket_t *packet);
 
-void getSeqPacket(circularWindow_t *window, uint32_t seqNum, udpPacket_t *packet);
+int getSeqPacket(circularWindow_t *window, uint32_t seqNum, udpPacket_t *packet);
 
 udpPacket_t *peekQueuePacket(circularQueue_t *queue);
 

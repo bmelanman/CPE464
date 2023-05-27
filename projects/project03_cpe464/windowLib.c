@@ -1,15 +1,20 @@
 
 #include "windowLib.h"
 
-circularQueue_t *createQueue(uint32_t len) {
+circularQueue_t *createQueue(uint32_t len, uint16_t bufferLen) {
 
     /* Allocate space for the new struct */
-    circularQueue_t *newQueue = malloc(sizeof(circularQueue_t));
+    circularQueue_t *newQueue = scalloc(1, sizeof(circularQueue_t));
 
     /* Allocate space for the queue */
-    newQueue->pktQueue = malloc(sizeof(udpPacket_t *) * len);
-    newQueue->lenQueue = malloc(sizeof(uint16_t) * len);
+    newQueue->pktQueue = scalloc(1, sizeof(udpPacket_t *) * len);
+    newQueue->lenQueue = scalloc(1, sizeof(uint16_t) * len);
     newQueue->size = len;
+
+    /* Allocate each queue entry now instead of later */
+    for (int i = 0; i < len; ++i) {
+        newQueue->pktQueue[i] = scalloc(1, bufferLen);
+    }
 
     /* Set variables to zero */
     newQueue->inputIdx = 0;
@@ -30,9 +35,6 @@ void addQueuePacket(circularQueue_t *queue, udpPacket_t *packet, uint16_t packet
         exit(EXIT_FAILURE);
     }
 
-    /* Make space for the packet */
-    queue->pktQueue[idx] = malloc(packetLen);
-
     /* Copy in the packet */
     memcpy(queue->pktQueue[idx], packet, packetLen);
 
@@ -45,20 +47,22 @@ void addQueuePacket(circularQueue_t *queue, udpPacket_t *packet, uint16_t packet
 
 udpPacket_t *peekQueuePacket(circularQueue_t *queue) {
     /* Returns the packet at the output index without moving on to the next */
-    return queue->pktQueue[(queue->outputIdx - 1) % queue->size];
+    return queue->pktQueue[queue->outputIdx % queue->size];
 }
 
 uint16_t getQueuePacket(circularQueue_t *queue, udpPacket_t *packet) {
 
-    uint16_t len = queue->lenQueue[(queue->outputIdx - 1) % queue->size];
+    /* Get the packet length from the fifo */
+    uint16_t len = queue->lenQueue[queue->outputIdx % queue->size];
 
-    /* Check if buffer is empty */
+    /* Check if the buffer is empty */
     if ((queue->outputIdx + 1) > queue->inputIdx) return 0;
 
-    /* Return the packet at the queue output, then move on to the next */
-    queue->outputIdx++;
+    /* Copy the packet over */
+    memcpy(packet, queue->pktQueue[queue->outputIdx % queue->size], len);
 
-    memcpy(packet, queue->pktQueue[(queue->outputIdx - 1) % queue->size], len);
+    /* Increment the location of the fifo output */
+    queue->outputIdx++;
 
     return len;
 }
@@ -92,11 +96,11 @@ uint8_t peekNextSeq_NO(circularQueue_t *queue, uint32_t seq_NO) {
     return 0;
 }
 
-circularWindow_t *createWindow(uint32_t windowSize) {
+circularWindow_t *createWindow(uint32_t windowSize, uint16_t bufferLen) {
 
-    circularWindow_t *newWindow = malloc(sizeof(circularWindow_t));
+    circularWindow_t *newWindow = scalloc(1, sizeof(circularWindow_t));
 
-    newWindow->circQueue = createQueue(windowSize);
+    newWindow->circQueue = createQueue(windowSize, bufferLen);
 
     newWindow->lower = 0;
     newWindow->current = 0;
@@ -129,7 +133,9 @@ uint16_t getLowestPacket(circularWindow_t *window, udpPacket_t *packet) {
     return len;
 }
 
-void getSeqPacket(circularWindow_t *window, uint32_t seqNum, udpPacket_t *packet) {
+int getSeqPacket(circularWindow_t *window, uint32_t seqNum, udpPacket_t *packet) {
+
+    uint16_t len = window->circQueue->lenQueue[seqNum % window->circQueue->size];
 
     // TODO: REMOVE
     if (seqNum < window->lower || window->upper < seqNum) {
@@ -139,12 +145,10 @@ void getSeqPacket(circularWindow_t *window, uint32_t seqNum, udpPacket_t *packet
         exit(EXIT_FAILURE);
     }
 
-//    TODO: change 1 to 0
-    /* Clear the packet */
-    memset(packet, 1, MAX_PDU_LEN);
-
     /* Copy the packet contents */
-    memcpy(packet, window->circQueue->pktQueue[seqNum % window->circQueue->size], MAX_PDU_LEN);
+    memcpy(packet, window->circQueue->pktQueue[seqNum % window->circQueue->size], len);
+
+    return len;
 }
 
 void moveWindow(circularWindow_t *window, uint16_t newLowerIdx) {

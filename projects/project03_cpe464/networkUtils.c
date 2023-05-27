@@ -1,13 +1,4 @@
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <memory.h>
-#include <sys/socket.h>
-#include <errno.h>
-#include <netinet/in.h>
-
-#include "cpe464.h"
-
 #include "networkUtils.h"
 
 void *srealloc(void *ptr, size_t size) {
@@ -35,7 +26,7 @@ int safeRecvFrom(int socketNum, void *buf, int len, addrInfo_t *srcAddr) {
     /* Receive a packet */
     ssize_t ret = recvfromErr(
             socketNum, buf, (size_t) len, 0,
-            (struct sockaddr *) srcAddr->dstInfo,
+            srcAddr->addrInfo,
             (socklen_t *) &srcAddr->addrLen
     );
 
@@ -53,7 +44,7 @@ int safeSendTo(int socketNum, void *buf, int len, addrInfo_t *dstInfo) {
     /* Send the packet */
     ssize_t ret = sendtoErr(
             socketNum, buf, len, 0,
-            (const struct sockaddr *) dstInfo->dstInfo,
+            dstInfo->addrInfo,
             dstInfo->addrLen
     );
 
@@ -66,45 +57,42 @@ int safeSendTo(int socketNum, void *buf, int len, addrInfo_t *dstInfo) {
     return (int) ret;
 }
 
-addrInfo_t *initAddrInfo(void) {
+addrInfo_t *initAddrInfo() {
 
-    addrInfo_t *a = malloc(sizeof(addrInfo_t));
+    addrInfo_t *a = scalloc(1, sizeof(addrInfo_t));
 
-    a->dstInfo = malloc(sizeof(struct sockaddr_in6));
-    a->addrLen = 0;
+    a->addrLen = sizeof(struct sockaddr_in6);
+
+    /* Ensure enough space is allocated for later typecasting */
+    a->addrInfo = scalloc(1, a->addrLen);
+
+    a->addrInfo->sa_family = AF_INET6;
 
     return a;
 }
 
-udpPacket_t *createPacket(uint16_t bufferLen) {
+udpPacket_t *initPacket(uint16_t bufferLen) {
 
-    udpPacket_t *p = NULL;
-
-    p->seq_NO = 0;
-    p->flag = 0;
-    p->checksum = 0;
-    p->payload = malloc(bufferLen);
-
-    return p;
+    /* Allocate space for the header plus the payload, which is a Flexible Array Member */
+    return (udpPacket_t *) scalloc(1, sizeof(udpPacket_t) + (sizeof(uint8_t) * bufferLen));
 }
 
-int createPDU(udpPacket_t *pduPacket, uint32_t seqNum, uint8_t flag, uint8_t *payload, int payloadLen) {
+int createPDU(udpPacket_t *pduPacket, uint16_t bufferLen, uint32_t seqNum,
+              uint8_t flag, uint8_t *payload, int payloadLen) {
 
-    uint16_t checksum, pduLen;
+    uint16_t checksum, pduLen = PDU_HEADER_LEN + payloadLen;
 
     /* Check inputs */
-    if (pduPacket == NULL || payloadLen > 1400) {
-        fprintf(stderr, "createPDU() err! Null buffers\n");
+    if (pduPacket == NULL) {
+        fprintf(stderr, "createPDU() err! Null packet struct\n");
+        exit(EXIT_FAILURE);
+    } else if (payloadLen > 1400) {
+        fprintf(stderr, "createPDU() err! Payload len > 1400\n");
+        exit(EXIT_FAILURE);
+    } else if (payload == NULL && payloadLen > 0) {
+        fprintf(stderr, "createPDU() err! Null payload with non-zero length\n");
         exit(EXIT_FAILURE);
     }
-
-    if (payload == NULL && payloadLen > 0) {
-        fprintf(stderr, "createPDU() err! Null buffers\n");
-        exit(EXIT_FAILURE);
-    }
-
-    /* Add the PDU header length */
-    pduLen = PDU_HEADER_LEN;
 
     /* Add the sequence in network order (4 bytes) */
     pduPacket->seq_NO = htonl(seqNum);
@@ -115,12 +103,11 @@ int createPDU(udpPacket_t *pduPacket, uint32_t seqNum, uint8_t flag, uint8_t *pa
     /* Add in the flag (1 byte) */
     pduPacket->flag = flag;
 
-    /* Clear extraneous data from payload */
-    memset(pduPacket->payload, 0, MAX_PAYLOAD_LEN);
+    /* Clear old data */
+    memset(pduPacket->payload, 0, bufferLen);
 
     /* Add in the payload */
     memcpy(pduPacket->payload, payload, payloadLen);
-    pduLen += payloadLen;
 
     /* Calculate the payload checksum */
     checksum = in_cksum((unsigned short *) pduPacket, pduLen);

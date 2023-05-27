@@ -2,7 +2,10 @@
 #ifndef LAB07_CPE464_RCOPY_H
 #define LAB07_CPE464_RCOPY_H
 
-#include <stdint.h>
+#include "gethostbyname.h"
+#include "networkUtils.h"
+#include "pollLib.h"
+#include "windowLib.h"
 
 #define ARGV_FROM_FILENAME  1
 #define ARGV_TO_FILENAME    2
@@ -11,6 +14,10 @@
 #define ARGV_ERR_RATE       5
 #define ARGV_HOST_NAME      6
 #define ARGV_HOST_PORT      7
+
+#define HS_IDX_BUFF_LEN     0
+#define HS_IDX_WIND_LEN     2
+#define HS_IDX_FILENAME     6
 
 typedef struct argsStruct {
     char *from_filename;
