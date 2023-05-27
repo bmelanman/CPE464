@@ -53,6 +53,10 @@ dkms.conf
 
 # CLion files
 */cmake-build-debug/*
+*.ninja*
+*log.*
+*.bin
+*.json
 
 # NVim
 /.backup/
