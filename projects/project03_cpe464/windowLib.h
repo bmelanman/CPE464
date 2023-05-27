@@ -4,8 +4,11 @@
 
 #include "networkUtils.h"
 
+#define WINDOW_LOWER (-1)
+#define WINDOW_CURRENT (-2)
+
 typedef struct circularQueueStruct {
-    udpPacket_t **pktQueue;
+    packet_t **pktQueue;
     uint16_t *lenQueue;
     uint16_t inputIdx;
     uint16_t outputIdx;
@@ -23,19 +26,19 @@ circularQueue_t *createQueue(uint32_t len, uint16_t bufferLen);
 
 circularWindow_t *createWindow(uint32_t windowSize, uint16_t bufferLen);
 
-void addQueuePacket(circularQueue_t *queue, udpPacket_t *packet, uint16_t packetLen);
+void addQueuePacket(circularQueue_t *queue, packet_t *packet, uint16_t packetLen);
 
-uint16_t getQueuePacket(circularQueue_t *queue, udpPacket_t *packet);
+uint16_t getQueuePacket(circularQueue_t *queue, packet_t *packet);
 
-void addWindowPacket(circularWindow_t *window, udpPacket_t *packet, uint16_t packetLen);
+void addWindowPacket(circularWindow_t *window, packet_t *packet, uint16_t packetLen);
 
-uint16_t getCurrentPacket(circularWindow_t *window, udpPacket_t *packet);
+uint16_t getCurrentPacket(circularWindow_t *window, packet_t *packet);
 
-uint16_t getLowestPacket(circularWindow_t *window, udpPacket_t *packet);
+uint16_t getLowestPacket(circularWindow_t *window, packet_t *packet);
 
-int getSeqPacket(circularWindow_t *window, uint32_t seqNum, udpPacket_t *packet);
+int getSeqPacket(circularWindow_t *window, uint32_t seqNum, packet_t *packet);
 
-udpPacket_t *peekQueuePacket(circularQueue_t *queue);
+packet_t *peekQueuePacket(circularQueue_t *queue);
 
 uint8_t peekNextSeq_NO(circularQueue_t *queue, uint32_t seq_NO);
 

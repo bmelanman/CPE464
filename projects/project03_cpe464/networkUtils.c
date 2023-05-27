@@ -2,59 +2,74 @@
 #include "networkUtils.h"
 
 void *srealloc(void *ptr, size_t size) {
-    void *returnValue = NULL;
 
-    if ((returnValue = realloc(ptr, size)) == NULL) {
-        printf("Error on realloc (tried for size: %d\n", (int) size);
+    void *ret = realloc(ptr, size);
+
+    if (ret == NULL) {
+        printf("Error using realloc with size %zu\n", size);
+        perror("srealloc");
         exit(EXIT_FAILURE);
     }
 
-    return returnValue;
+    return ret;
 }
 
-void *scalloc(size_t nmemb, size_t size) {
-    void *returnValue = NULL;
-    if ((returnValue = calloc(nmemb, size)) == NULL) {
-        perror("calloc");
+void *scalloc(size_t count, size_t size) {
+
+    void *ret = calloc(count, size);
+
+    if (ret == NULL) {
+        printf("Error using calloc with %zu items of size %zu\n", count, size);
+        perror("scalloc");
         exit(EXIT_FAILURE);
     }
-    return returnValue;
+
+    return ret;
 }
 
-int safeRecvFrom(int socketNum, void *buf, int len, addrInfo_t *srcAddr) {
+ssize_t safeRecvFrom(int socketNum, void *buf, int len, addrInfo_t *srcAddrInfo) {
 
     /* Receive a packet */
     ssize_t ret = recvfromErr(
             socketNum, buf, (size_t) len, 0,
-            srcAddr->addrInfo,
-            (socklen_t *) &srcAddr->addrLen
-    );
-
-    /* Check for errors */
-    if (ret < 0 && errno != EINTR) {
-        perror("recvFrom: ");
-        exit(EXIT_FAILURE);
-    }
-
-    return (int) ret;
-}
-
-int safeSendTo(int socketNum, void *buf, int len, addrInfo_t *dstInfo) {
-
-    /* Send the packet */
-    ssize_t ret = sendtoErr(
-            socketNum, buf, len, 0,
-            dstInfo->addrInfo,
-            dstInfo->addrLen
+            srcAddrInfo->addrInfo,
+            (socklen_t *) &srcAddrInfo->addrLen
     );
 
     /* Check for errors */
     if (ret < 0) {
-        perror("sendTo");
-        exit(EXIT_FAILURE);
+        if (errno != EINTR) {
+            printf("recvfrom was interrupted!\n");
+        } else {
+            perror("recvfrom");
+            exit(EXIT_FAILURE);
+        }
+
     }
 
-    return (int) ret;
+    return ret;
+}
+
+ssize_t safeSendTo(int socketNum, void *buf, int len, addrInfo_t *dstAddrInfo) {
+
+    /* Send the packet */
+    ssize_t ret = sendtoErr(
+            socketNum, buf, len, 0,
+            dstAddrInfo->addrInfo,
+            dstAddrInfo->addrLen
+    );
+
+    /* Check for errors */
+    if (ret < 0) {
+        if (errno != EINTR) {
+            printf("sendto was interrupted!\n");
+        } else {
+            perror("sendto");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    return ret;
 }
 
 addrInfo_t *initAddrInfo() {
@@ -71,26 +86,34 @@ addrInfo_t *initAddrInfo() {
     return a;
 }
 
-udpPacket_t *initPacket(uint16_t bufferLen) {
+packet_t *initPacket(uint16_t payloadLen) {
 
     /* Allocate space for the header plus the payload, which is a Flexible Array Member */
-    return (udpPacket_t *) scalloc(1, sizeof(udpPacket_t) + (sizeof(uint8_t) * bufferLen));
+    return (packet_t *) scalloc(1, sizeof(packet_t) + (sizeof(uint8_t) * payloadLen));
 }
 
-int createPDU(udpPacket_t *pduPacket, uint16_t bufferLen, uint32_t seqNum,
-              uint8_t flag, uint8_t *payload, int payloadLen) {
+void freeAddrInfo(addrInfo_t *addrInfo) {
+    free(addrInfo->addrInfo);
+    free(addrInfo);
+}
 
-    uint16_t checksum, pduLen = PDU_HEADER_LEN + payloadLen;
+void freePacket(packet_t *packet) {
+    free(packet);
+}
+
+ssize_t buildPacket(packet_t *pduPacket, uint16_t payloadLen, uint32_t seqNum, uint8_t flag, uint8_t *data, ssize_t dataLen) {
+
+    uint16_t checksum, pduLen = PDU_HEADER_LEN + dataLen;
 
     /* Check inputs */
     if (pduPacket == NULL) {
-        fprintf(stderr, "createPDU() err! Null packet struct\n");
+        fprintf(stderr, "buildPacket() err! Null packet struct\n");
         exit(EXIT_FAILURE);
-    } else if (payloadLen > 1400) {
-        fprintf(stderr, "createPDU() err! Payload len > 1400\n");
+    } else if (dataLen > 1400) {
+        fprintf(stderr, "buildPacket() err! Payload len > 1400\n");
         exit(EXIT_FAILURE);
-    } else if (payload == NULL && payloadLen > 0) {
-        fprintf(stderr, "createPDU() err! Null payload with non-zero length\n");
+    } else if (data == NULL && dataLen > 0) {
+        fprintf(stderr, "buildPacket() err! Null payload with non-zero length\n");
         exit(EXIT_FAILURE);
     }
 
@@ -104,10 +127,10 @@ int createPDU(udpPacket_t *pduPacket, uint16_t bufferLen, uint32_t seqNum,
     pduPacket->flag = flag;
 
     /* Clear old data */
-    memset(pduPacket->payload, 0, bufferLen);
+    memset(pduPacket->payload, 0, payloadLen);
 
     /* Add in the payload */
-    memcpy(pduPacket->payload, payload, payloadLen);
+    memcpy(pduPacket->payload, data, dataLen);
 
     /* Calculate the payload checksum */
     checksum = in_cksum((unsigned short *) pduPacket, pduLen);

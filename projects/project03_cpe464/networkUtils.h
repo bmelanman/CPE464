@@ -19,6 +19,10 @@
 
 #define MAX_PDU_LEN (MAX_PAYLOAD_LEN + PDU_HEADER_LEN)
 
+#define HS_IDX_BUFF_LEN     0
+#define HS_IDX_WIND_LEN     2
+#define HS_IDX_FILENAME     6
+
 #define SETUP_PKT       1
 #define SETUP_ACK_PKT   2
 
@@ -39,12 +43,12 @@ typedef struct addrInfo_s {
     struct sockaddr *addrInfo;
 } addrInfo_t;
 
-typedef struct pduPacket_s {
+typedef struct headerPayloadPacket_s {
     uint32_t seq_NO;
     __attribute__((unused)) uint16_t checksum;
     uint8_t flag;
     uint8_t payload[];
-} udpPacket_t;
+} packet_t;
 
 struct sockaddr;
 
@@ -52,15 +56,15 @@ void *srealloc(void *ptr, size_t size);
 
 void *scalloc(size_t nmemb, size_t size);
 
-int safeRecvFrom(int socketNum, void *buf, int len, addrInfo_t *srcAddr);
+ssize_t safeRecvFrom(int socketNum, void *buf, int len, addrInfo_t *srcAddrInfo);
 
-int safeSendTo(int socketNum, void *buf, int len, addrInfo_t *dstInfo);
+ssize_t safeSendTo(int socketNum, void *buf, int len, addrInfo_t *dstAddrInfo);
 
 addrInfo_t *initAddrInfo(void);
 
-udpPacket_t *initPacket(uint16_t bufferLen);
+packet_t *initPacket(uint16_t payloadLen);
 
-int
-createPDU(udpPacket_t *pduPacket, uint16_t bufferLen, uint32_t seqNum, uint8_t flag, uint8_t *payload, int payloadLen);
+ssize_t
+buildPacket(packet_t *pduPacket, uint16_t payloadLen, uint32_t seqNum, uint8_t flag, uint8_t *data, ssize_t dataLen);
 
 #endif /* SAFEUTIL_H */

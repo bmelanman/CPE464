@@ -15,10 +15,6 @@
 #define ARGV_HOST_NAME      6
 #define ARGV_HOST_PORT      7
 
-#define HS_IDX_BUFF_LEN     0
-#define HS_IDX_WIND_LEN     2
-#define HS_IDX_FILENAME     6
-
 typedef struct argsStruct {
     char *from_filename;
     char *to_filename;

@@ -7,7 +7,7 @@ circularQueue_t *createQueue(uint32_t len, uint16_t bufferLen) {
     circularQueue_t *newQueue = scalloc(1, sizeof(circularQueue_t));
 
     /* Allocate space for the queue */
-    newQueue->pktQueue = scalloc(1, sizeof(udpPacket_t *) * len);
+    newQueue->pktQueue = scalloc(1, sizeof(packet_t *) * len);
     newQueue->lenQueue = scalloc(1, sizeof(uint16_t) * len);
     newQueue->size = len;
 
@@ -23,7 +23,7 @@ circularQueue_t *createQueue(uint32_t len, uint16_t bufferLen) {
     return newQueue;
 }
 
-void addQueuePacket(circularQueue_t *queue, udpPacket_t *packet, uint16_t packetLen) {
+void addQueuePacket(circularQueue_t *queue, packet_t *packet, uint16_t packetLen) {
 
     uint16_t idx = queue->inputIdx % queue->size;
 
@@ -45,12 +45,12 @@ void addQueuePacket(circularQueue_t *queue, udpPacket_t *packet, uint16_t packet
     queue->inputIdx++;
 }
 
-udpPacket_t *peekQueuePacket(circularQueue_t *queue) {
+packet_t *peekQueuePacket(circularQueue_t *queue) {
     /* Returns the packet at the output index without moving on to the next */
     return queue->pktQueue[queue->outputIdx % queue->size];
 }
 
-uint16_t getQueuePacket(circularQueue_t *queue, udpPacket_t *packet) {
+uint16_t getQueuePacket(circularQueue_t *queue, packet_t *packet) {
 
     /* Get the packet length from the fifo */
     uint16_t len = queue->lenQueue[queue->outputIdx % queue->size];
@@ -109,11 +109,11 @@ circularWindow_t *createWindow(uint32_t windowSize, uint16_t bufferLen) {
     return newWindow;
 }
 
-void addWindowPacket(circularWindow_t *window, udpPacket_t *packet, uint16_t packetLen) {
+void addWindowPacket(circularWindow_t *window, packet_t *packet, uint16_t packetLen) {
     addQueuePacket(window->circQueue, packet, packetLen);
 }
 
-uint16_t getCurrentPacket(circularWindow_t *window, udpPacket_t *packet) {
+uint16_t getCurrentPacket(circularWindow_t *window, packet_t *packet) {
 
     uint16_t len = window->circQueue->lenQueue[window->current % window->circQueue->size];
 
@@ -124,7 +124,7 @@ uint16_t getCurrentPacket(circularWindow_t *window, udpPacket_t *packet) {
     return len;
 }
 
-uint16_t getLowestPacket(circularWindow_t *window, udpPacket_t *packet) {
+uint16_t getLowestPacket(circularWindow_t *window, packet_t *packet) {
 
     uint16_t len = window->circQueue->lenQueue[window->lower % window->circQueue->size];
 
@@ -133,7 +133,7 @@ uint16_t getLowestPacket(circularWindow_t *window, udpPacket_t *packet) {
     return len;
 }
 
-int getSeqPacket(circularWindow_t *window, uint32_t seqNum, udpPacket_t *packet) {
+int getSeqPacket(circularWindow_t *window, uint32_t seqNum, packet_t *packet) {
 
     uint16_t len = window->circQueue->lenQueue[seqNum % window->circQueue->size];
 
@@ -147,6 +147,38 @@ int getSeqPacket(circularWindow_t *window, uint32_t seqNum, udpPacket_t *packet)
 
     /* Copy the packet contents */
     memcpy(packet, window->circQueue->pktQueue[seqNum % window->circQueue->size], len);
+
+    return len;
+}
+
+uint16_t getWindowPacket(circularWindow_t *window, packet_t *packet, int pos) {
+
+    uint16_t idx, len;
+
+    /* Parse input for special flags */
+    if (pos == WINDOW_LOWER) {
+        idx = window->lower % window->circQueue->size;
+
+    } else if (pos == WINDOW_CURRENT) {
+        idx = window->current % window->circQueue->size;
+
+    } else if (pos < window->lower || window->upper < pos) {
+        /* Error checking */
+        fprintf(stderr, "\nPacket %d has been requested, however lower is %d and upper is %d\n",
+                pos, window->lower, window->upper);
+        exit(EXIT_FAILURE);
+
+    } else {
+        /* Otherwise, use the pos as an index */
+        idx = pos % window->circQueue->size;
+
+    }
+
+    /* Get the packet length */
+    len = window->circQueue->lenQueue[idx];
+
+    /* Copy the packet contents */
+    memcpy(packet, window->circQueue->pktQueue[idx], len);
 
     return len;
 }
