@@ -29,6 +29,11 @@ void *scalloc(size_t count, size_t size) {
 
 size_t safeRecvFrom(int socket, void *buf, size_t len, addrInfo_t *srcAddrInfo) {
 
+    /* Check if we need to make a temp address struct */
+    if (srcAddrInfo == NULL) {
+        srcAddrInfo = initAddrInfo();
+    }
+
     /* Receive a packet */
     ssize_t ret = recvfromErr(
             socket, buf, len, 0,

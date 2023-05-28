@@ -78,7 +78,7 @@ int udpServerSetup(int port) {
 
     /* Get the port number */
     getsockname(sock, (struct sockaddr *) serverAddr, (socklen_t *) &serverAddrLen);
-    printf("Server using Port #: %d\n", ntohs(serverAddr->sin6_port));
+    printf("Child server process using Port #: %d\n", ntohs(serverAddr->sin6_port));
 
     return sock;
 }
@@ -96,16 +96,10 @@ FILE *recvSetupInfo(int parentSocket, int childSocket, pollSet_t *pollSet, uint1
     FILE *fd = NULL;
 
     /** Connect the child process to the client **/
-    printf("Client connection request detected, initializing connection...\n");
 
     /* Add both sockets to the poll set */
     addToPollSet(pollSet, parentSocket);
     addToPollSet(pollSet, childSocket);
-
-    printf("Parent socket: %d\n"
-           "Child socket: %d\n",
-           parentSocket, childSocket
-    );
 
     /* Send the packet and wait for an Ack */
     while (1) {
@@ -120,8 +114,6 @@ FILE *recvSetupInfo(int parentSocket, int childSocket, pollSet_t *pollSet, uint1
         pollSock = pollCall(pollSet, POLL_1_SEC);
 
         if (pollSock == parentSocket) {
-
-            printf("Parent socket\n");
 
             /* Receive initial the client message */
             pktLen = safeRecvFrom(parentSocket, packet, pktLen + PDU_HEADER_LEN, clientInfo);
@@ -138,8 +130,6 @@ FILE *recvSetupInfo(int parentSocket, int childSocket, pollSet_t *pollSet, uint1
             }
 
         } else if (pollSock == childSocket) {
-
-            printf("Child socket\n");
 
             /* Receive the response */
             pktLen = safeRecvFrom(childSocket, packet, MAX_PDU_LEN, clientInfo);
@@ -176,7 +166,7 @@ FILE *recvSetupInfo(int parentSocket, int childSocket, pollSet_t *pollSet, uint1
     /* Error checking */
     if (fd == NULL) {
 
-        /* Prompt */
+        /* The client did not successfully send the file name, or timed out */
         printf("An error has occurred, connection terminated. \n");
 
         /* Make an ERR packet */
@@ -187,8 +177,6 @@ FILE *recvSetupInfo(int parentSocket, int childSocket, pollSet_t *pollSet, uint1
 
         return NULL;
     }
-
-    printf("Child sending Ack\n");
 
     /* Make an ACK packet */
     pktLen = buildPacket(packet, *bufferLen, 0, INFO_ACK_PKT, NULL, 0);
@@ -229,16 +217,6 @@ FILE *recvSetupInfo(int parentSocket, int childSocket, pollSet_t *pollSet, uint1
         }
     }
 
-    /* Prompt */
-    printf(
-            "Setup Complete!        \n"
-            "\tBuffer Size: %d      \n"
-            "\tWindow Size: %d      \n"
-            "\tto-filename: %s      \n"
-            "\n",
-            *bufferLen, windSize, to_filename
-    );
-
     /* Clear the packet Ack from the queue */
     getQueuePacket(*packetQueue, packet);
 
@@ -251,6 +229,7 @@ FILE *recvSetupInfo(int parentSocket, int childSocket, pollSet_t *pollSet, uint1
 
 void teardown(addrInfo_t *addrInfo, FILE *fd, circularQueue_t *queue, packet_t *packet) {
 
+    /* Teardown/Clean up */
     freeAddrInfo(addrInfo);
 
     fclose(fd);
@@ -278,7 +257,7 @@ int runServer(int parentSocket, int childSocket) {
     /* Receive setup info from the client */
     newFile = recvSetupInfo(parentSocket, childSocket, pollSet, &bufferLen, clientInfo, &packetQueue);
 
-    /* Initialize the data packet struct */
+    /* Re-initialize the data packet struct */
     packet = initPacket(bufferLen);
 
     /* Check for successful connection */
@@ -287,7 +266,7 @@ int runServer(int parentSocket, int childSocket) {
         return 1;
     }
 
-    printf("Receiving from client...\n");
+    printf("Receiving data from client...\n");
 
     /* Receive file data from client */
     while (1) {
@@ -411,8 +390,9 @@ int runServer(int parentSocket, int childSocket) {
 void runServerController(int port, float errorRate) {
 
     int pollSock, childSock, stat, numChildren = 0;
-    pid_t pid = 0, *children = malloc(sizeof(pid_t) * (numChildren + 1));
+    pid_t pid, *children = malloc(sizeof(pid_t) * (numChildren + 1));
     pollSet_t *pollSet = initPollSet();
+    packet_t *setupPacket = initPacket(0);
 
     /* Set up a parent socket */
     addToPollSet(pollSet, udpServerSetup(port));
@@ -420,15 +400,20 @@ void runServerController(int port, float errorRate) {
     /* Initialize sendErr() */
     sendErr_init(errorRate, DROP_ON, FLIP_ON, DEBUG_ON, RSEED_OFF);
 
+    /* Run server */
     while (!shutdownServer) {
 
         /* Wait for a client to connect */
         pollSock = pollCall(pollSet, POLL_BLOCK);
 
-        if (pid != 0) continue; // TODO: REMOVE
-
         /* Check poll for connections */
         if (pollSock != POLL_TIMEOUT) {
+
+            /* Grab the packet to clear the socket input */
+            safeRecvFrom(pollSock, setupPacket, PDU_HEADER_LEN, NULL);
+
+            /* Ignore packets that aren't setup packets */
+            if (setupPacket->flag != SETUP_PKT) continue;
 
             /* Create a child to complete the transfer */
             pid = fork();
@@ -460,15 +445,11 @@ void runServerController(int port, float errorRate) {
 
             } else {
 
-                printf("\nChild forked with PID %d\n", pid);
-
                 /* Add the child to the list of child PIDs */
                 children[numChildren++] = pid;
 
                 /* Increase the list size */
                 children = srealloc(children, sizeof(pid_t) * (numChildren + 1));
-
-                waitpid(pid, NULL, 0);
 
             }
         }
@@ -479,10 +460,11 @@ void runServerController(int port, float errorRate) {
         kill(children[i], SIGKILL);
     }
 
+    /* Clean up */
     free(children);
-
     freePollSet(pollSet);
 
+    // TODO: REMOVE
     printf("Clean close!\n");
 }
 

@@ -51,7 +51,6 @@ int main(int argc, char *argv[]) {
 
     /* Initialize the error rate library */
     sendErr_init(usrArgs.error_rate, DROP_ON, FLIP_ON, DEBUG_ON, RSEED_OFF);
-    printf("\n");
 
     /* Start the transfer process */
     runClient(socket, serverInfo, &usrArgs, fp);
@@ -147,8 +146,6 @@ void checkArgs(int argc, char *argv[], FILE **fp, runtimeArgs_t *usrArgs) {
 int setupUdpClientToServer(addrInfo_t *serverInfo, char *hostName, int hostPort) {
 
     int clientSocket;
-    char ipString[INET6_ADDRSTRLEN];
-    uint8_t *ipAddress = NULL;
 
     /* Open a new socket */
     clientSocket = socket(AF_INET6, SOCK_DGRAM, 0);
@@ -162,21 +159,7 @@ int setupUdpClientToServer(addrInfo_t *serverInfo, char *hostName, int hostPort)
     *((int *) serverInfo->addrInfo->sa_data) = htons(hostPort);
 
     /* Get the IP address */
-    ipAddress = gethostbyname6(hostName, (struct sockaddr_in6 *) serverInfo->addrInfo);
-
-    if (ipAddress == NULL) {
-        printf("IP address null?\n");
-        exit(EXIT_FAILURE);
-    }
-
-    /* TODO: Remove */
-    inet_ntop(AF_INET6, ipAddress, ipString, sizeof(ipString));
-    printf("Server info:     \n"
-           "\tIP: %s        \n"
-           "\tPort: %d      \n"
-           "\n",
-           ipString, hostPort
-    );
+    gethostbyname6(hostName, (struct sockaddr_in6 *) serverInfo->addrInfo);
 
     return clientSocket;
 }
@@ -460,29 +443,11 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
         if (packet->flag == TERM_CONN_PKT) break;
     }
 
-    /* Send the Ack until the server stops asking for it, or until 10 attempts have been made */
-    count = 0;
-    while (1) {
-        /* Only try 10 times */
-        if (count > 9) break;
+    /* Make a termination ACK packet */
+    pktLen = buildPacket(packet, buffLen, currentSeq, TERM_ACK_PKT, NULL, 0);
 
-        /* Make a termination ACK packet */
-        pktLen = buildPacket(packet, buffLen, currentSeq, TERM_ACK_PKT, NULL, 0);
-
-        /* Send the packet */
-        safeSendTo(socket, packet, pktLen, serverInfo);
-
-        /* Check for a response */
-        if (pollCall(pollSet, POLL_1_SEC) != POLL_TIMEOUT) {
-
-            /* Clear the response from the recv buffer */
-            safeRecvFrom(socket, packet, PDU_HEADER_LEN, serverInfo);
-
-            /* Increment number of attempts */
-            count++;
-
-        } else break;
-    }
+    /* Send the final Ack and hope the server gets it */
+    safeSendTo(socket, packet, pktLen, serverInfo);
 
     printf("File transfer has successfully completed!\n");
 
