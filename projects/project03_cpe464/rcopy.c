@@ -275,15 +275,12 @@ int setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, po
         }
     }
 
-    free(serverInfo);
+    /* Copy over the new child process server info */
+    memcpy(serverInfo->addrInfo, childInfo->addrInfo, sizeof(addrInfo_t));
+    serverInfo->addrLen = childInfo->addrLen;
 
-    serverInfo = childInfo;
-
-//    /* Copy over the new server info */
-//    memcpy(serverInfo, childInfo, sizeof(addrInfo_t));
-//
-//    /* Free the temp address struct */
-//    freeAddrInfo(childInfo);
+    /* Free the temp address struct */
+    freeAddrInfo(childInfo);
 
     return 0;
 

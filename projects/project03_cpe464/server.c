@@ -173,48 +173,6 @@ FILE *recvSetupInfo(int parentSocket, int childSocket, pollSet_t *pollSet, uint1
     /* Remove the parent socket, only the child socket is needed now */
     removeFromPollSet(pollSet, parentSocket);
 
-//    printf("Client is connected to child process!\n");
-//
-//    /** Get the buffer length, window size, and filename from the client **/
-//    printf("Waiting for client handshake data...\n");
-//
-//    while (1) {
-//
-//        if (count > 9) break;
-//
-//        /* Check for incoming data */
-//        if (pollCall(pollSet, POLL_1_SEC) == POLL_TIMEOUT) {
-//            printf("poll timed out waiting for handshake data!\n");
-//            count++;
-//            continue;
-//        }
-//
-//        printf("Child received packet\n");
-//
-//        /* Get new message */
-//        pktLen = safeRecvFrom(childSocket, packet, MAX_PDU_LEN, clientInfo);
-//
-//        /* Verify checksum and packet type */
-//        if (in_cksum((unsigned short *) packet, (int) pktLen) == 0 && packet->flag == INFO_PKT) {
-//
-//            printf("Child received transfer data \n");
-//
-//            /* Get the values from the payload */
-//            memcpy(bufferLen, (uint16_t *) &packet->payload[HS_IDX_BUFF_LEN], sizeof(uint16_t));
-//            memcpy(&windSize, (uint32_t *) &packet->payload[HS_IDX_WIND_LEN], sizeof(uint32_t));
-//            snprintf(to_filename, 100, "%s", &packet->payload[HS_IDX_FILENAME]);
-//
-//            /* Initialize the queue */
-//            *packetQueue = createQueue(windSize, *bufferLen);
-//
-//            /* Initialize the file pointer */
-//            fd = fopen(to_filename, "wb+");
-//
-//            /* Leave the loop */
-//            break;
-//        }
-//    }
-
     /* Error checking */
     if (fd == NULL) {
 
@@ -246,7 +204,7 @@ FILE *recvSetupInfo(int parentSocket, int childSocket, pollSet_t *pollSet, uint1
             return NULL;
         }
 
-        /* Get the termination packet */
+        /* Get the Ack packet */
         pktLen = peekQueuePacket(*packetQueue, packet);
 
         /* Send packet */
@@ -258,7 +216,7 @@ FILE *recvSetupInfo(int parentSocket, int childSocket, pollSet_t *pollSet, uint1
             /* Receive packet */
             pktLen = safeRecvFrom(childSocket, packet, *bufferLen + PDU_HEADER_LEN, clientInfo);
 
-            /* Check for termination ACK */
+            /* Check for response data */
             if (packet->flag == DATA_PKT) {
 
                 /* Save the packet for later */
@@ -453,7 +411,7 @@ int runServer(int parentSocket, int childSocket) {
 void runServerController(int port, float errorRate) {
 
     int pollSock, childSock, stat, numChildren = 0;
-    pid_t pid, *children = malloc(sizeof(pid_t) * (numChildren + 1));
+    pid_t pid = 0, *children = malloc(sizeof(pid_t) * (numChildren + 1));
     pollSet_t *pollSet = initPollSet();
 
     /* Set up a parent socket */
@@ -466,6 +424,8 @@ void runServerController(int port, float errorRate) {
 
         /* Wait for a client to connect */
         pollSock = pollCall(pollSet, POLL_BLOCK);
+
+        if (pid != 0) continue; // TODO: REMOVE
 
         /* Check poll for connections */
         if (pollSock != POLL_TIMEOUT) {
@@ -522,6 +482,8 @@ void runServerController(int port, float errorRate) {
     free(children);
 
     freePollSet(pollSet);
+
+    printf("Clean close!\n");
 }
 
 void checkArgs(int argc, char *argv[], float *errRate, int *port) {
