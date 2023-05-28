@@ -183,27 +183,65 @@ int setupUdpClientToServer(addrInfo_t *serverInfo, char *hostName, int hostPort)
 
 int setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, pollSet_t *pollSet) {
 
-    int pollSocket;
     uint16_t count = 1, filenameLen = strlen(usrArgs->to_filename) + 1;
     uint16_t payloadLen = sizeof(uint16_t) + sizeof(uint32_t) + filenameLen;
-    uint8_t *hsPayload = scalloc(1, payloadLen);
-    size_t pduLen;
+    uint8_t *payload = scalloc(1, payloadLen);
 
-    packet_t *hsPkt = initPacket(payloadLen);
+    addrInfo_t *childInfo = initAddrInfo();
+    packet_t *packet = initPacket(payloadLen);
+    size_t pktLen;
 
-    /* First, connect to the child socket */
+    /** Establish a connection with the child process **/
+    printf("Connecting to server child process...\n");
+
+    /* Send the packet and wait for an Ack */
+    while (1) {
+
+        /* Check for timeout */
+        if (count > 9) {
+            printf("Child process could not reach client\n");
+            return 1;
+        }
+
+        /* Make a setup packet */
+        pktLen = buildPacket(packet, 0, 0, SETUP_PKT, NULL, 0);
+
+        /* Send the setup packet */
+        safeSendTo(socket, packet, pktLen, serverInfo);
+
+        /* Check for socket activity */
+        if (pollCall(pollSet, POLL_1_SEC) != POLL_TIMEOUT) {
+
+            /* Get the server response message */
+            pktLen = safeRecvFrom(socket, packet, pktLen + PDU_HEADER_LEN, childInfo);
+
+            /* Verify the checksum and packet flag */
+            if (in_cksum((unsigned short *) packet, (int) pktLen) == 0 && packet->flag == SETUP_ACK_PKT) break;
+
+        } else {
+
+            /* Increment timeout */
+            count++;
+
+        }
+    }
+
+    printf("Connection established!\n");
+
+    /** Send the transfer info to the server **/
+    printf("Sending transmission info...\n");
 
     /* Add the buffer length to the payload */
-    memcpy(&hsPayload[HS_IDX_BUFF_LEN], &(usrArgs->buffer_size), sizeof(uint16_t));
+    memcpy(&payload[HS_IDX_BUFF_LEN], &(usrArgs->buffer_size), sizeof(uint16_t));
 
     /* Add the window size to the payload */
-    memcpy(&hsPayload[HS_IDX_WIND_LEN], &(usrArgs->window_size), sizeof(uint32_t));
+    memcpy(&payload[HS_IDX_WIND_LEN], &(usrArgs->window_size), sizeof(uint32_t));
 
     /* Add the to-filename to the payload */
-    memcpy(&hsPayload[HS_IDX_FILENAME], (usrArgs->to_filename), filenameLen);
+    memcpy(&payload[HS_IDX_FILENAME], (usrArgs->to_filename), filenameLen);
 
     /* Fill the PDU */
-    pduLen = buildPacket(hsPkt, payloadLen, 0, INFO_PKT, hsPayload, payloadLen);
+    pktLen = buildPacket(packet, payloadLen, 0, INFO_PKT, payload, payloadLen);
 
     /* Wait for the server to respond */
     while (1) {
@@ -215,23 +253,20 @@ int setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, po
         } else count++;
 
         /* Send the PDU */
-        safeSendTo(socket, (void *) hsPkt, pduLen, serverInfo);
+        safeSendTo(socket, (void *) packet, pktLen, childInfo);
 
-        /* Check poll */
-        pollSocket = pollCall(pollSet, POLL_1_SEC);
-
-        /* Check for time out */
-        if (pollSocket >= 0) {
+        /* Check of rsocket activity */
+        if (pollCall(pollSet, POLL_1_SEC) != POLL_TIMEOUT) {
 
             /* Receive packet */
-            pduLen = safeRecvFrom(pollSocket, (void *) hsPkt, MAX_PDU_LEN, serverInfo);
+            pktLen = safeRecvFrom(socket, (void *) packet, MAX_PDU_LEN, childInfo);
 
             /* Verify checksum */
-            if (in_cksum((unsigned short *) hsPkt, (int) pduLen) == 0) {
+            if (in_cksum((unsigned short *) packet, (int) pktLen) == 0) {
 
                 /* Check packet flag */
-                if (hsPkt->flag == INFO_ACK_PKT) return 0;
-                else if (hsPkt->flag == INFO_ERR_PKT) {
+                if (packet->flag == INFO_ACK_PKT) break;
+                else if (packet->flag == INFO_ERR_PKT) {
 
                     printf("The server was unable to create the new file, please try again. \n");
                     return 1;
@@ -239,6 +274,19 @@ int setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, po
             }
         }
     }
+
+    free(serverInfo);
+
+    serverInfo = childInfo;
+
+//    /* Copy over the new server info */
+//    memcpy(serverInfo, childInfo, sizeof(addrInfo_t));
+//
+//    /* Free the temp address struct */
+//    freeAddrInfo(childInfo);
+
+    return 0;
+
 }
 
 void teardown(int socket, runtimeArgs_t *usrArgs, pollSet_t *pollSet, FILE *fp) {

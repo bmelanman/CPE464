@@ -4,6 +4,7 @@
  * using modified code from Dr. Hugh Smith
  *  */
 
+#include <signal.h>
 #include "server.h"
 
 static volatile int shutdownServer = 0;
@@ -42,33 +43,44 @@ int main(int argc, char *argv[]) {
  * @return The server's socket
  */
 int udpServerSetup(int port) {
-    struct sockaddr_in6 serverAddress = {0};
-    int socketNum;
-    int serverAddrLen = 0;
+
+    int ret, serverAddrLen = sizeof(struct sockaddr_in6);
+    struct sockaddr_in6 *serverAddr = malloc(serverAddrLen);
 
     // create the socket
-    if ((socketNum = socket(AF_INET6, SOCK_DGRAM, 0)) < 0) {
+    int sock = socket(AF_INET6, SOCK_DGRAM, 0);
+
+    /* Error checking */
+    if (sock < 0) {
         perror("socket() call error");
-        exit(-1);
+        exit(EXIT_FAILURE);
+    }
+
+    /* Reuse address for easier debugging */
+    if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &(int) {1}, sizeof(int)) < 0) {
+        perror("setsockopt(SO_REUSEADDR) failed");
+        exit(EXIT_FAILURE);
     }
 
     // set up the socket
-    serverAddress.sin6_family = AF_INET6;            // internet (IPv6 or IPv4) family
-    serverAddress.sin6_addr = in6addr_any;        // use any local IP address
-    serverAddress.sin6_port = htons(port);   // if 0 = os picks
+    serverAddr->sin6_family = AF_INET6;   // internet (IPv6 or IPv4) family
+    serverAddr->sin6_addr = in6addr_any;  // use any local IP address
+    serverAddr->sin6_port = htons(port);  // if 0 = os picks
 
     // bind the name (address) to a port
-    if (bind(socketNum, (struct sockaddr *) &serverAddress, sizeof(serverAddress)) < 0) {
+    ret = bind(sock, (struct sockaddr *) serverAddr, serverAddrLen);
+
+    /* Error checking */
+    if (ret < 0) {
         perror("bind() call error");
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
 
     /* Get the port number */
-    serverAddrLen = sizeof(serverAddress);
-    getsockname(socketNum, (struct sockaddr *) &serverAddress, (socklen_t *) &serverAddrLen);
-    printf("Server using Port #: %d\n", ntohs(serverAddress.sin6_port));
+    getsockname(sock, (struct sockaddr *) serverAddr, (socklen_t *) &serverAddrLen);
+    printf("Server using Port #: %d\n", ntohs(serverAddr->sin6_port));
 
-    return socketNum;
+    return sock;
 }
 
 FILE *recvSetupInfo(int parentSocket, int childSocket, pollSet_t *pollSet, uint16_t *bufferLen, addrInfo_t *clientInfo,
@@ -104,6 +116,8 @@ FILE *recvSetupInfo(int parentSocket, int childSocket, pollSet_t *pollSet, uint1
 
         if (pollSock == parentSocket) {
 
+            printf("Parent socket\n");
+
             /* Receive initial the client message */
             pktLen = safeRecvFrom(parentSocket, packet, pktLen + PDU_HEADER_LEN, clientInfo);
 
@@ -120,11 +134,13 @@ FILE *recvSetupInfo(int parentSocket, int childSocket, pollSet_t *pollSet, uint1
 
         } else if (pollSock == childSocket) {
 
+            printf("Child socket\n");
+
             /* Receive the response */
-            pktLen = safeRecvFrom(childSocket, packet, pktLen + PDU_HEADER_LEN, clientInfo);
+            pktLen = safeRecvFrom(childSocket, packet, MAX_PDU_LEN, clientInfo);
 
             /* Verify the checksum and packet flag */
-            if (in_cksum((unsigned short *) packet, (int) pktLen) == 0 && packet->flag == SETUP_ACK_PKT) break;
+            if (in_cksum((unsigned short *) packet, (int) pktLen) == 0 && packet->flag == INFO_PKT) break;
 
         } else {
 
@@ -409,7 +425,8 @@ int runServer(int parentSocket, int childSocket) {
 
 void runServerController(int port, float errorRate) {
 
-    int pollSock, childSock, stat, pid;
+    int pollSock, childSock, stat, numChildren = 0;
+    pid_t pid, *children = malloc(sizeof(pid_t) * (numChildren + 1));
     pollSet_t *pollSet = initPollSet();
 
     /* Set up a parent socket */
@@ -442,13 +459,7 @@ void runServerController(int port, float errorRate) {
                 sendErr_init(errorRate, DROP_ON, FLIP_ON, DEBUG_ON, RSEED_OFF);
 
                 /* Make a new socket for the child process */
-                childSock = udpServerSetup(port);
-
-                /* Error checking */
-                if (childSock == -1) {
-                    printf("Child process could not initialize a new socket!\n");
-                    exit(EXIT_SUCCESS);
-                }
+                childSock = udpServerSetup(0);
 
                 /* Run the child server to start the transfer */
                 stat = runServer(pollSock, childSock);
@@ -461,10 +472,25 @@ void runServerController(int port, float errorRate) {
                 exit(EXIT_SUCCESS);
 
             } else {
-                waitpid(pid, NULL, 0); // TODO: REMOVE
+
+                printf("\nChild forked with PID %d\n", pid);
+
+                /* Add the child to the list of child PIDs */
+                children[numChildren++] = pid;
+
+                /* Increase the list size */
+                children = srealloc(children, sizeof(pid_t) * (numChildren + 1));
+
             }
         }
     }
+
+    /* Close children */
+    for (int i = 0; i < numChildren; ++i) {
+        kill(children[i], SIGKILL);
+    }
+
+    free(children);
 
     freePollSet(pollSet);
 }

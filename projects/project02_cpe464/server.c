@@ -51,7 +51,7 @@ int tcpServerSetup(int serverPort) {
     /* Hugh Smith - April 2017 */
 
     int mainServerSocket;
-    struct sockaddr_in6 serverAddress;
+    struct sockaddr_in6 serverAddress = {0};
     socklen_t serverAddressLen = sizeof(serverAddress);
 
     mainServerSocket = socket(AF_INET6, SOCK_STREAM, 0);
@@ -64,7 +64,6 @@ int tcpServerSetup(int serverPort) {
         perror("setsockopt(SO_REUSEADDR) failed");
     }
 
-    memset(&serverAddress, 0, sizeof(struct sockaddr_in6));
     serverAddress.sin6_family = AF_INET6;
     serverAddress.sin6_addr = in6addr_any;
     serverAddress.sin6_port = htons(serverPort);
