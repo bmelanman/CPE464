@@ -65,12 +65,12 @@ void addToPollSet(pollSet_t *pollSet, int socketNumber) {
     pollSet->pollFds[socketNumber].events = POLLIN;
 }
 
-__attribute__((unused)) void removeFromPollSet(pollSet_t *pollSet, int socketNumber) {
+void removeFromPollSet(pollSet_t *pollSet, int socketNumber) {
     /* Clear out the old info */
     pollSet->pollFds[socketNumber].fd = -1;
     pollSet->pollFds[socketNumber].events = -1;
     /* Close the socket as well */
-    close(socketNumber);
+//    close(socketNumber);
 }
 
 int pollCall(pollSet_t *pollSet, int timeInMilliSeconds) {
