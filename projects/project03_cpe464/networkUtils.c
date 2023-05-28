@@ -27,11 +27,11 @@ void *scalloc(size_t count, size_t size) {
     return ret;
 }
 
-size_t safeRecvFrom(int socketNum, void *buf, size_t len, addrInfo_t *srcAddrInfo) {
+size_t safeRecvFrom(int socket, void *buf, size_t len, addrInfo_t *srcAddrInfo) {
 
     /* Receive a packet */
     ssize_t ret = recvfromErr(
-            socketNum, buf, len, 0,
+            socket, buf, len, 0,
             srcAddrInfo->addrInfo,
             (socklen_t *) &srcAddrInfo->addrLen
     );
@@ -50,11 +50,11 @@ size_t safeRecvFrom(int socketNum, void *buf, size_t len, addrInfo_t *srcAddrInf
     return (size_t) ret;
 }
 
-size_t safeSendTo(int socketNum, void *buf, size_t len, addrInfo_t *dstAddrInfo) {
+size_t safeSendTo(int socket, void *buf, size_t len, addrInfo_t *dstAddrInfo) {
 
     /* Send the packet */
     ssize_t ret = sendtoErr(
-            socketNum, buf, (int) len, 0,
+            socket, buf, (int) len, 0,
             dstAddrInfo->addrInfo,
             dstAddrInfo->addrLen
     );
@@ -93,12 +93,12 @@ packet_t *initPacket(uint16_t payloadLen) {
 }
 
 size_t
-buildPacket(packet_t *pduPacket, uint16_t payloadLen, uint32_t seqNum, uint8_t flag, uint8_t *data, size_t dataLen) {
+buildPacket(packet_t *packet, uint16_t payloadLen, uint32_t seqNum, uint8_t flag, uint8_t *data, size_t dataLen) {
 
     uint16_t checksum, pduLen = PDU_HEADER_LEN + dataLen;
 
     /* Check inputs */
-    if (pduPacket == NULL) {
+    if (packet == NULL) {
         fprintf(stderr, "buildPacket() err! Null packet struct\n");
         exit(EXIT_FAILURE);
     } else if (dataLen > 1400) {
@@ -110,25 +110,25 @@ buildPacket(packet_t *pduPacket, uint16_t payloadLen, uint32_t seqNum, uint8_t f
     }
 
     /* Add the sequence in network order (4 bytes) */
-    pduPacket->seq_NO = htonl(seqNum);
+    packet->seq_NO = htonl(seqNum);
 
     /* Set the checksum to 0 for now (2 bytes) */
-    pduPacket->checksum = 0;
+    packet->checksum = 0;
 
     /* Add in the flag (1 byte) */
-    pduPacket->flag = flag;
+    packet->flag = flag;
 
     /* Clear old data */
-    memset(pduPacket->payload, 0, payloadLen);
+    memset(packet->payload, 0, payloadLen);
 
     /* Add in the payload */
-    memcpy(pduPacket->payload, data, dataLen);
+    memcpy(packet->payload, data, dataLen);
 
     /* Calculate the payload checksum */
-    checksum = in_cksum((unsigned short *) pduPacket, pduLen);
+    checksum = in_cksum((unsigned short *) packet, pduLen);
 
     /* Put the checksum into the PDU */
-    pduPacket->checksum = checksum;
+    packet->checksum = checksum;
 
     return pduLen;
 }
@@ -136,8 +136,4 @@ buildPacket(packet_t *pduPacket, uint16_t payloadLen, uint32_t seqNum, uint8_t f
 void freeAddrInfo(addrInfo_t *addrInfo) {
     free(addrInfo->addrInfo);
     free(addrInfo);
-}
-
-void freePacket(packet_t *packet) {
-    free(packet);
 }

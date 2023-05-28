@@ -19,6 +19,8 @@
 
 #define MAX_PDU_LEN (MAX_PAYLOAD_LEN + PDU_HEADER_LEN)
 
+#define CHILD_PROCESS 0
+
 #define HS_IDX_BUFF_LEN     0
 #define HS_IDX_WIND_LEN     2
 #define HS_IDX_FILENAME     6
@@ -54,21 +56,19 @@ struct sockaddr;
 
 void *srealloc(void *ptr, size_t size);
 
-void *scalloc(size_t nmemb, size_t size);
+void *scalloc(size_t count, size_t size);
 
-size_t safeRecvFrom(int socketNum, void *buf, size_t len, addrInfo_t *srcAddrInfo);
+size_t safeRecvFrom(int socket, void *buf, size_t len, addrInfo_t *srcAddrInfo);
 
-size_t safeSendTo(int socketNum, void *buf, size_t len, addrInfo_t *dstAddrInfo);
+size_t safeSendTo(int socket, void *buf, size_t len, addrInfo_t *dstAddrInfo);
 
 addrInfo_t *initAddrInfo(void);
 
 packet_t *initPacket(uint16_t payloadLen);
 
 size_t
-buildPacket(packet_t *pduPacket, uint16_t payloadLen, uint32_t seqNum, uint8_t flag, uint8_t *data, size_t dataLen);
+buildPacket(packet_t *packet, uint16_t payloadLen, uint32_t seqNum, uint8_t flag, uint8_t *data, size_t dataLen);
 
 void freeAddrInfo(addrInfo_t *addrInfo);
-
-void freePacket(packet_t *packet);
 
 #endif /* SAFEUTIL_H */

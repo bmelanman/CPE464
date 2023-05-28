@@ -32,15 +32,9 @@ uint16_t getQueuePacket(circularQueue_t *queue, packet_t *packet);
 
 void addWindowPacket(circularWindow_t *window, packet_t *packet, uint16_t packetLen);
 
-//uint16_t getCurrentPacket(circularWindow_t *window, packet_t *packet);
-//
-//uint16_t getLowestPacket(circularWindow_t *window, packet_t *packet);
-//
-//int getSeqPacket(circularWindow_t *window, uint32_t seqNum, packet_t *packet);
-
 uint16_t getWindowPacket(circularWindow_t *window, packet_t *packet, int pos);
 
-packet_t *peekQueuePacket(circularQueue_t *queue);
+uint16_t peekQueuePacket(circularQueue_t *queue, packet_t *packet);
 
 uint8_t peekNextSeq_NO(circularQueue_t *queue, uint32_t seq_NO);
 
@@ -48,7 +42,7 @@ void moveWindow(circularWindow_t *window, uint16_t newLowerIdx);
 
 int getWindowSpace(circularWindow_t *window);
 
-int checkSendSpace(circularWindow_t *window);
+int checkWindowOpen(circularWindow_t *window);
 
 void resetCurrent(circularWindow_t *window);
 

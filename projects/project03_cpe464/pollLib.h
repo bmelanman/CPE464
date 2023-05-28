@@ -11,10 +11,11 @@
 
 /* TODO: REMOVE */
 #define POLL_BLOCK (-1)
-//#define POLL_1_SEC 1000
-//#define POLL_10_SEC 10000
-#define POLL_1_SEC (-1)
-#define POLL_10_SEC (-1)
+#define POLL_NON_BLOCK 0
+#define POLL_1_SEC 1000
+#define POLL_10_SEC 10000
+//#define POLL_1_SEC (-1)
+//#define POLL_10_SEC (-1)
 
 typedef struct pollSetStruct {
     struct pollfd *pollFds;
@@ -22,7 +23,7 @@ typedef struct pollSetStruct {
     int pollSetSize;
 } pollSet_t;
 
-pollSet_t * newPollSet(void);
+pollSet_t * initPollSet(void);
 
 void addToPollSet(pollSet_t *pollSet, int socketNumber);
 

@@ -29,8 +29,7 @@ void addQueuePacket(circularQueue_t *queue, packet_t *packet, uint16_t packetLen
 
     /* The buffer is circular, check is there is available space */
     if (queue->inputIdx == (queue->outputIdx + queue->size)) return;
-    else if (queue->inputIdx > (queue->outputIdx + queue->size)) {
-        // TODO: Error checking, remove
+    else if (queue->inputIdx > (queue->outputIdx + queue->size)) { // TODO: Error checking, remove
         fprintf(stderr, "Somehow, the input index has moved past the size of the buffer and data is likely corrupt.\n");
         exit(EXIT_FAILURE);
     }
@@ -45,12 +44,7 @@ void addQueuePacket(circularQueue_t *queue, packet_t *packet, uint16_t packetLen
     queue->inputIdx++;
 }
 
-packet_t *peekQueuePacket(circularQueue_t *queue) {
-    /* Returns the packet at the output index without moving on to the next */
-    return queue->pktQueue[queue->outputIdx % queue->size];
-}
-
-uint16_t getQueuePacket(circularQueue_t *queue, packet_t *packet) {
+uint16_t peekQueuePacket(circularQueue_t *queue, packet_t *packet) {
 
     /* Get the packet length from the fifo */
     uint16_t len = queue->lenQueue[queue->outputIdx % queue->size];
@@ -60,6 +54,14 @@ uint16_t getQueuePacket(circularQueue_t *queue, packet_t *packet) {
 
     /* Copy the packet over */
     memcpy(packet, queue->pktQueue[queue->outputIdx % queue->size], len);
+
+    return len;
+}
+
+uint16_t getQueuePacket(circularQueue_t *queue, packet_t *packet) {
+
+    /* Get the packet */
+    uint16_t len = peekQueuePacket(queue, packet);
 
     /* Increment the location of the fifo output */
     queue->outputIdx++;
@@ -83,8 +85,7 @@ uint8_t peekNextSeq_NO(circularQueue_t *queue, uint32_t seq_NO) {
 
         } else if (queue->pktQueue[start]->seq_NO < seq_NO) {
             /* Flush the packet if it is lower */
-            queue->outputIdx++;
-            start = queue->outputIdx % queue->size;
+            start = (++queue->outputIdx) % queue->size;
 
         } else {
             /* The packet was not found */
@@ -175,7 +176,7 @@ int getWindowSpace(circularWindow_t *window) {
     return 0;
 }
 
-int checkSendSpace(circularWindow_t *window) {
+int checkWindowOpen(circularWindow_t *window) {
 
     if (window->current < window->upper) return 1;
 
