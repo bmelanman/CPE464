@@ -368,7 +368,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
 
 void runServerController(int port, float errorRate) {
 
-    int pollSock, childSock, stat, numChildren = 0;
+    int pollSock, childSock, stat, numChildren = 0, i;
 
     pollSet_t *pollSet = initPollSet();
     packet_t *setupPacket = initPacket(0);
@@ -392,7 +392,6 @@ void runServerController(int port, float errorRate) {
         if (pollSock != POLL_TIMEOUT) {
 
             /* Set up a new info struct */
-//            childAddrInfo[numChildren] = initAddrInfo();
             clientInfo = initAddrInfo();
 
             /* Grab the packet to get the client info for the child process */
@@ -443,7 +442,7 @@ void runServerController(int port, float errorRate) {
     }
 
     /* Close children */
-    for (int i = 0; i < numChildren; ++i) {
+    for (i = 0; i < numChildren; ++i) {
         kill(children[i], SIGKILL);
     }
 
