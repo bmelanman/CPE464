@@ -20,7 +20,7 @@ link_libraries(
 # Adding the given custom library
 add_definitions(-D__LIBCPE464_)
 link_libraries(
-        ${PROJECT_SOURCE_DIR}/given_files/libcpe464.2.21.a stdc++ dl
+        ${PROJECT_SOURCE_DIR}/libcpe464.2.21.a stdc++ dl
 )
 
 # UDP Client

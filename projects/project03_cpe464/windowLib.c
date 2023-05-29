@@ -142,6 +142,9 @@ uint16_t getWindowPacket(circularWindow_t *window, packet_t *packet, int pos) {
         window->circQueue->outputIdx++;
         window->current++;
 
+    } else if (pos == WINDOW_CURRENT_NO_INC) {
+        idx = window->current % window->circQueue->size;
+
     } else if (pos < window->lower || window->upper < pos) {
         /* Error checking */
         fprintf(stderr, "\nPacket %d has been requested, however lower is %d and upper is %d\n",

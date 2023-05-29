@@ -6,6 +6,7 @@
 
 #define WINDOW_LOWER (-1)
 #define WINDOW_CURRENT (-2)
+#define WINDOW_CURRENT_NO_INC (-3)
 
 typedef struct circularQueueStruct {
     packet_t **pktQueue;

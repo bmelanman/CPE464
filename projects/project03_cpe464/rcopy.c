@@ -421,7 +421,20 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
             } else if (packet->flag == DATA_ACK_PKT || packet->flag == TERM_CONN_PKT) {
 
                 /* EOF waits until all RRs are received */
-                if (eof == 1 && packet->flag != TERM_CONN_PKT) continue;
+                if (eof == 1 && packet->flag != TERM_CONN_PKT) {
+
+                    /* Re-send EOF if a timeout occurred */
+                    if (count > 0) {
+
+                        recvSeq = htonl(*((uint32_t *) packet->payload)) + 1;
+
+                        pktLen = getWindowPacket(packetWindow, packet, (int) recvSeq);
+                        safeSendTo(socket, packet, pktLen, serverInfo);
+
+                    }
+
+                    continue;
+                }
 
                 /* Get the RRs sequence number */
                 recvSeq = htonl(*((uint32_t *) packet->payload));
@@ -431,8 +444,8 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
 
                 /* Once the window moves, we can send another packet */
                 break;
-            }
-            /* Packets without the Ack or SRej flag are ignored */
+
+            } /* Packets without the Ack or SRej flag are ignored */
 
             /* Reset count */
             if (count > 0) {
