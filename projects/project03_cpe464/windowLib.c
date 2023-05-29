@@ -3,6 +3,8 @@
 
 circularQueue_t *createQueue(uint32_t len, uint16_t bufferLen) {
 
+    uint32_t i;
+
     /* Allocate space for the new struct */
     circularQueue_t *newQueue = scalloc(1, sizeof(circularQueue_t));
 
@@ -12,7 +14,7 @@ circularQueue_t *createQueue(uint32_t len, uint16_t bufferLen) {
     newQueue->size = len;
 
     /* Allocate each queue entry now instead of later */
-    for (int i = 0; i < len; ++i) {
+    for (i = 0; i < len; ++i) {
         newQueue->pktQueue[i] = scalloc(1, bufferLen);
     }
 
@@ -99,8 +101,10 @@ uint8_t peekNextSeq_NO(circularQueue_t *queue, uint32_t seq_NO) {
 
 void freeQueue(circularQueue_t *queue) {
 
+    uint32_t i;
+
     /* Free each packet */
-    for (uint32_t i = 0; i < queue->size; ++i) {
+    for (i = 0; i < queue->size; ++i) {
         free(queue->pktQueue[i]);
     }
 
