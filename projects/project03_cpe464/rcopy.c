@@ -269,7 +269,7 @@ int setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, po
 
 }
 
-void teardown(int socket, runtimeArgs_t *usrArgs, pollSet_t *pollSet, FILE *fp) {
+void teardown(int socket, runtimeArgs_t *usrArgs, pollSet_t *pollSet, circularWindow_t *window, FILE *fp) {
 
     close(socket);
 
@@ -278,6 +278,8 @@ void teardown(int socket, runtimeArgs_t *usrArgs, pollSet_t *pollSet, FILE *fp) 
     free(usrArgs->to_filename);
     free(usrArgs->from_filename);
     free(usrArgs->host_name);
+
+    freeWindow(window);
 
     fclose(fp);
 }
@@ -299,7 +301,7 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
 
     /* Send the server the necessary transfer details */
     if (setupTransfer(socket, serverInfo, usrArgs, pollSet) != 0) {
-        teardown(socket, usrArgs, pollSet, fp);
+        teardown(socket, usrArgs, pollSet, packetWindow, fp);
         return;
     }
 
@@ -313,7 +315,7 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
         /* Monitor connection */
         if (count > 9) {
             printf("Server has disconnected, shutting down...\n");
-            teardown(socket, usrArgs, pollSet, fp);
+            teardown(socket, usrArgs, pollSet, packetWindow, fp);
             return;
         }
 
@@ -462,5 +464,5 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
     }
 
     /* Clean up! */
-    teardown(socket, usrArgs, pollSet, fp);
+    teardown(socket, usrArgs, pollSet, packetWindow, fp);
 }

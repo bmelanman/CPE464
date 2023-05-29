@@ -44,8 +44,6 @@ int getWindowSpace(circularWindow_t *window);
 
 int checkWindowOpen(circularWindow_t *window);
 
-void resetCurrent(circularWindow_t *window);
-
 void freeQueue(circularQueue_t *queue);
 
 void freeWindow(circularWindow_t *window);

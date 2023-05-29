@@ -165,10 +165,6 @@ void moveWindow(circularWindow_t *window, uint16_t newLowerIdx) {
     window->upper = newLowerIdx + window->circQueue->size;
 }
 
-void resetCurrent(circularWindow_t *window) {
-    window->current = window->lower;
-}
-
 int getWindowSpace(circularWindow_t *window) {
 
     if (window->circQueue->inputIdx < window->upper) return 1;

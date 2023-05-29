@@ -70,7 +70,7 @@ void removeFromPollSet(pollSet_t *pollSet, int socketNumber) {
     pollSet->pollFds[socketNumber].fd = -1;
     pollSet->pollFds[socketNumber].events = -1;
     /* Close the socket as well */
-//    close(socketNumber);
+    close(socketNumber);
 }
 
 int pollCall(pollSet_t *pollSet, int timeInMilliSeconds) {

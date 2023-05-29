@@ -8,7 +8,7 @@ CC= gcc
 CFLAGS= -g -Wall -D__LIBCPE464_
 LIBS = libcpe464.2.21.a -lstdc++ -ldl
 
-OBJS = networks.o gethostbyname.o safeUtil.o udpPDU.o
+OBJS = networkUtils.o gethostbyname.o pollLib.o windowLib.o
 
 all: libcpe rcopy server cleano
 
