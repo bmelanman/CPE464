@@ -344,7 +344,8 @@ ssize_t PacketManager::sendto_Err(int s, void *buf, size_t len, int flags,
 
     uint32_t seqNo = ntohl(*(uint32_t*)(buf));
     uint8_t packetFlags = ((char *) buf)[6];
-    MSG_PRINT("SEND MSG# %3u SEQ# %3u LEN %4u FLAGS %d ", m_MsgNo, seqNo, len, packetFlags); 
+
+    MSG_PRINT("PORT# %d SEND MSG# %3u SEQ# %3u LEN %4u FLAGS %d ", ntohs(*((uint16_t *) to->sa_data)), m_MsgNo, seqNo, len, packetFlags);
  	printType(packetFlags, (char *)buf);  
 	
     size_t lenTmp = len;

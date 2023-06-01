@@ -48,14 +48,14 @@ void addQueuePacket(circularQueue_t *queue, packet_t *packet, uint16_t packetLen
 
 uint16_t peekQueuePacket(circularQueue_t *queue, packet_t *packet) {
 
-    /* Get the packet length from the fifo */
-    uint16_t len = queue->lenQueue[queue->outputIdx % queue->size];
+    /* Check if the fifo is empty */
+    if (queue->outputIdx >= queue->inputIdx) return 0;
 
-    /* Check if the buffer is empty */
-    if ((queue->outputIdx + 1) > queue->inputIdx) return 0;
+    uint16_t idx = queue->outputIdx % queue->size;
+    uint16_t len = queue->lenQueue[idx];
 
     /* Copy the packet over */
-    memcpy(packet, queue->pktQueue[queue->outputIdx % queue->size], len);
+    memcpy(packet, queue->pktQueue[idx], len);
 
     return len;
 }

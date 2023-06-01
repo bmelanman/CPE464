@@ -34,6 +34,16 @@ size_t safeRecvFrom(int socket, void *buf, size_t len, addrInfo_t *srcAddrInfo) 
         srcAddrInfo = initAddrInfo();
     }
 
+//    printf("\n"
+//           "recvfromErr args:   \n"
+//           "Socket: %d          \n"
+//           "Packet Flag: %d     \n"
+//           "Len: %zu            \n"
+//           "Port: %d            \n\n",
+//           socket, ((packet_t *) buf)->flag, len,
+//           ntohs(*((uint16_t *) srcAddrInfo->addrInfo->sa_data))
+//    );
+
     /* Receive a packet */
     ssize_t ret = recvfromErr(
             socket, buf, len, 0,
@@ -57,12 +67,18 @@ size_t safeRecvFrom(int socket, void *buf, size_t len, addrInfo_t *srcAddrInfo) 
 
 size_t safeSendTo(int socket, void *buf, size_t len, addrInfo_t *dstAddrInfo) {
 
+    if (len < 1) {
+        return 0;
+    }
+
     /* Send the packet */
     ssize_t ret = sendtoErr(
             socket, buf, (int) len, 0,
             dstAddrInfo->addrInfo,
             dstAddrInfo->addrLen
     );
+
+    printf("B\n");
 
     /* Check for errors */
     if (ret < 0) {

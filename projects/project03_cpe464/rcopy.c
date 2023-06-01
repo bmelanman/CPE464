@@ -10,7 +10,7 @@ void checkArgs(int argc, char *argv[], FILE **fp, runtimeArgs_t *usrArgs);
 
 int setupUdpClientToServer(addrInfo_t *serverInfo, char *hostName, int hostPort);
 
-int setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, pollSet_t *pollSet);
+addrInfo_t *setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, pollSet_t *pollSet);
 
 void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE *fp);
 
@@ -164,7 +164,7 @@ int setupUdpClientToServer(addrInfo_t *serverInfo, char *hostName, int hostPort)
     return clientSocket;
 }
 
-int setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, pollSet_t *pollSet) {
+addrInfo_t *setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, pollSet_t *pollSet) {
 
     uint16_t count = 1, filenameLen = strlen(usrArgs->to_filename) + 1;
     uint16_t payloadLen = sizeof(uint16_t) + sizeof(uint32_t) + filenameLen;
@@ -183,7 +183,7 @@ int setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, po
         /* Check for timeout */
         if (count > 9) {
             printf("Child process could not reach client\n");
-            return 1;
+            return NULL;
         }
 
         /* Make a setup packet */
@@ -214,13 +214,13 @@ int setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, po
     /** Send the transfer info to the server **/
     printf("Sending transmission info...\n");
 
-    /* Add the buffer length to the payload */
+    /* Add buffer length */
     memcpy(&payload[HS_IDX_BUFF_LEN], &(usrArgs->buffer_size), sizeof(uint16_t));
 
-    /* Add the window size to the payload */
+    /* Add window size */
     memcpy(&payload[HS_IDX_WIND_LEN], &(usrArgs->window_size), sizeof(uint32_t));
 
-    /* Add the to-filename to the payload */
+    /* Add the to-filename */
     memcpy(&payload[HS_IDX_FILENAME], (usrArgs->to_filename), filenameLen);
 
     /* Fill the PDU */
@@ -232,7 +232,7 @@ int setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, po
         /* If we get no response after 10 tries, assume the connection has been terminated */
         if (count > 10) {
             printf("Server has disconnected!\n");
-            return 1;
+            return NULL;
         } else count++;
 
         /* Send the PDU */
@@ -252,20 +252,13 @@ int setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, po
                 else if (packet->flag == INFO_ERR_PKT) {
 
                     printf("The server was unable to create the new file, please try again. \n");
-                    return 1;
+                    return NULL;
                 }
             }
         }
     }
 
-    /* Copy over the new child process server info */
-    memcpy(serverInfo->addrInfo, childInfo->addrInfo, sizeof(addrInfo_t));
-    serverInfo->addrLen = childInfo->addrLen;
-
-    /* Free the temp address struct */
-    freeAddrInfo(childInfo);
-
-    return 0;
+    return childInfo;
 
 }
 
@@ -286,28 +279,28 @@ void teardown(int socket, runtimeArgs_t *usrArgs, pollSet_t *pollSet, circularWi
 
 void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE *fp) {
 
-    uint8_t count = 0, eof = 0, buffLen = usrArgs->buffer_size, *dataBuff = malloc(buffLen + 1);
     uint32_t currentSeq = 0, recvSeq;
+    uint16_t buffLen = usrArgs->buffer_size;
+    uint8_t count = 0, eof = 0, *dataBuff = malloc(buffLen + 1);
     size_t pktLen, readLen;
     ssize_t ret;
 
-    packet_t *packet = NULL;
-    circularWindow_t *packetWindow = NULL;
+    /* Set up the packet and window */
+    packet_t *packet = initPacket(usrArgs->buffer_size);
+    circularWindow_t *packetWindow = createWindow(usrArgs->window_size, usrArgs->buffer_size);
 
+    /* Set up the poll set */
     pollSet_t *pollSet = initPollSet();
-
-    /* Add the socket to the poll set */
     addToPollSet(pollSet, socket);
 
+    /* Connect to the child process */
+    addrInfo_t *childInfo = setupTransfer(socket, serverInfo, usrArgs, pollSet);
+
     /* Send the server the necessary transfer details */
-    if (setupTransfer(socket, serverInfo, usrArgs, pollSet) != 0) {
+    if (childInfo == NULL) {
         teardown(socket, usrArgs, pollSet, packetWindow, fp);
         return;
     }
-
-    /* Set up the packet and window */
-    packet = initPacket(usrArgs->buffer_size);
-    packetWindow = createWindow(usrArgs->window_size, usrArgs->buffer_size);
 
     /* Transfer data */
     while (1) {
@@ -319,8 +312,12 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
             return;
         }
 
+        if (eof == 0) {
+
+        }
+
         /* Fill the window */
-        while (eof == 0 && getWindowSpace(packetWindow)) {
+        while (getWindowSpace(packetWindow)) {
 
             /* Read from the input file */
             readLen = (ssize_t) fread(dataBuff, sizeof(uint8_t), buffLen, fp);
@@ -354,7 +351,7 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
             pktLen = getWindowPacket(packetWindow, packet, WINDOW_CURRENT);
 
             /* Send the packet */
-            safeSendTo(socket, (void *) packet, pktLen, serverInfo);
+            safeSendTo(socket, (void *) packet, pktLen, childInfo);
 
             /* Don't send anything in the window after the EOF packet */
             if (packet->flag == DATA_EOF_PKT) break;
@@ -363,8 +360,10 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
         /* Receive data */
         while (1) {
 
+            if (count > 9) break;
+
             /* Check if the window is open or closed */
-            if (checkWindowOpen(packetWindow)) {
+            if (!eof && checkWindowOpen(packetWindow)) {
 
                 /* Window open: non-blocking */
                 ret = pollCall(pollSet, POLL_NON_BLOCK);
@@ -383,19 +382,21 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
                 pktLen = getWindowPacket(packetWindow, packet, WINDOW_LOWER);
 
                 /* Send packet */
-                safeSendTo(socket, (void *) packet, pktLen, serverInfo);
+                safeSendTo(socket, (void *) packet, pktLen, childInfo);
 
                 /* Keep track of timeouts */
                 count++;
 
-                printf("\nThere have been %d time-out(s)\n\n", count);
-
                 /* Try resending */
-                break;
+                if (eof) continue;
+                else break;
+
+            } else {
+                count = 0;
             }
 
             /* Receive the packet */
-            pktLen = safeRecvFrom(socket, packet, buffLen + PDU_HEADER_LEN, serverInfo);
+            pktLen = safeRecvFrom(socket, packet, buffLen + PDU_HEADER_LEN, childInfo);
 
             /* Verify checksum and packet type */
             if (in_cksum((unsigned short *) packet, (int) pktLen)) {
@@ -405,7 +406,7 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
                 pktLen = getWindowPacket(packetWindow, packet, WINDOW_LOWER);
 
                 /* Send packet */
-                safeSendTo(socket, (void *) packet, pktLen, serverInfo);
+                safeSendTo(socket, (void *) packet, pktLen, childInfo);
 
             } else if (packet->flag == DATA_REJ_PKT) {
 
@@ -416,20 +417,20 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
                 pktLen = getWindowPacket(packetWindow, packet, (int) recvSeq);
 
                 /* Send the packet */
-                safeSendTo(socket, (void *) packet, pktLen, serverInfo);
+                safeSendTo(socket, (void *) packet, pktLen, childInfo);
 
             } else if (packet->flag == DATA_ACK_PKT || packet->flag == TERM_CONN_PKT) {
 
                 /* EOF waits until all RRs are received */
                 if (eof == 1 && packet->flag != TERM_CONN_PKT) {
 
-                    /* Re-send EOF if a timeout occurred */
+                    /* Re-send the RR if a timeout occurred after sending the EOF packet, as it was likely lost */
                     if (count > 0) {
 
                         recvSeq = htonl(*((uint32_t *) packet->payload)) + 1;
 
                         pktLen = getWindowPacket(packetWindow, packet, (int) recvSeq);
-                        safeSendTo(socket, packet, pktLen, serverInfo);
+                        safeSendTo(socket, packet, pktLen, childInfo);
 
                     }
 
@@ -446,12 +447,6 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
                 break;
 
             } /* Packets without the Ack or SRej flag are ignored */
-
-            /* Reset count */
-            if (count > 0) {
-                count = 0;
-                printf("Count has been reset\n");
-            }
         }
 
         /* Once a termination request has been received and all packets have been RRed, we're done sending data */
@@ -462,7 +457,7 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
     pktLen = buildPacket(packet, buffLen, currentSeq, TERM_ACK_PKT, NULL, 0);
 
     /* Send the final Ack and hope the server gets it */
-    safeSendTo(socket, packet, pktLen, serverInfo);
+    safeSendTo(socket, packet, pktLen, childInfo);
 
     printf("File transfer has successfully completed!\n");
 

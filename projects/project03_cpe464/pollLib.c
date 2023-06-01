@@ -84,6 +84,14 @@ int pollCall(pollSet_t *pollSet, int timeInMilliSeconds) {
 
     int i, pollValue, returnValue = -1;
 
+    /* Poll has a hard time doing a non-blocking check when t = 0,
+     * so we set it to t = 1ms to 'emulate' a non-blocking poll call.
+     * This might just be a Mac thing or something, but hopefully
+     * this work-around is acceptable. */
+    if (timeInMilliSeconds == 0) {
+        timeInMilliSeconds = 1;
+    }
+
     pollValue = poll(pollSet->pollFds, pollSet->maxFd, timeInMilliSeconds);
 
     if (pollValue < 0) {

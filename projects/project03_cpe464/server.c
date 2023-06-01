@@ -79,6 +79,10 @@ int udpServerSetup(int port) {
     /* Get the port number */
     getsockname(sock, (struct sockaddr *) serverAddr, (socklen_t *) &serverAddrLen);
 
+    if (port == 0) {
+        printf("Process started using port %d\n", ntohs(serverAddr->sin6_port));
+    }
+
     return sock;
 }
 
@@ -92,7 +96,7 @@ FILE *recvSetupInfo(int childSocket, addrInfo_t *clientInfo, uint16_t *bufferLen
     pollSet_t *pollSet = initPollSet();
     packet_t *packet = initPacket(pktLen);
     FILE *fd = NULL;
-
+    
     /** Connect the child process to the client **/
 
     /* Add socket to the poll set */
@@ -187,7 +191,7 @@ FILE *recvSetupInfo(int childSocket, addrInfo_t *clientInfo, uint16_t *bufferLen
             pktLen = safeRecvFrom(childSocket, packet, *bufferLen + PDU_HEADER_LEN, clientInfo);
 
             /* Check for response data */
-            if (packet->flag == DATA_PKT) {
+            if (packet->flag == DATA_PKT || packet->flag == DATA_EOF_PKT) {
 
                 /* Save the packet for later */
                 addQueuePacket(*packetQueue, packet, pktLen);
@@ -201,9 +205,6 @@ FILE *recvSetupInfo(int childSocket, addrInfo_t *clientInfo, uint16_t *bufferLen
 
     /* Clear the packet Ack from the queue */
     getQueuePacket(*packetQueue, packet);
-
-    /* Clean up */
-    free(packet);
 
     return fd;
 
@@ -238,7 +239,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
     /* Receive setup info from the client */
     newFd = recvSetupInfo(childSocket, clientInfo, &bufferLen, &packetQueue);
 
-    /* Re-initialize the data packet struct */
+    /* Initialize the data packet struct */
     packet = initPacket(bufferLen);
 
     /* Check for successful connection */
@@ -344,8 +345,20 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
         /* Get the termination packet */
         pduLen = peekQueuePacket(packetQueue, packet);
 
+        printf("A\n");
+
+        int run = 1;
+
+        while (run);
+
         /* Send packet */
-        safeSendTo(childSocket, packet, pduLen, clientInfo);
+        if (safeSendTo(childSocket, packet, pduLen, clientInfo) < 1) {
+
+            printf("W\n");
+            continue;
+        }
+
+        printf("X\n");
 
         /* Wait for client to reply */
         if (pollCall(pollSet, POLL_1_SEC) != POLL_TIMEOUT) {
@@ -382,6 +395,13 @@ void runServerController(int port, float errorRate) {
     /* Initialize sendErr() */
     sendErr_init(errorRate, DROP_ON, FLIP_ON, DEBUG_ON, RSEED_OFF);
 
+    printf("Runtime Arguments:  \n"
+           "- Port: %d          \n"
+           "- Error Rate: %3.1f    \n"
+           "Server is running...\n",
+           port, (errorRate * 100)
+    );
+
     /* Run server */
     while (!shutdownServer) {
 
@@ -411,6 +431,8 @@ void runServerController(int port, float errorRate) {
 
             /* Split parent and child */
             if (pid == CHILD_PROCESS) {
+
+                printf("\nStarting child process...\n");
 
                 /* Init sendToErr for the child process */
                 sendErr_init(errorRate, DROP_ON, FLIP_ON, DEBUG_ON, RSEED_OFF);
