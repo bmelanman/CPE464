@@ -50,7 +50,7 @@ typedef struct packetStruct_s {
     uint32_t seq_NO;
     __attribute__((unused)) uint16_t checksum;
     uint8_t flag;
-    uint8_t payload[];
+    uint8_t payload[MAX_PAYLOAD_LEN];
 } packet_t;
 
 struct sockaddr;
