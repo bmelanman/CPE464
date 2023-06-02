@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
 int udpServerSetup(int port) {
 
     int ret;
-    
+
     struct sockaddr_in6 serverAddr = {0};
     socklen_t serverAddrLen = sizeof(struct sockaddr_in6);
 
@@ -170,6 +170,10 @@ FILE *recvSetupInfo(int childSocket, addrInfo_t *clientInfo, uint16_t *bufferLen
         /* Send packet */
         safeSendTo(childSocket, txPacket, pktLen, clientInfo);
 
+        freePollSet(pollSet);
+        free(rxPacket);
+        free(txPacket);
+
         return NULL;
     }
 
@@ -206,6 +210,10 @@ FILE *recvSetupInfo(int childSocket, addrInfo_t *clientInfo, uint16_t *bufferLen
         }
     }
 
+    freePollSet(pollSet);
+    free(rxPacket);
+    free(txPacket);
+
     return fd;
 
 }
@@ -238,14 +246,14 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
     /* Receive setup info from the client */
     newFd = recvSetupInfo(childSocket, clientInfo, &bufferLen, &packetQueue);
 
-    /* Initialize the data packet struct */
-    packet = initPacket();
-
     /* Check for successful connection */
     if (newFd == NULL) {
         teardown(clientInfo, packetQueue, pollSet);
         return 1;
     }
+
+    /* Initialize the data packet struct */
+    packet = initPacket();
 
     /* Receive file data from client */
     while (1) {
@@ -261,6 +269,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
             /* Check client connection */
             if (pollCall(pollSet, POLL_10_SEC) == POLL_TIMEOUT) {
                 teardown(clientInfo, packetQueue, pollSet);
+                free(packet);
                 fclose(newFd);
                 return 1;
             }
@@ -338,6 +347,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
         /* Check for disconnection */
         if (count > 9) {
             teardown(clientInfo, packetQueue, pollSet);
+            free(packet);
             fclose(newFd);
             return 1;
         }
@@ -360,6 +370,8 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
 
     /* Clean up */
     teardown(clientInfo, packetQueue, pollSet);
+    free(packet);
+    free(txPacket);
 
     return 0;
 }
