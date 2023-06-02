@@ -413,6 +413,9 @@ void runServerController(int port, float errorRate) {
             /* Split parent and child */
             if (pid == CHILD_PROCESS) {
 
+                int run=1;
+                while (run);
+
                 printf("\nStarting child process...\n");
 
                 /* Init sendToErr for the child process */

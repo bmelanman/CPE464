@@ -16,7 +16,7 @@ function clean_up {
     kill -9 "$($PIDOF $APP_CLIENT)" &>/dev/null
     kill -9 "$($PIDOF $APP_SERVER)" &>/dev/null
 
-#    rm -f $APP_SERVER $APP_CLIENT
+    rm -f "$FILEOUT" "$APP_SERVER" "$APP_CLIENT"
 
     exit
 }
@@ -63,14 +63,22 @@ if [ "$PORT" -eq 0 ]; then
 fi
 
 # Generate output file name
-FILEOUT="$(basename "$FILE").tmp"
+FILEOUT=$(basename "$FILE").tmp
 
 # Make sure everything is up to date
 if [ ! -e APP_CLIENT ] || [ ! -e APP_SERVER ]; then
-    make all -C ../ -f Makefile
+
+    # Check for the custom library
+    if [ ! -e ../libcpe464.2.21.a ]; then
+        make all -C ../ -f Makefile
+    else
+        make rcopy -C ../ -f Makefile
+        make server -C ../ -f Makefile
+    fi
+
     mv ../$APP_CLIENT ./${APP_CLIENT}_"$PORT"
     mv ../$APP_SERVER ./${APP_SERVER}_"$PORT"
-    make clean -C ../ -f Makefile
+    make cleano -C ../ -f Makefile
 fi
 
 APP_CLIENT=${APP_CLIENT}_$PORT
@@ -149,12 +157,17 @@ if [ $APP_CLIENT_RES -ne 0 ]; then
     echo "- Client Returned $APP_CLIENT_RES"
 fi
 
-SERV_PID=$(/"$PIDOF" "$APP_SERVER")
+# Check server status
 if [ "$(echo "$SERV_PID" | wc -w)" -eq 0 ]; then
+
     echo "- Server closed early"
+
 elif [ "$(echo "$SERV_PID" | wc -w)" -gt 1 ]; then
+
     echo "- Waiting for Server children to close"
-    for i in {1..10}; do
+
+    # Check if the child processes close
+    for i in {1..11}; do
         if [ "$(echo "$SERV_PID" | wc -w)" -gt 1 ]; then
             echo "."
             sleep 1
@@ -165,15 +178,19 @@ elif [ "$(echo "$SERV_PID" | wc -w)" -gt 1 ]; then
     done
 
     if [ "$(echo "$SERV_PID" | wc -w)" -gt 1 ]; then
+
         echo "-- Children didn't close"
+
         # shellcheck disable=SC2009
         ps -eaf | grep "$APP_SERVER" | grep -v grep | sed 's/.*/--- &/'
     fi
 fi
 
 if [ "$(echo "$SERV_PID" | wc -w)" -gt 0 ]; then
-    kill "$SERV_PID"
+
+    kill -9 "$SERV_PID"
     echo "- Waiting for Server to close"
+
     # shellcheck disable=SC2034
     for i in {1..3}; do
         if [ "$(echo "$SERV_PID" | wc -w)" -gt 0 ]; then
@@ -195,6 +212,6 @@ echo "---------- DIFF (IN | OUT) ----------"
 diff -qs "$FILE" "$FILEOUT"
 RETVAL=$?
 
-rm -f "$FILEOUT" "$APP_SERVER" "$APP_CLIENT"
+clean_up
 
 exit $RETVAL
