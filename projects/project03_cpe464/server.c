@@ -409,17 +409,17 @@ void runServerController(int port, float errorRate) {
             /* Ignore packets that aren't setup packets */
             if (setupPacket->flag != SETUP_PKT) continue;
 
-            /* Create a child to complete the transfer */
-            pid = fork();
-
-            /* Error checking */
-            if (pid < 0) {
-                perror("fork");
-                exit(EXIT_FAILURE);
-            }
-
-            /* Split parent and child */
-            if (pid == CHILD_PROCESS) {
+//            /* Create a child to complete the transfer */
+//            pid = fork();
+//
+//            /* Error checking */
+//            if (pid < 0) {
+//                perror("fork");
+//                exit(EXIT_FAILURE);
+//            }
+//
+//            /* Split parent and child */
+//            if (pid == CHILD_PROCESS) {
 
 //                int run=1;
 //                while (run);
@@ -439,19 +439,19 @@ void runServerController(int port, float errorRate) {
                 if (stat != 0) printf("Client has disconnected! \n");
                 else printf("File transfer has successfully completed!\n");
 
-                /* Terminate child process */
-                exit(EXIT_SUCCESS);
-
-            } else {
-
-                /* Add the child to the list of child PIDs */
-                children[numChildren] = pid;
-
-                /* Increase the list sizes */
-                numChildren++;
-                children = srealloc(children, sizeof(pid_t) * numChildren);
-
-            }
+//                /* Terminate child process */
+//                exit(EXIT_SUCCESS);
+//
+//            } else {
+//
+//                /* Add the child to the list of child PIDs */
+//                children[numChildren] = pid;
+//
+//                /* Increase the list sizes */
+//                numChildren++;
+//                children = srealloc(children, sizeof(pid_t) * numChildren);
+//
+//            }
         }
     }
 
