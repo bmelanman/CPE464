@@ -210,14 +210,14 @@ FILE *recvSetupInfo(int childSocket, addrInfo_t *clientInfo, uint16_t *bufferLen
 
 }
 
-void teardown(addrInfo_t *addrInfo, FILE *fd, circularQueue_t *queue) {
+void teardown(addrInfo_t *addrInfo, circularQueue_t *queue, pollSet_t *pollSet) {
 
     /* Teardown/Clean up */
     freeAddrInfo(addrInfo);
 
-    freeQueue(queue);
+    freePollSet(pollSet);
 
-    fclose(fd);
+    freeQueue(queue);
 
     // DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib
 }
@@ -243,7 +243,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
 
     /* Check for successful connection */
     if (newFd == NULL) {
-        teardown(clientInfo, newFd, packetQueue);
+        teardown(clientInfo, packetQueue, pollSet);
         return 1;
     }
 
@@ -260,7 +260,8 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
 
             /* Check client connection */
             if (pollCall(pollSet, POLL_10_SEC) == POLL_TIMEOUT) {
-                teardown(clientInfo, newFd, packetQueue);
+                teardown(clientInfo, packetQueue, pollSet);
+                fclose(newFd);
                 return 1;
             }
 
@@ -336,7 +337,8 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
 
         /* Check for disconnection */
         if (count > 9) {
-            teardown(clientInfo, newFd, packetQueue);
+            teardown(clientInfo, packetQueue, pollSet);
+            fclose(newFd);
             return 1;
         }
 
@@ -357,9 +359,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
     }
 
     /* Clean up */
-    teardown(clientInfo, newFd, packetQueue);
-
-    freePollSet(pollSet);
+    teardown(clientInfo, packetQueue, pollSet);
 
     return 0;
 }
