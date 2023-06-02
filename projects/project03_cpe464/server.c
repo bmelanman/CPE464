@@ -340,9 +340,6 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
             return 1;
         }
 
-//        int run = 1;
-//        while (run);
-
         /* Send packet */
         safeSendTo(childSocket, txPacket, pktLen, clientInfo);
 
