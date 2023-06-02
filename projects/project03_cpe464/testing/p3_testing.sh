@@ -195,6 +195,6 @@ echo "---------- DIFF (IN | OUT) ----------"
 diff -qs "$FILE" "$FILEOUT"
 RETVAL=$?
 
-#rm -f "$FILEOUT" "$APP_SERVER" "$APP_CLIENT"
+rm -f "$FILEOUT" "$APP_SERVER" "$APP_CLIENT"
 
 exit $RETVAL
