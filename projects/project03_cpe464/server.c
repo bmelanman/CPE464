@@ -121,7 +121,7 @@ FILE *recvSetupInfo(int childSocket, addrInfo_t *clientInfo, uint16_t *bufferLen
         }
 
         /* Make an Ack packet */
-        pktLen = buildPacket(txPacket, NO_PAYLOAD, NO_PAYLOAD, SETUP_ACK_PKT, NULL, 0);
+        pktLen = buildPacket(txPacket, NO_PAYLOAD, SETUP_ACK_PKT, NULL, 0);
 
         /* Send packet */
         safeSendTo(childSocket, txPacket, pktLen, clientInfo);
@@ -141,7 +141,7 @@ FILE *recvSetupInfo(int childSocket, addrInfo_t *clientInfo, uint16_t *bufferLen
                 snprintf(to_filename, 100, "%s", &rxPacket->payload[HS_IDX_FILENAME]);
 
                 /* Initialize the queue */
-                (*packetQueue) = createQueue(windSize, (*bufferLen) + PDU_HEADER_LEN);
+                (*packetQueue) = createQueue(windSize);
 
                 /* Initialize the file pointer */
                 fd = fopen(to_filename, "wb+");
@@ -165,7 +165,7 @@ FILE *recvSetupInfo(int childSocket, addrInfo_t *clientInfo, uint16_t *bufferLen
         printf("An error has occurred, connection terminated. \n");
 
         /* Make an ERR packet */
-        pktLen = buildPacket(txPacket, NO_PAYLOAD, 0, INFO_ERR_PKT, NULL, 0);
+        pktLen = buildPacket(txPacket, 0, INFO_ERR_PKT, NULL, 0);
 
         /* Send packet */
         safeSendTo(childSocket, txPacket, pktLen, clientInfo);
@@ -174,7 +174,7 @@ FILE *recvSetupInfo(int childSocket, addrInfo_t *clientInfo, uint16_t *bufferLen
     }
 
     /* Make an ACK packet */
-    pktLen = buildPacket(txPacket, NO_PAYLOAD, 0, INFO_ACK_PKT, NULL, 0);
+    pktLen = buildPacket(txPacket, 0, INFO_ACK_PKT, NULL, 0);
 
     /* ACK and wait for data to start coming */
     while (1) {
@@ -220,7 +220,6 @@ void teardown(addrInfo_t *addrInfo, FILE *fd, circularQueue_t *queue) {
     fclose(fd);
 
     // DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib
-
 }
 
 int runServer(int childSocket, addrInfo_t *clientInfo) {
@@ -272,21 +271,21 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
             if (in_cksum((unsigned short *) packet, pktLen)) {
 
                 /* Selective reject the corrupt packet */
-                buildPacket(packet, bufferLen, serverSeq++, DATA_REJ_PKT, (uint8_t *) &nextPkt_NO, sizeof(nextPkt_NO));
+                buildPacket(packet, serverSeq++, DATA_REJ_PKT, (uint8_t *) &nextPkt_NO, sizeof(nextPkt_NO));
 
             } else if (ntohl(packet->seq_NO) < nextPkt) {
 
                 /* If it's a lower sequence, reply with an RR for the highest recv'd packet */
                 nextPkt_NO = htonl(nextPkt - 1);
 
-                buildPacket(packet, bufferLen, serverSeq++, DATA_ACK_PKT, (uint8_t *) &nextPkt_NO, sizeof(nextPkt_NO));
+                buildPacket(packet, serverSeq++, DATA_ACK_PKT, (uint8_t *) &nextPkt_NO, sizeof(nextPkt_NO));
 
             } else if (ntohl(packet->seq_NO) > nextPkt) {
                 /* If it's a higher sequence, save it and send a SRej */
                 addQueuePacket(packetQueue, packet, pktLen);
 
                 /* SRej the missing packet */
-                buildPacket(packet, bufferLen, serverSeq++, DATA_REJ_PKT, (uint8_t *) &nextPkt_NO, sizeof(nextPkt_NO));
+                buildPacket(packet, serverSeq++, DATA_REJ_PKT, (uint8_t *) &nextPkt_NO, sizeof(nextPkt_NO));
             }
         }
 
@@ -297,7 +296,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
             fwrite(packet->payload, sizeof(uint8_t), pktLen - PDU_HEADER_LEN, newFd);
 
             /* Create an ACK packet */
-            buildPacket(packet, bufferLen, serverSeq++, DATA_ACK_PKT, (uint8_t *) &nextPkt_NO, sizeof(nextPkt_NO));
+            buildPacket(packet, serverSeq++, DATA_ACK_PKT, (uint8_t *) &nextPkt_NO, sizeof(nextPkt_NO));
 
             /* Increment next expected packet sequence */
             nextPkt++;
@@ -331,7 +330,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
     txPacket = initPacket();
 
     /* Ack the EOF packet by sending a termination request */
-    pktLen = buildPacket(txPacket, NO_PAYLOAD, serverSeq, TERM_CONN_PKT, NULL, 0);
+    pktLen = buildPacket(txPacket, serverSeq, TERM_CONN_PKT, NULL, 0);
 
     while (1) {
 

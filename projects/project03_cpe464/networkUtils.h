@@ -68,7 +68,7 @@ addrInfo_t *initAddrInfo(void);
 packet_t *initPacket(void);
 
 size_t
-buildPacket(packet_t *packet, uint16_t payloadLen, uint32_t seqNum, uint8_t flag, uint8_t *data, size_t dataLen);
+buildPacket(packet_t *packet, uint32_t seqNum, uint8_t flag, uint8_t *data, size_t dataLen);
 
 void freeAddrInfo(addrInfo_t *addrInfo);
 

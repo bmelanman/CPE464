@@ -104,13 +104,11 @@ addrInfo_t *initAddrInfo() {
 }
 
 packet_t *initPacket(void) {
-
-    /* Allocate space for the header plus the payload, which is a Flexible Array Member */
     return (packet_t *) scalloc(1, sizeof(packet_t));
 }
 
 size_t
-buildPacket(packet_t *packet, uint16_t payloadLen, uint32_t seqNum, uint8_t flag, uint8_t *data, size_t dataLen) {
+buildPacket(packet_t *packet, uint32_t seqNum, uint8_t flag, uint8_t *data, size_t dataLen) {
 
     uint16_t checksum, pduLen = PDU_HEADER_LEN + dataLen;
 
@@ -136,7 +134,7 @@ buildPacket(packet_t *packet, uint16_t payloadLen, uint32_t seqNum, uint8_t flag
     packet->flag = flag;
 
     /* Clear old data */
-    memset(packet->payload, 0, payloadLen);
+    memset(packet->payload, 0, MAX_PAYLOAD_LEN);
 
     /* Add in the payload */
     memcpy(packet->payload, data, dataLen);

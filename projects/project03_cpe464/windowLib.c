@@ -1,7 +1,7 @@
 
 #include "windowLib.h"
 
-circularQueue_t *createQueue(uint32_t len, uint16_t bufferLen) {
+circularQueue_t *createQueue(uint32_t len) {
 
     uint32_t i;
 
@@ -37,7 +37,7 @@ void addQueuePacket(circularQueue_t *queue, packet_t *packet, uint16_t packetLen
     }
 
     /* Copy in the packet */
-    memcpy(queue->pktQueue[idx], packet, packetLen);
+    memcpy(queue->pktQueue[idx], packet, MAX_PDU_LEN);
 
     /* Store the PDU's length */
     queue->lenQueue[idx] = packetLen;
@@ -55,7 +55,7 @@ uint16_t peekQueuePacket(circularQueue_t *queue, packet_t *packet) {
     uint16_t len = queue->lenQueue[idx];
 
     /* Copy the packet over */
-    memcpy(packet, queue->pktQueue[idx], len);
+    memcpy(packet, queue->pktQueue[idx], MAX_PDU_LEN);
 
     return len;
 }
@@ -108,15 +108,19 @@ void freeQueue(circularQueue_t *queue) {
         free(queue->pktQueue[i]);
     }
 
+    /* Free the arrays */
+    free(queue->pktQueue);
+    free(queue->lenQueue);
+
     /* Free the queue struct */
     free(queue);
 }
 
-circularWindow_t *createWindow(uint32_t windowSize, uint16_t bufferLen) {
+circularWindow_t *createWindow(uint32_t windowSize) {
 
     circularWindow_t *newWindow = scalloc(1, sizeof(circularWindow_t));
 
-    newWindow->circQueue = createQueue(windowSize, bufferLen);
+    newWindow->circQueue = createQueue(windowSize);
 
     newWindow->lower = 0;
     newWindow->current = 0;
@@ -161,7 +165,7 @@ uint16_t getWindowPacket(circularWindow_t *window, packet_t *packet, int pos) {
     len = window->circQueue->lenQueue[idx];
 
     /* Copy the packet contents */
-    memcpy(packet, window->circQueue->pktQueue[idx], len);
+    memcpy(packet, window->circQueue->pktQueue[idx], MAX_PDU_LEN);
 
     return len;
 }

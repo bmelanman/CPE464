@@ -23,9 +23,9 @@ typedef struct windowStruct {
     circularQueue_t *circQueue;
 } circularWindow_t;
 
-circularQueue_t *createQueue(uint32_t len, uint16_t bufferLen);
+circularQueue_t *createQueue(uint32_t len);
 
-circularWindow_t *createWindow(uint32_t windowSize, uint16_t bufferLen);
+circularWindow_t *createWindow(uint32_t windowSize);
 
 void addQueuePacket(circularQueue_t *queue, packet_t *packet, uint16_t packetLen);
 

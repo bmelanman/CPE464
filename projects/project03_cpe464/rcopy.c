@@ -187,7 +187,7 @@ addrInfo_t *setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usr
         }
 
         /* Make a setup packet */
-        pktLen = buildPacket(packet, 0, 0, SETUP_PKT, NULL, 0);
+        pktLen = buildPacket(packet, 0, SETUP_PKT, NULL, 0);
 
         /* Send the setup packet */
         safeSendTo(socket, packet, pktLen, serverInfo);
@@ -224,7 +224,7 @@ addrInfo_t *setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usr
     memcpy(&payload[HS_IDX_FILENAME], (usrArgs->to_filename), filenameLen);
 
     /* Fill the PDU */
-    pktLen = buildPacket(packet, payloadLen, 0, INFO_PKT, payload, payloadLen);
+    pktLen = buildPacket(packet, 0, INFO_PKT, payload, payloadLen);
 
     /* Wait for the server to respond */
     while (1) {
@@ -285,7 +285,7 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
 
     /* Set up the packet and window */
     packet_t *packet = initPacket();
-    circularWindow_t *packetWindow = createWindow(usrArgs->window_size, usrArgs->buffer_size);
+    circularWindow_t *packetWindow = createWindow(usrArgs->window_size);
 
     /* Set up the poll set */
     pollSet_t *pollSet = initPollSet();
@@ -324,7 +324,7 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
             if (feof(fp)) {
 
                 /* Make a packet */
-                pktLen = buildPacket(packet, buffLen, currentSeq++, DATA_EOF_PKT, dataBuff, readLen);
+                pktLen = buildPacket(packet, currentSeq++, DATA_EOF_PKT, dataBuff, readLen);
 
                 /* Add it to the window */
                 addWindowPacket(packetWindow, packet, pktLen);
@@ -336,7 +336,7 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
             }
 
             /* Make a packet */
-            pktLen = buildPacket(packet, buffLen, currentSeq++, DATA_PKT, dataBuff, readLen);
+            pktLen = buildPacket(packet, currentSeq++, DATA_PKT, dataBuff, readLen);
 
             /* Add it to the window */
             addWindowPacket(packetWindow, packet, pktLen);
@@ -452,7 +452,7 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
     }
 
     /* Make a termination ACK packet */
-    pktLen = buildPacket(packet, buffLen, currentSeq, TERM_ACK_PKT, NULL, 0);
+    pktLen = buildPacket(packet, currentSeq, TERM_ACK_PKT, NULL, 0);
 
     /* Send the final Ack and hope the server gets it */
     safeSendTo(socket, packet, pktLen, childInfo);
