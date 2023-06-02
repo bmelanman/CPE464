@@ -45,7 +45,7 @@ size_t safeRecvFrom(int socket, void *buf, size_t len, addrInfo_t *srcAddrInfo) 
 //    );
 
     /* Receive a packet */
-    ssize_t ret = recvfromErr(
+    ssize_t ret = recvfrom(
             socket, buf, len, 0,
             srcAddrInfo->addrInfo,
             (socklen_t *) &srcAddrInfo->addrLen
@@ -54,7 +54,7 @@ size_t safeRecvFrom(int socket, void *buf, size_t len, addrInfo_t *srcAddrInfo) 
     /* Check for errors */
     if (ret < 0) {
         if (errno != EINTR) {
-            printf("recvfrom was interrupted!\n");
+            printf("recvfromErr was interrupted!\n");
         } else {
             perror("recvfrom");
             exit(EXIT_FAILURE);
@@ -68,22 +68,19 @@ size_t safeRecvFrom(int socket, void *buf, size_t len, addrInfo_t *srcAddrInfo) 
 size_t safeSendTo(int socket, void *buf, size_t len, addrInfo_t *dstAddrInfo) {
 
     if (len < 1) {
+        printf("Cannot send packet of size zero!\n");
         return 0;
     }
 
     /* Send the packet */
-    ssize_t ret = sendtoErr(
-            socket, buf, (int) len, 0,
-            dstAddrInfo->addrInfo,
-            dstAddrInfo->addrLen
+    ssize_t ret = sendto(
+            socket, buf, (int) len, 0, dstAddrInfo->addrInfo, dstAddrInfo->addrLen
     );
-
-    printf("B\n");
 
     /* Check for errors */
     if (ret < 0) {
         if (errno != EINTR) {
-            printf("sendto was interrupted!\n");
+            printf("sendtoErr was interrupted!\n");
         } else {
             perror("sendto");
             exit(EXIT_FAILURE);
@@ -99,7 +96,6 @@ addrInfo_t *initAddrInfo() {
 
     a->addrLen = sizeof(struct sockaddr_in6);
 
-    /* Ensure enough space is allocated for later typecasting */
     a->addrInfo = scalloc(1, a->addrLen);
 
     a->addrInfo->sa_family = AF_INET6;

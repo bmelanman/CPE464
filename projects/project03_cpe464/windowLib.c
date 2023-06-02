@@ -9,13 +9,13 @@ circularQueue_t *createQueue(uint32_t len, uint16_t bufferLen) {
     circularQueue_t *newQueue = scalloc(1, sizeof(circularQueue_t));
 
     /* Allocate space for the queue */
-    newQueue->pktQueue = scalloc(1, sizeof(packet_t *) * len);
-    newQueue->lenQueue = scalloc(1, sizeof(uint16_t) * len);
+    newQueue->pktQueue = scalloc(len, sizeof(packet_t *));
+    newQueue->lenQueue = scalloc(len, sizeof(uint16_t));
     newQueue->size = len;
 
     /* Allocate each queue entry now instead of later */
     for (i = 0; i < len; ++i) {
-        newQueue->pktQueue[i] = scalloc(1, bufferLen);
+        newQueue->pktQueue[i] = scalloc(1, sizeof(packet_t) + bufferLen);
     }
 
     /* Set variables to zero */

@@ -94,9 +94,10 @@ FILE *recvSetupInfo(int childSocket, addrInfo_t *clientInfo, uint16_t *bufferLen
     char to_filename[maxFileLen];
 
     pollSet_t *pollSet = initPollSet();
-    packet_t *packet = initPacket(pktLen);
+    packet_t *rxPacket = initPacket(pktLen);
+    packet_t *txPacket = initPacket(pktLen);
     FILE *fd = NULL;
-    
+
     /** Connect the child process to the client **/
 
     /* Add socket to the poll set */
@@ -112,27 +113,27 @@ FILE *recvSetupInfo(int childSocket, addrInfo_t *clientInfo, uint16_t *bufferLen
         }
 
         /* Make an Ack packet */
-        pktLen = buildPacket(packet, *bufferLen, 0, SETUP_ACK_PKT, NULL, 0);
+        pktLen = buildPacket(txPacket, NO_PAYLOAD, NO_PAYLOAD, SETUP_ACK_PKT, NULL, 0);
 
         /* Send packet */
-        safeSendTo(childSocket, packet, pktLen, clientInfo);
+        safeSendTo(childSocket, txPacket, pktLen, clientInfo);
 
         /* Check for a response  */
         if (pollCall(pollSet, POLL_1_SEC) != POLL_TIMEOUT) {
 
             /* Receive the response */
-            pktLen = safeRecvFrom(childSocket, packet, MAX_PDU_LEN, clientInfo);
+            pktLen = safeRecvFrom(childSocket, rxPacket, MAX_PDU_LEN, clientInfo);
 
             /* Verify the checksum and packet flag */
-            if (in_cksum((unsigned short *) packet, (int) pktLen) == 0 && packet->flag == INFO_PKT) {
+            if (in_cksum((unsigned short *) rxPacket, (int) pktLen) == 0 && rxPacket->flag == INFO_PKT) {
 
                 /* Get the values from the payload */
-                memcpy(bufferLen, (uint16_t *) &packet->payload[HS_IDX_BUFF_LEN], sizeof(uint16_t));
-                memcpy(&windSize, (uint32_t *) &packet->payload[HS_IDX_WIND_LEN], sizeof(uint32_t));
-                snprintf(to_filename, 100, "%s", &packet->payload[HS_IDX_FILENAME]);
+                memcpy(bufferLen, (uint16_t *) &rxPacket->payload[HS_IDX_BUFF_LEN], sizeof(uint16_t));
+                memcpy(&windSize, (uint32_t *) &rxPacket->payload[HS_IDX_WIND_LEN], sizeof(uint32_t));
+                snprintf(to_filename, 100, "%s", &rxPacket->payload[HS_IDX_FILENAME]);
 
                 /* Initialize the queue */
-                *packetQueue = createQueue(windSize, *bufferLen);
+                (*packetQueue) = createQueue(windSize, (*bufferLen) + PDU_HEADER_LEN);
 
                 /* Initialize the file pointer */
                 fd = fopen(to_filename, "wb+");
@@ -156,19 +157,16 @@ FILE *recvSetupInfo(int childSocket, addrInfo_t *clientInfo, uint16_t *bufferLen
         printf("An error has occurred, connection terminated. \n");
 
         /* Make an ERR packet */
-        pktLen = buildPacket(packet, *bufferLen, 0, INFO_ERR_PKT, NULL, 0);
+        pktLen = buildPacket(txPacket, NO_PAYLOAD, 0, INFO_ERR_PKT, NULL, 0);
 
         /* Send packet */
-        safeSendTo(childSocket, packet, pktLen, clientInfo);
+        safeSendTo(childSocket, txPacket, pktLen, clientInfo);
 
         return NULL;
     }
 
     /* Make an ACK packet */
-    pktLen = buildPacket(packet, *bufferLen, 0, INFO_ACK_PKT, NULL, 0);
-
-    /* Save the packet */
-    addQueuePacket(*packetQueue, packet, pktLen);
+    pktLen = buildPacket(txPacket, NO_PAYLOAD, 0, INFO_ACK_PKT, NULL, 0);
 
     /* ACK and wait for data to start coming */
     while (1) {
@@ -178,23 +176,20 @@ FILE *recvSetupInfo(int childSocket, addrInfo_t *clientInfo, uint16_t *bufferLen
             return NULL;
         }
 
-        /* Get the Ack packet */
-        pktLen = peekQueuePacket(*packetQueue, packet);
-
         /* Send packet */
-        safeSendTo(childSocket, packet, pktLen, clientInfo);
+        safeSendTo(childSocket, txPacket, pktLen, clientInfo);
 
         /* Wait for client to reply */
         if (pollCall(pollSet, POLL_1_SEC) != POLL_TIMEOUT) {
 
             /* Receive packet */
-            pktLen = safeRecvFrom(childSocket, packet, *bufferLen + PDU_HEADER_LEN, clientInfo);
+            pktLen = safeRecvFrom(childSocket, rxPacket, (*bufferLen) + PDU_HEADER_LEN, clientInfo);
 
             /* Check for response data */
-            if (packet->flag == DATA_PKT || packet->flag == DATA_EOF_PKT) {
+            if (rxPacket->flag == DATA_PKT || rxPacket->flag == DATA_EOF_PKT) {
 
                 /* Save the packet for later */
-                addQueuePacket(*packetQueue, packet, pktLen);
+                addQueuePacket(*packetQueue, rxPacket, pktLen);
 
                 break;
             }
@@ -203,34 +198,31 @@ FILE *recvSetupInfo(int childSocket, addrInfo_t *clientInfo, uint16_t *bufferLen
         }
     }
 
-    /* Clear the packet Ack from the queue */
-    getQueuePacket(*packetQueue, packet);
-
     return fd;
 
 }
 
-void teardown(addrInfo_t *addrInfo, FILE *fd, circularQueue_t *queue, packet_t *packet) {
+void teardown(addrInfo_t *addrInfo, FILE *fd, circularQueue_t *queue) {
 
     /* Teardown/Clean up */
     freeAddrInfo(addrInfo);
 
+    freeQueue(queue);
+
     fclose(fd);
 
-    free(packet);
-
-    freeQueue(queue);
+    // DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib
 
 }
 
 int runServer(int childSocket, addrInfo_t *clientInfo) {
 
     uint8_t count = 0;
-    uint16_t bufferLen, pduLen;
+    uint16_t bufferLen, pktLen;
     uint32_t serverSeq = 0, nextPkt = 0, nextPkt_NO = 0;
 
     FILE *newFd = NULL;
-    packet_t *packet = NULL;
+    packet_t *packet = NULL, *txPacket = NULL;
     circularQueue_t *packetQueue = NULL;
 
     pollSet_t *pollSet = initPollSet();
@@ -244,7 +236,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
 
     /* Check for successful connection */
     if (newFd == NULL) {
-        teardown(clientInfo, newFd, packetQueue, packet);
+        teardown(clientInfo, newFd, packetQueue);
         return 1;
     }
 
@@ -255,21 +247,21 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
         if (peekNextSeq_NO(packetQueue, nextPkt_NO)) {
 
             /* Grab the packet from the queue, and skip checksum as it has already been verified */
-            pduLen = getQueuePacket(packetQueue, packet);
+            pktLen = getQueuePacket(packetQueue, packet);
 
         } else {
 
             /* Check client connection */
             if (pollCall(pollSet, POLL_10_SEC) == POLL_TIMEOUT) {
-                teardown(clientInfo, newFd, packetQueue, packet);
+                teardown(clientInfo, newFd, packetQueue);
                 return 1;
             }
 
             /* Get the packet */
-            pduLen = safeRecvFrom(childSocket, packet, bufferLen + PDU_HEADER_LEN, clientInfo);
+            pktLen = safeRecvFrom(childSocket, packet, bufferLen + PDU_HEADER_LEN, clientInfo);
 
             /* Validate checksum and packet sequence */
-            if (in_cksum((unsigned short *) packet, pduLen)) {
+            if (in_cksum((unsigned short *) packet, pktLen)) {
 
                 /* Selective reject the corrupt packet */
                 buildPacket(packet, bufferLen, serverSeq++, DATA_REJ_PKT, (uint8_t *) &nextPkt_NO, sizeof(nextPkt_NO));
@@ -283,7 +275,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
 
             } else if (ntohl(packet->seq_NO) > nextPkt) {
                 /* If it's a higher sequence, save it and send a SRej */
-                addQueuePacket(packetQueue, packet, pduLen);
+                addQueuePacket(packetQueue, packet, pktLen);
 
                 /* SRej the missing packet */
                 buildPacket(packet, bufferLen, serverSeq++, DATA_REJ_PKT, (uint8_t *) &nextPkt_NO, sizeof(nextPkt_NO));
@@ -294,7 +286,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
         if (packet->flag == DATA_PKT) {
 
             /* Write the data to the file */
-            fwrite(packet->payload, sizeof(uint8_t), pduLen - PDU_HEADER_LEN, newFd);
+            fwrite(packet->payload, sizeof(uint8_t), pktLen - PDU_HEADER_LEN, newFd);
 
             /* Create an ACK packet */
             buildPacket(packet, bufferLen, serverSeq++, DATA_ACK_PKT, (uint8_t *) &nextPkt_NO, sizeof(nextPkt_NO));
@@ -307,7 +299,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
         if (packet->flag == DATA_EOF_PKT) {
 
             /* Write the last of the data to the file */
-            fwrite(packet->payload, sizeof(uint8_t), pduLen - PDU_HEADER_LEN, newFd);
+            fwrite(packet->payload, sizeof(uint8_t), pktLen - PDU_HEADER_LEN, newFd);
 
             /* Wrap things up */
             break;
@@ -328,37 +320,24 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
     /* Close new file */
     fclose(newFd);
 
-    /* Ack the EOF packet by sending a termination request */
-    pduLen = buildPacket(packet, bufferLen, serverSeq, TERM_CONN_PKT, NULL, 0);
+    txPacket = initPacket(0);
 
-    /* Add the packet to the queue in case we need to re-send it */
-    addQueuePacket(packetQueue, packet, pduLen);
+    /* Ack the EOF packet by sending a termination request */
+    pktLen = buildPacket(txPacket, NO_PAYLOAD, serverSeq, TERM_CONN_PKT, NULL, 0);
 
     while (1) {
 
         /* Check for disconnection */
         if (count > 9) {
-            teardown(clientInfo, newFd, packetQueue, packet);
+            teardown(clientInfo, newFd, packetQueue);
             return 1;
         }
 
-        /* Get the termination packet */
-        pduLen = peekQueuePacket(packetQueue, packet);
-
-        printf("A\n");
-
-        int run = 1;
-
-        while (run);
+//        int run = 1;
+//        while (run);
 
         /* Send packet */
-        if (safeSendTo(childSocket, packet, pduLen, clientInfo) < 1) {
-
-            printf("W\n");
-            continue;
-        }
-
-        printf("X\n");
+        safeSendTo(childSocket, txPacket, pktLen, clientInfo);
 
         /* Wait for client to reply */
         if (pollCall(pollSet, POLL_1_SEC) != POLL_TIMEOUT) {
@@ -374,7 +353,9 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
     }
 
     /* Clean up */
-    teardown(clientInfo, newFd, packetQueue, packet);
+    teardown(clientInfo, newFd, packetQueue);
+
+    freePollSet(pollSet);
 
     return 0;
 }
