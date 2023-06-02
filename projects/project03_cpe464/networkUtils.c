@@ -103,7 +103,7 @@ addrInfo_t *initAddrInfo() {
     return a;
 }
 
-packet_t *initPacket(uint16_t payloadLen) {
+packet_t *initPacket(void) {
 
     /* Allocate space for the header plus the payload, which is a Flexible Array Member */
     return (packet_t *) scalloc(1, sizeof(packet_t));

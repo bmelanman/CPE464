@@ -65,7 +65,7 @@ size_t safeSendTo(int socket, void *buf, size_t len, addrInfo_t *dstAddrInfo);
 
 addrInfo_t *initAddrInfo(void);
 
-packet_t *initPacket(uint16_t payloadLen);
+packet_t *initPacket(void);
 
 size_t
 buildPacket(packet_t *packet, uint16_t payloadLen, uint32_t seqNum, uint8_t flag, uint8_t *data, size_t dataLen);

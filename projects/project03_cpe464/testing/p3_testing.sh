@@ -70,11 +70,10 @@ if [ ! -e APP_CLIENT ] || [ ! -e APP_SERVER ]; then
 
     # Check for the custom library
     if [ ! -e ../libcpe464.2.21.a ]; then
-        make all -C ../ -f Makefile
-    else
-        make rcopy -C ../ -f Makefile
-        make server -C ../ -f Makefile
+        make libcpe -C ../ -f Makefile
     fi
+
+    make all -C ../ -f Makefile
 
     mv ../$APP_CLIENT ./${APP_CLIENT}_"$PORT"
     mv ../$APP_SERVER ./${APP_SERVER}_"$PORT"

@@ -97,13 +97,13 @@ int udpServerSetup(int port) {
 FILE *recvSetupInfo(int childSocket, addrInfo_t *clientInfo, uint16_t *bufferLen, circularQueue_t **packetQueue) {
 
     uint16_t maxFileLen = 100, count = 0;
-    size_t pktLen = maxFileLen + sizeof(uint16_t) + sizeof(uint32_t);
+    size_t pktLen;
     uint32_t windSize;
     char to_filename[maxFileLen];
 
     pollSet_t *pollSet = initPollSet();
-    packet_t *rxPacket = initPacket(pktLen);
-    packet_t *txPacket = initPacket(pktLen);
+    packet_t *rxPacket = initPacket();
+    packet_t *txPacket = initPacket();
     FILE *fd = NULL;
 
     /** Connect the child process to the client **/
@@ -240,7 +240,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
     newFd = recvSetupInfo(childSocket, clientInfo, &bufferLen, &packetQueue);
 
     /* Initialize the data packet struct */
-    packet = initPacket(bufferLen);
+    packet = initPacket();
 
     /* Check for successful connection */
     if (newFd == NULL) {
@@ -328,7 +328,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
     /* Close new file */
     fclose(newFd);
 
-    txPacket = initPacket(0);
+    txPacket = initPacket();
 
     /* Ack the EOF packet by sending a termination request */
     pktLen = buildPacket(txPacket, NO_PAYLOAD, serverSeq, TERM_CONN_PKT, NULL, 0);
@@ -373,7 +373,7 @@ void runServerController(int port, float errorRate) {
     int pollSock, childSock, stat, numChildren = 0, i;
 
     pollSet_t *pollSet = initPollSet();
-    packet_t *setupPacket = initPacket(0);
+    packet_t *setupPacket = initPacket();
 
     addrInfo_t *clientInfo = NULL;
     pid_t pid, *children = scalloc(numChildren + 1, sizeof(pid_t));
@@ -409,20 +409,17 @@ void runServerController(int port, float errorRate) {
             /* Ignore packets that aren't setup packets */
             if (setupPacket->flag != SETUP_PKT) continue;
 
-//            /* Create a child to complete the transfer */
-//            pid = fork();
-//
-//            /* Error checking */
-//            if (pid < 0) {
-//                perror("fork");
-//                exit(EXIT_FAILURE);
-//            }
-//
-//            /* Split parent and child */
-//            if (pid == CHILD_PROCESS) {
+            /* Create a child to complete the transfer */
+            pid = fork();
 
-//                int run=1;
-//                while (run);
+            /* Error checking */
+            if (pid < 0) {
+                perror("fork");
+                exit(EXIT_FAILURE);
+            }
+
+            /* Split parent and child */
+            if (pid == CHILD_PROCESS) {
 
                 printf("\nStarting child process...\n");
 
@@ -439,19 +436,19 @@ void runServerController(int port, float errorRate) {
                 if (stat != 0) printf("Client has disconnected! \n");
                 else printf("File transfer has successfully completed!\n");
 
-//                /* Terminate child process */
-//                exit(EXIT_SUCCESS);
-//
-//            } else {
-//
-//                /* Add the child to the list of child PIDs */
-//                children[numChildren] = pid;
-//
-//                /* Increase the list sizes */
-//                numChildren++;
-//                children = srealloc(children, sizeof(pid_t) * numChildren);
-//
-//            }
+                /* Terminate child process */
+                exit(EXIT_SUCCESS);
+
+            } else {
+
+                /* Add the child to the list of child PIDs */
+                children[numChildren] = pid;
+
+                /* Increase the list sizes */
+                numChildren++;
+                children = srealloc(children, sizeof(pid_t) * numChildren);
+
+            }
         }
     }
 
@@ -464,7 +461,7 @@ void runServerController(int port, float errorRate) {
     free(children);
     freePollSet(pollSet);
 
-    printf("Clean exit!");
+    printf("Clean exit!\n");
 
 }
 

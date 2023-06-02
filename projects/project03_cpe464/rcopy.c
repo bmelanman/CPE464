@@ -171,7 +171,7 @@ addrInfo_t *setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usr
     uint8_t *payload = scalloc(1, payloadLen);
 
     addrInfo_t *childInfo = initAddrInfo();
-    packet_t *packet = initPacket(payloadLen);
+    packet_t *packet = initPacket();
     size_t pktLen;
 
     /** Establish a connection with the child process **/
@@ -284,7 +284,7 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
     ssize_t ret;
 
     /* Set up the packet and window */
-    packet_t *packet = initPacket(usrArgs->buffer_size);
+    packet_t *packet = initPacket();
     circularWindow_t *packetWindow = createWindow(usrArgs->window_size, usrArgs->buffer_size);
 
     /* Set up the poll set */

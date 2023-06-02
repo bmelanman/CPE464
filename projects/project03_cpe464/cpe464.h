@@ -112,7 +112,7 @@ ssize_t recvfromErr(int s, void *buf, size_t len, int flags,
                     struct sockaddr *from, socklen_t *fromlen);
 
 #define socket(...)      socketMod(__VA_ARGS__)
-#define bind(...)     bindMod(__VA_ARGS__)
+//#define bind(...)     bindMod(__VA_ARGS__)
 #define select(...)   selectMod(__VA_ARGS__)
 #define fork          forkMod
 

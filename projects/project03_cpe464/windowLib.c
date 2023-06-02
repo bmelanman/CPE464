@@ -15,7 +15,7 @@ circularQueue_t *createQueue(uint32_t len, uint16_t bufferLen) {
 
     /* Allocate each queue entry now instead of later */
     for (i = 0; i < len; ++i) {
-        newQueue->pktQueue[i] = scalloc(1, sizeof(packet_t) + bufferLen);
+        newQueue->pktQueue[i] = initPacket();
     }
 
     /* Set variables to zero */
