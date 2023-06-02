@@ -44,10 +44,12 @@ int main(int argc, char *argv[]) {
  */
 int udpServerSetup(int port) {
 
-    int ret, serverAddrLen = sizeof(struct sockaddr_in6);
-    struct sockaddr_in6 *serverAddr = malloc(serverAddrLen);
+    int ret;
+    
+    struct sockaddr_in6 serverAddr = {0};
+    socklen_t serverAddrLen = sizeof(struct sockaddr_in6);
 
-    // create the socket
+    /* Make a socket */
     int sock = socket(AF_INET6, SOCK_DGRAM, 0);
 
     /* Error checking */
@@ -62,25 +64,31 @@ int udpServerSetup(int port) {
         exit(EXIT_FAILURE);
     }
 
-    // set up the socket
-    serverAddr->sin6_family = AF_INET6;   // internet (IPv6 or IPv4) family
-    serverAddr->sin6_addr = in6addr_any;  // use any local IP address
-    serverAddr->sin6_port = htons(port);  // if 0 = os picks
+    /* Set up the socket */
+    serverAddr.sin6_family = AF_INET6;   /* IPv4/6 family       */
+    serverAddr.sin6_addr = in6addr_any;  /* Use any IP          */
+    serverAddr.sin6_port = htons(port);  /* Set/Request a port  */
 
-    // bind the name (address) to a port
-    ret = bind(sock, (struct sockaddr *) serverAddr, serverAddrLen);
+    /* Bind the socket to a port and assign it an address */
+    ret = bind(sock, (const struct sockaddr *) &serverAddr, serverAddrLen);
 
     /* Error checking */
-    if (ret < 0) {
+    if (ret != 0) {
         perror("bind() call error");
         exit(EXIT_FAILURE);
     }
 
-    /* Get the port number */
-    getsockname(sock, (struct sockaddr *) serverAddr, (socklen_t *) &serverAddrLen);
+    /* Get the socket name */
+    ret = getsockname(sock, (struct sockaddr *) &serverAddr, (socklen_t *) &serverAddrLen);
+
+    /* Error checking */
+    if (ret != 0) {
+        perror("bind() call error");
+        exit(EXIT_FAILURE);
+    }
 
     if (port == 0) {
-        printf("Process started using port %d\n", ntohs(serverAddr->sin6_port));
+        printf("Process started using port %d\n", ntohs(serverAddr.sin6_port));
     }
 
     return sock;
@@ -413,8 +421,8 @@ void runServerController(int port, float errorRate) {
             /* Split parent and child */
             if (pid == CHILD_PROCESS) {
 
-                int run=1;
-                while (run);
+//                int run=1;
+//                while (run);
 
                 printf("\nStarting child process...\n");
 
@@ -455,6 +463,8 @@ void runServerController(int port, float errorRate) {
     /* Clean up */
     free(children);
     freePollSet(pollSet);
+
+    printf("Clean exit!");
 
 }
 
