@@ -5,7 +5,7 @@
 # all target makes UDP test code
 
 CC= gcc
-CFLAGS= -g -Wall -D__LIBCPE464_ -Wattributes
+CFLAGS= -g -Wall -D__LIBCPE464_ -Wno-attributes
 LIBS = libcpe464.2.21.a -lstdc++ -ldl
 
 OBJS = networkUtils.o gethostbyname.o pollLib.o windowLib.o
