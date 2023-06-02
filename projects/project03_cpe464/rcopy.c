@@ -168,7 +168,7 @@ addrInfo_t *setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usr
 
     uint16_t count = 1, filenameLen = strlen(usrArgs->to_filename) + 1;
     uint16_t payloadLen = sizeof(uint16_t) + sizeof(uint32_t) + filenameLen;
-    uint8_t *payload = scalloc(1, payloadLen);
+    uint8_t payload[MAX_PAYLOAD_LEN] = {0};
 
     addrInfo_t *childInfo = initAddrInfo();
     packet_t *packet = initPacket();
@@ -258,11 +258,13 @@ addrInfo_t *setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usr
         }
     }
 
+    freeAddrInfo(serverInfo);
+
     return childInfo;
 
 }
 
-void teardown(runtimeArgs_t *usrArgs, pollSet_t *pollSet, circularWindow_t *window, FILE *fp) {
+void teardown(runtimeArgs_t *usrArgs, pollSet_t *pollSet, circularWindow_t *window, FILE *fp, addrInfo_t *addrInfo) {
 
     freePollSet(pollSet);
 
@@ -272,6 +274,8 @@ void teardown(runtimeArgs_t *usrArgs, pollSet_t *pollSet, circularWindow_t *wind
 
     freeWindow(window);
 
+    freeAddrInfo(addrInfo);
+
     fclose(fp);
 }
 
@@ -279,7 +283,7 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
 
     uint32_t currentSeq = 0, recvSeq;
     uint16_t buffLen = usrArgs->buffer_size;
-    uint8_t count = 0, eof = 0, *dataBuff = malloc(buffLen + 1);
+    uint8_t count = 0, eof = 0, dataBuff[MAX_PAYLOAD_LEN];
     size_t pktLen, readLen;
     ssize_t ret;
 
@@ -296,7 +300,7 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
 
     /* Send the server the necessary transfer details */
     if (childInfo == NULL) {
-        teardown(usrArgs, pollSet, packetWindow, fp);
+        teardown(usrArgs, pollSet, packetWindow, fp, childInfo);
         return;
     }
 
@@ -306,7 +310,7 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
         /* Monitor connection */
         if (count > 9) {
             printf("Server has disconnected, shutting down...\n");
-            teardown(usrArgs, pollSet, packetWindow, fp);
+            teardown(usrArgs, pollSet, packetWindow, fp, childInfo);
             return;
         }
 
@@ -470,5 +474,5 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
     }
 
     /* Clean up! */
-    teardown(usrArgs, pollSet, packetWindow, fp);
+    teardown(usrArgs, pollSet, packetWindow, fp, childInfo);
 }
