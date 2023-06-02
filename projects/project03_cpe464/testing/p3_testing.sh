@@ -135,7 +135,7 @@ echo "Hostname: $HOSTNAME"
 
 # Run the server in the background
 echo "---------- SERVER ----------"
-#./"$APP_SERVER" "$ERROR" "$PORT" &
+./"$APP_SERVER" "$ERROR" "$PORT" &
 
 sleep 2
 
