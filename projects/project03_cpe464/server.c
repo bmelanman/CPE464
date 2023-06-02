@@ -458,7 +458,9 @@ void runServerController(int port, float errorRate) {
 
     /* Clean up */
     free(children);
+    free(setupPacket);
     freePollSet(pollSet);
+    freeAddrInfo(clientInfo);
 
     printf("Clean exit!\n");
 
