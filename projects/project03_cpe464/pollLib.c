@@ -124,14 +124,19 @@ int pollCall(pollSet_t *pollSet, int timeInMilliSeconds) {
     return returnValue;
 }
 
-void freePollSet(pollSet_t *pollSet) {
+void freePollSet(pollSet_t *pollSet, uint8_t closeSocks) {
 
     int i, s;
 
-    /* Ensure all sockets are closed */
-    for (i = pollSet->maxFd; i >= 0; --i) {
-        s = pollSet->pollFds[i].fd;
-        if (s > 0) close(s);
+    if (closeSocks == TRUE) {
+
+        /* Ensure all sockets are closed if desired */
+        for (i = pollSet->maxFd; i > 0; --i) {
+
+            s = pollSet->pollFds[i].fd;
+            close(s);
+
+        }
     }
 
     /* Free previously allocated memory */

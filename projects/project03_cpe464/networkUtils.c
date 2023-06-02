@@ -55,6 +55,7 @@ size_t safeRecvFrom(int socket, void *buf, size_t len, addrInfo_t *srcAddrInfo) 
     if (ret < 0) {
         if (errno != EINTR) {
             printf("recvfromErr was interrupted!\n");
+            perror("recvfrom");
         } else {
             perror("recvfrom");
             exit(EXIT_FAILURE);
@@ -81,6 +82,7 @@ size_t safeSendTo(int socket, void *buf, size_t len, addrInfo_t *dstAddrInfo) {
     if (ret < 0) {
         if (errno != EINTR) {
             printf("sendtoErr was interrupted!\n");
+            perror("sendto");
         } else {
             perror("sendto");
             exit(EXIT_FAILURE);

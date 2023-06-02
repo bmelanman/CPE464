@@ -18,6 +18,9 @@
 //#define POLL_1_SEC (-1)
 //#define POLL_10_SEC (-1)
 
+#define FALSE 0
+#define TRUE 1
+
 typedef struct pollSetStruct {
     struct pollfd *pollFds;
     int maxFd;
@@ -32,6 +35,6 @@ __attribute__((unused)) void removeFromPollSet(pollSet_t *pollSet, int socketNum
 
 int pollCall(pollSet_t *pollSet, int timeInMilliSeconds);
 
-void freePollSet(pollSet_t *pollSet);
+void freePollSet(pollSet_t *pollSet, uint8_t closeSocks);
 
 #endif /* PROJECT_2_LIBPOLL_H */

@@ -271,7 +271,7 @@ void teardown(
         FILE *fp, addrInfo_t *addrInfo, packet_t *packet
 ) {
 
-    freePollSet(pollSet);
+    freePollSet(pollSet, TRUE);
 
     freeWindow(window);
 
