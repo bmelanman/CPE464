@@ -46,7 +46,7 @@ typedef struct addrInfo_s {
     struct sockaddr *addrInfo;
 } addrInfo_t;
 
-typedef struct headerPayloadPacket_s {
+typedef struct packetStruct_s {
     uint32_t seq_NO;
     __attribute__((unused)) uint16_t checksum;
     uint8_t flag;

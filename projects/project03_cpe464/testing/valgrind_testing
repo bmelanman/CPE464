@@ -1,0 +1,123 @@
+[bryce@unix4 project03_cpe464] $ valgrind --track-origins=yes ./server 0 54321
+
+==21356== Memcheck, a memory error detector
+==21356== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==21356== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==21356== Command: ./server 0 54321
+==21356==
+==21356== Syscall param socketcall.getsockname(namelen_in) points to uninitialised byte(s)
+==21356==    at 0x56587A7: getsockname (in /usr/lib64/libc-2.17.so)
+==21356==    by 0x40392B: bindMod (in /home/bmelande/CPE464/projects/project03_cpe464/server)
+==21356==    by 0x401D79: udpServerSetup (server.c:73)
+==21356==    by 0x40260B: runServerController (server.c:382)
+==21356==    by 0x401C8F: main (server.c:34)
+==21356==  Address 0x1fff00003c is on thread 1's stack
+==21356==  in frame #1, created by bindMod (???:)
+==21356==  Uninitialised value was created by a stack allocation
+==21356==    at 0x403830: bindMod (in /home/bmelande/CPE464/projects/project03_cpe464/server)
+==21356==
+==21356== Syscall param socketcall.getsockname(namelen_out) points to uninitialised byte(s)
+==21356==    at 0x56587A7: getsockname (in /usr/lib64/libc-2.17.so)
+==21356==    by 0x40392B: bindMod (in /home/bmelande/CPE464/projects/project03_cpe464/server)
+==21356==    by 0x401D79: udpServerSetup (server.c:73)
+==21356==    by 0x40260B: runServerController (server.c:382)
+==21356==    by 0x401C8F: main (server.c:34)
+==21356==  Address 0x1fff00003c is on thread 1's stack
+==21356==  in frame #1, created by bindMod (???:)
+==21356==  Uninitialised value was created by a stack allocation
+==21356==    at 0x403830: bindMod (in /home/bmelande/CPE464/projects/project03_cpe464/server)
+==21356==
+
+Send Err-INIT ErrRate: 0.00 Drop: Y Flip: Y Rand: N Debug: Y
+Runtime Arguments:
+- Port: 54321
+- Error Rate: 0.0
+Server is running...
+RECV          SEQ#   0 LEN    7 FLAGS 1  -SETUP Init
+
+Starting child process...
+Send Err-INIT ErrRate: 0.00 Drop: Y Flip: Y Rand: N Debug: Y
+
+==21356== Syscall param socketcall.getsockname(namelen_in) points to uninitialised byte(s)
+==21356==    at 0x56587A7: getsockname (in /usr/lib64/libc-2.17.so)
+==21356==    by 0x40392B: bindMod (in /home/bmelande/CPE464/projects/project03_cpe464/server)
+==21356==    by 0x401D79: udpServerSetup (server.c:73)
+==21356==    by 0x4026F0: runServerController (server.c:433)
+==21356==    by 0x401C8F: main (server.c:34)
+==21356==  Address 0x1fff00003c is on thread 1's stack
+==21356==  in frame #1, created by bindMod (???:)
+==21356==  Uninitialised value was created by a stack allocation
+==21356==    at 0x403830: bindMod (in /home/bmelande/CPE464/projects/project03_cpe464/server)
+==21356==
+==21356== Syscall param socketcall.getsockname(namelen_out) points to uninitialised byte(s)
+==21356==    at 0x56587A7: getsockname (in /usr/lib64/libc-2.17.so)
+==21356==    by 0x40392B: bindMod (in /home/bmelande/CPE464/projects/project03_cpe464/server)
+==21356==    by 0x401D79: udpServerSetup (server.c:73)
+==21356==    by 0x4026F0: runServerController (server.c:433)
+==21356==    by 0x401C8F: main (server.c:34)
+==21356==  Address 0x1fff00003c is on thread 1's stack
+==21356==  in frame #1, created by bindMod (???:)
+==21356==  Uninitialised value was created by a stack allocation
+==21356==    at 0x403830: bindMod (in /home/bmelande/CPE464/projects/project03_cpe464/server)
+==21356==
+
+Process started using port 44991
+PORT# 35190 SEND MSG#   1 SEQ#   0 LEN    7 FLAGS 2  -SETUP Response
+
+==21356== Syscall param socketcall.recvfrom(buf) points to unaddressable byte(s)
+==21356==    at 0x56588F3: __recvfrom_nocancel (in /usr/lib64/libc-2.17.so)
+==21356==    by 0x406DF0: PacketManager::recvfrom_Mod(int, void*, unsigned long, int, sockaddr*, unsigned int*) (in /home/bmelande/CPE464/projects/project03_cpe464/server)
+==21356==    by 0x403D48: recvfromErr (in /home/bmelande/CPE464/projects/project03_cpe464/server)
+==21356==    by 0x402998: safeRecvFrom (networkUtils.c:48)
+==21356==    by 0x401F56: recvSetupInfo (server.c:133)
+==21356==    by 0x402216: runServer (server.c:240)
+==21356==    by 0x402704: runServerController (server.c:436)
+==21356==    by 0x401C8F: main (server.c:34)
+==21356==  Address 0x5c29cd2 is 0 bytes after a block of size 114 alloc'd
+==21356==    at 0x4C2C089: calloc (vg_replace_malloc.c:762)
+==21356==    by 0x402909: scalloc (networkUtils.c:19)
+==21356==    by 0x402AE6: initPacket (networkUtils.c:109)
+==21356==    by 0x401E97: recvSetupInfo (server.c:105)
+==21356==    by 0x402216: runServer (server.c:240)
+==21356==    by 0x402704: runServerController (server.c:436)
+==21356==    by 0x401C8F: main (server.c:34)
+==21356==
+
+RECV          SEQ#   0 LEN   27 FLAGS 7  -FNAME
+PORT# 35190 SEND MSG#   2 SEQ#   0 LEN    7 FLAGS 8  -FNAME response
+RECV          SEQ#   0 LEN  908 FLAGS 10  -User defined
+
+==21356== Invalid read of size 8
+==21356==    at 0x403213: addQueuePacket (windowLib.c:40)
+==21356==    by 0x40213F: recvSetupInfo (server.c:200)
+==21356==    by 0x402216: runServer (server.c:240)
+==21356==    by 0x402704: runServerController (server.c:436)
+==21356==    by 0x401C8F: main (server.c:34)
+==21356==  Address 0x6575717369775a09 is not stack'd, malloc'd or (recently) free'd
+==21356==
+==21356==
+==21356== Process terminating with default action of signal 11 (SIGSEGV)
+==21356==  General Protection Fault
+==21356==    at 0x403213: addQueuePacket (windowLib.c:40)
+==21356==    by 0x40213F: recvSetupInfo (server.c:200)
+==21356==    by 0x402216: runServer (server.c:240)
+==21356==    by 0x402704: runServerController (server.c:436)
+==21356==    by 0x401C8F: main (server.c:34)
+==21356==
+==21356== HEAP SUMMARY:
+==21356==     in use at exit: 12,374 bytes in 45 blocks
+==21356==   total heap usage: 50 allocs, 5 frees, 12,414 bytes allocated
+==21356==
+==21356== LEAK SUMMARY:
+==21356==    definitely lost: 6,190 bytes in 8 blocks
+==21356==    indirectly lost: 4,060 bytes in 4 blocks
+==21356==      possibly lost: 0 bytes in 0 blocks
+==21356==    still reachable: 2,124 bytes in 33 blocks
+==21356==         suppressed: 0 bytes in 0 blocks
+==21356== Rerun with --leak-check=full to see details of leaked memory
+==21356==
+==21356== For lists of detected and suppressed errors, rerun with: -s
+==21356== ERROR SUMMARY: 7 errors from 6 contexts (suppressed: 0 from 0)
+
+Segmentation fault
+[bryce@unix4 project03_cpe464] $

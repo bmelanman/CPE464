@@ -10,7 +10,7 @@ LIBS = libcpe464.2.21.a -lstdc++ -ldl
 
 OBJS = networkUtils.o gethostbyname.o pollLib.o windowLib.o
 
-all: libcpe rcopy server cleano
+all: rcopy server cleano
 
 libcpe:
 	make -C ./given_files/ -f ./build464Lib.mk all
