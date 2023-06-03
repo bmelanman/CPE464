@@ -295,7 +295,7 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
 
         /* Monitor connection */
         if (count > 9) {
-            printf("Server has disconnected, shutting down...\n");
+            printf("\nServer has disconnected, shutting down...\n");
             teardown(usrArgs, pollSet, packetWindow, fp, childInfo, packet);
             return;
         }
@@ -336,6 +336,11 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
 
             /* Send the packet */
             safeSendTo(socket, (void *) packet, pktLen, childInfo);
+
+            /* Something to print ot the screen so that it looks like its working haha */
+            printf(".");
+            fflush(stdout);
+            if (eof || currentSeq % 40 == 0) printf("\n");
 
             /* Don't send anything in the window after the EOF packet */
             if (packet->flag == DATA_EOF_PKT) break;
