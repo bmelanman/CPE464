@@ -8,7 +8,7 @@ add_definitions(-D__LIBCPE464_)
 
 # Include custom library
 link_libraries(
-        ${PROJECT_SOURCE_DIR}/given_files/libcpe464.2.21.a stdc++ dl
+        ${PROJECT_SOURCE_DIR}/libcpe464.2.21.a stdc++ dl
 )
 
 # Various supporting libraries
@@ -30,5 +30,3 @@ add_executable(rcopy rcopy.c rcopy.h cpe464.h)
 
 # UDP Server
 add_executable(server server.c server.h cpe464.h)
-
-add_executable(test test.c)
