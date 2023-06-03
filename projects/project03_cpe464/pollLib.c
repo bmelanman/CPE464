@@ -37,7 +37,7 @@ static void growPollSet(pollSet_t *pollSet, int newSetSize) {
 
 pollSet_t *initPollSet(void) {
 
-    pollSet_t *pollSet = scalloc(1, sizeof(pollSet_t));
+    pollSet_t *pollSet = (pollSet_t *) scalloc(1, sizeof(pollSet_t));
 
     pollSet->pollSetSize = POLL_SET_SIZE;
     pollSet->pollFds = (struct pollfd *) scalloc(POLL_SET_SIZE, sizeof(struct pollfd));

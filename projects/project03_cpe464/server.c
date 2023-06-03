@@ -4,9 +4,6 @@
  * using modified code from Dr. Hugh Smith
  *  */
 
-#include <signal.h>
-#include <sys/stat.h>
-#include <sys/fcntl.h>
 #include "server.h"
 
 static volatile int shutdownServer = 0;
@@ -48,8 +45,8 @@ int udpServerSetup(int port) {
 
     int ret;
 
-    struct sockaddr_in6 serverAddr = {0};
     socklen_t serverAddrLen = sizeof(struct sockaddr_in6);
+    struct sockaddr_in6 *serverAddr = calloc(1, serverAddrLen);
 
     /* Make a socket */
     int sock = socket(AF_INET6, SOCK_DGRAM, 0);
@@ -67,9 +64,9 @@ int udpServerSetup(int port) {
     }
 
     /* Set up the socket */
-    serverAddr.sin6_family = AF_INET6;   /* IPv4/6 family       */
-    serverAddr.sin6_addr = in6addr_any;  /* Use any IP          */
-    serverAddr.sin6_port = htons(port);  /* Set/Request a port  */
+    serverAddr->sin6_family = AF_INET6;   /* IPv4/6 family       */
+    serverAddr->sin6_addr = in6addr_any;  /* Use any IP          */
+    serverAddr->sin6_port = htons(port);  /* Set/Request a port  */
 
     /* Bind the socket to a port and assign it an address */
     ret = bind(sock, (const struct sockaddr *) &serverAddr, serverAddrLen);
@@ -89,15 +86,15 @@ int udpServerSetup(int port) {
         exit(EXIT_FAILURE);
     }
 
+    /* Prompt */
     if (port == 0) {
-        printf("Process started using port %d\n", ntohs(serverAddr.sin6_port));
+        printf("Process started using port %d\n", ntohs(serverAddr->sin6_port));
     }
 
     return sock;
 }
 
-FILE *recvSetupInfo(int childSocket, pollSet_t *pollSet, addrInfo_t *clientInfo, uint16_t *bufferLen,
-                    circularQueue_t **packetQueue) {
+FILE *recvSetupInfo(int childSocket, pollSet_t *pollSet, addrInfo_t *clientInfo, uint16_t *bufferLen, circularQueue_t **packetQueue) {
 
     uint16_t maxFileLen = 100, count = 0;
     size_t pktLen;
@@ -407,7 +404,7 @@ void runServerController(int port, float errorRate) {
     packet_t *setupPacket = initPacket();
 
     addrInfo_t *clientInfo = NULL;
-    pid_t pid, *children = scalloc(numChildren + 1, sizeof(pid_t));
+    pid_t pid, *children = (pid_t *) scalloc(numChildren + 1, sizeof(pid_t));
 
     /* Set up a parent socket */
     addToPollSet(pollSet, udpServerSetup(port));

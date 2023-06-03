@@ -301,7 +301,7 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
         }
 
         /* Fill the window */
-        while (getWindowSpace(packetWindow)) {
+        while (checkInputSpaceAvailable(packetWindow)) {
 
             /* Read from the input file */
             readLen = (ssize_t) fread(dataBuff, sizeof(uint8_t), buffLen, fp);
@@ -329,7 +329,7 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
         }
 
         /* Check if we can send more packets */
-        while (checkWindowOpen(packetWindow)) {
+        while (checkWindowSpaceAvailable(packetWindow)) {
 
             /* Get the packet at current */
             pktLen = getWindowPacket(packetWindow, packet, WINDOW_CURRENT);
@@ -347,7 +347,7 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
             if (count > 9) break;
 
             /* Check if the window is open or closed */
-            if (!eof && checkWindowOpen(packetWindow)) {
+            if (!eof && checkWindowSpaceAvailable(packetWindow)) {
 
                 /* Window open: non-blocking */
                 ret = pollCall(pollSet, POLL_NON_BLOCK);

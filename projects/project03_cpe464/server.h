@@ -2,6 +2,10 @@
 #ifndef LAB07_CPE464_SERVER_H
 #define LAB07_CPE464_SERVER_H
 
+#include <signal.h>
+#include <sys/stat.h>
+#include <sys/fcntl.h>
+
 #include "networkUtils.h"
 #include "pollLib.h"
 #include "windowLib.h"

@@ -6,11 +6,11 @@ circularQueue_t *createQueue(uint32_t len) {
     uint32_t i;
 
     /* Allocate space for the new struct */
-    circularQueue_t *newQueue = scalloc(1, sizeof(circularQueue_t));
+    circularQueue_t *newQueue = (circularQueue_t *) scalloc(1, sizeof(circularQueue_t));
 
     /* Allocate space for the queue */
-    newQueue->pktQueue = scalloc(len, sizeof(packet_t *));
-    newQueue->lenQueue = scalloc(len, sizeof(uint16_t));
+    newQueue->pktQueue = (packet_t **) scalloc(len, sizeof(packet_t *));
+    newQueue->lenQueue = (uint16_t *) scalloc(len, sizeof(uint16_t));
     newQueue->size = len;
 
     /* Allocate each queue entry now instead of later */
@@ -42,24 +42,16 @@ void addQueuePacket(circularQueue_t *queue, packet_t *packet, uint16_t packetLen
     queue->inputIdx++;
 }
 
-uint16_t peekQueuePacket(circularQueue_t *queue, packet_t *packet) {
-
-    /* Check if the fifo is empty */
-    if (queue->outputIdx >= queue->inputIdx) return 0;
+uint16_t getQueuePacket(circularQueue_t *queue, packet_t *packet) {
 
     uint16_t idx = queue->outputIdx % queue->size;
     uint16_t len = queue->lenQueue[idx];
 
+    /* Check if the fifo is empty */
+    if (queue->outputIdx >= queue->inputIdx) return 0;
+
     /* Copy the packet over */
     memcpy(packet, queue->pktQueue[idx], MAX_PDU_LEN);
-
-    return len;
-}
-
-uint16_t getQueuePacket(circularQueue_t *queue, packet_t *packet) {
-
-    /* Get the packet */
-    uint16_t len = peekQueuePacket(queue, packet);
 
     /* Increment the location of the fifo output */
     queue->outputIdx++;
@@ -122,7 +114,7 @@ void freeQueue(circularQueue_t *queue) {
 
 circularWindow_t *createWindow(uint32_t windowSize) {
 
-    circularWindow_t *newWindow = scalloc(1, sizeof(circularWindow_t));
+    circularWindow_t *newWindow = (circularWindow_t *) scalloc(1, sizeof(circularWindow_t));
 
     newWindow->circQueue = createQueue(windowSize);
 
@@ -180,14 +172,14 @@ void moveWindow(circularWindow_t *window, uint16_t newLowerIdx) {
     window->upper = newLowerIdx + window->circQueue->size;
 }
 
-int getWindowSpace(circularWindow_t *window) {
+int checkInputSpaceAvailable(circularWindow_t *window) {
 
     if (window->circQueue->inputIdx < window->upper) return 1;
 
     return 0;
 }
 
-int checkWindowOpen(circularWindow_t *window) {
+int checkWindowSpaceAvailable(circularWindow_t *window) {
 
     if (window->current < window->upper) return 1;
 

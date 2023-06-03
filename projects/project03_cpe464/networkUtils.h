@@ -48,7 +48,7 @@ typedef struct addrInfo_s {
 
 typedef struct packetStruct_s {
     uint32_t seq_NO;
-    __attribute__((unused)) uint16_t checksum;
+    uint16_t checksum;
     uint8_t flag;
     uint8_t payload[MAX_PAYLOAD_LEN];
 } packet_t;
@@ -67,8 +67,7 @@ addrInfo_t *initAddrInfo(void);
 
 packet_t *initPacket(void);
 
-size_t
-buildPacket(packet_t *packet, uint32_t seqNum, uint8_t flag, uint8_t *data, size_t dataLen);
+size_t buildPacket(packet_t *packet, uint32_t seqNum, uint8_t flag, uint8_t *data, size_t dataLen);
 
 void freeAddrInfo(addrInfo_t *addrInfo);
 
