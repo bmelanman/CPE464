@@ -46,7 +46,7 @@ int udpServerSetup(int port) {
     int ret;
 
     socklen_t serverAddrLen = sizeof(struct sockaddr_in6);
-    struct sockaddr_in6 *serverAddr = calloc(1, serverAddrLen);
+    struct sockaddr_in6 *serverAddr = scalloc(1, serverAddrLen);
 
     /* Make a socket */
     int sock = socket(AF_INET6, SOCK_DGRAM, 0);
@@ -69,7 +69,7 @@ int udpServerSetup(int port) {
     serverAddr->sin6_port = htons(port);  /* Set/Request a port  */
 
     /* Bind the socket to a port and assign it an address */
-    ret = bind(sock, (const struct sockaddr *) &serverAddr, serverAddrLen);
+    ret = bind(sock, (const struct sockaddr *) serverAddr, serverAddrLen);
 
     /* Error checking */
     if (ret != 0) {
@@ -78,7 +78,7 @@ int udpServerSetup(int port) {
     }
 
     /* Get the socket name */
-    ret = getsockname(sock, (struct sockaddr *) &serverAddr, (socklen_t *) &serverAddrLen);
+    ret = getsockname(sock, (struct sockaddr *) serverAddr, (socklen_t *) &serverAddrLen);
 
     /* Error checking */
     if (ret != 0) {
