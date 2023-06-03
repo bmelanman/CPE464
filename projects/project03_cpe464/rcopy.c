@@ -14,28 +14,6 @@ addrInfo_t *setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usr
 
 void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE *fp);
 
-int diff(char *to_filename, char *from_filename) {
-
-    /* TODO: REMOVE */
-
-    FILE *to = fopen(to_filename, "r");
-    FILE *from = fopen(from_filename, "r");
-    int t = fgetc(to), f = fgetc(from);
-
-    while (t != EOF && f != EOF) {
-
-        if (fgetc(to) != fgetc(from)) return 1;
-
-        t = fgetc(to);
-        f = fgetc(from);
-    }
-
-    if (t != EOF || f != EOF) return 1;
-
-    return 0;
-
-}
-
 int main(int argc, char *argv[]) {
 
     FILE *fp;
@@ -50,7 +28,7 @@ int main(int argc, char *argv[]) {
     socket = setupUdpClientToServer(serverInfo, usrArgs.host_name, usrArgs.host_port);
 
     /* Initialize the error rate library */
-    sendErr_init(usrArgs.error_rate, DROP_ON, FLIP_ON, DEBUG_ON, RSEED_OFF);
+    sendErr_init(usrArgs.error_rate, DROP_ON, FLIP_ON, DEBUG_OFF, RSEED_ON);
 
     /* Start the transfer process */
     runClient(socket, serverInfo, &usrArgs, fp);
@@ -175,7 +153,7 @@ addrInfo_t *setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usr
     size_t pktLen;
 
     /** Establish a connection with the child process **/
-    printf("Connecting to server child process...\n");
+    printf("Connecting to server subprocess...\n");
 
     /* Send the packet and wait for an Ack */
     while (1) {
@@ -465,17 +443,7 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
     /* Send the final Ack and hope the server gets it */
     safeSendTo(socket, packet, pktLen, childInfo);
 
-    printf("File transfer has successfully completed!\n");
-
-    /* TODO: REMOVE */
-    if (diff(usrArgs->to_filename, usrArgs->from_filename)) {
-        printf(
-                "\n"
-                "DIFF ERROR!!!\n"
-                "DIFF ERROR!!!\n"
-                "DIFF ERROR!!!\n"
-        );
-    }
+    printf("File transfer has been successfully transmitted!\n");
 
     /* Clean up! */
     teardown(usrArgs, pollSet, packetWindow, fp, childInfo, packet);

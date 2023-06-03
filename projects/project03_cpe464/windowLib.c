@@ -31,10 +31,6 @@ void addQueuePacket(circularQueue_t *queue, packet_t *packet, uint16_t packetLen
 
     /* The buffer is circular, check is there is available space */
     if (queue->inputIdx == (queue->outputIdx + queue->size)) return;
-    else if (queue->inputIdx > (queue->outputIdx + queue->size)) { // TODO: Error checking, remove
-        fprintf(stderr, "Somehow, the input index has moved past the size of the buffer and data is likely corrupt.\n");
-        exit(EXIT_FAILURE);
-    }
 
     /* Copy in the packet */
     memcpy(queue->pktQueue[idx], packet, MAX_PDU_LEN);

@@ -355,7 +355,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
     /* Close new file */
     fclose(new_fd);
 
-    printf("File transfer has successfully completed!\n");
+    printf("File transfer has been successfully received!\n");
 
     txPacket = initPacket();
 
@@ -413,20 +413,17 @@ void runServerController(int port, float errorRate) {
     addToPollSet(pollSet, udpServerSetup(port));
 
     /* Initialize sendErr() */
-    sendErr_init(errorRate, DROP_ON, FLIP_ON, DEBUG_ON, RSEED_OFF);
+    sendErr_init(errorRate, DROP_ON, FLIP_ON, DEBUG_OFF, RSEED_ON);
 
-    printf("Runtime Arguments:  \n"
-           "- Port: %d          \n"
-           "- Error Rate: %3.1f    \n"
-           "Server is running...\n",
-           port, (errorRate * 100)
-    );
+    printf("Server controller is initialized...\n");
 
     /* Run server */
     while (!shutdownServer) {
 
         /* Wait for a client to connect */
         pollSock = pollCall(pollSet, POLL_BLOCK);
+
+        printf("Network socket activity detected...\n");
 
         /* Check poll for connections */
         if (pollSock != POLL_TIMEOUT) {
@@ -452,10 +449,10 @@ void runServerController(int port, float errorRate) {
             /* Split parent and child */
             if (pid == CHILD_PROCESS) {
 
-                printf("\nStarting child process...\n");
+                printf("Starting file transfer process...\n");
 
                 /* Init sendToErr for the child process */
-                sendErr_init(errorRate, DROP_ON, FLIP_ON, DEBUG_ON, RSEED_OFF);
+                sendErr_init(errorRate, DROP_ON, FLIP_ON, DEBUG_OFF, RSEED_ON);
 
                 /* Make a new socket for the child process */
                 childSock = udpServerSetup(0);

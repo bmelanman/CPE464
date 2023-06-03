@@ -157,6 +157,8 @@ if [ $APP_CLIENT_RES -ne 0 ]; then
 fi
 
 # Check server status
+SERV_PID=$(/"$PIDOF" "$APP_SERVER")
+
 if [ "$(echo "$SERV_PID" | wc -w)" -eq 0 ]; then
 
     echo "- Server closed early"
@@ -180,8 +182,8 @@ elif [ "$(echo "$SERV_PID" | wc -w)" -gt 1 ]; then
 
         echo "-- Children didn't close"
 
-        # shellcheck disable=SC2009
-        ps -eaf | grep "$APP_SERVER" | grep -v grep | sed 's/.*/--- &/'
+        pgrep "$APP_SERVER"
+
     fi
 fi
 
