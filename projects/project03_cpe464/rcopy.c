@@ -259,7 +259,6 @@ addrInfo_t *setupTransfer(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usr
     }
 
     /* Clean up */
-    freeAddrInfo(serverInfo);
     free(packet);
 
     return childInfo;
@@ -271,7 +270,7 @@ void teardown(
         FILE *fp, addrInfo_t *addrInfo, packet_t *packet
 ) {
 
-    freePollSet(pollSet, TRUE);
+    freePollSet(pollSet);
 
     freeWindow(window);
 
@@ -307,8 +306,10 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
 
     /* Send the server the necessary transfer details */
     if (childInfo == NULL) {
-        teardown(usrArgs, pollSet, packetWindow, fp, childInfo, packet);
+        teardown(usrArgs, pollSet, packetWindow, fp, serverInfo, packet);
         return;
+    } else {
+        freeAddrInfo(serverInfo);
     }
 
     /* Transfer data */
@@ -319,10 +320,6 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
             printf("Server has disconnected, shutting down...\n");
             teardown(usrArgs, pollSet, packetWindow, fp, childInfo, packet);
             return;
-        }
-
-        if (eof == 0) {
-
         }
 
         /* Fill the window */
@@ -397,11 +394,8 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
                 count++;
 
                 /* Try resending */
-                if (eof) continue;
+                if (eof && count < 9) continue;
                 else break;
-
-            } else {
-                count = 0;
             }
 
             /* Receive the packet */
@@ -451,6 +445,9 @@ void runClient(int socket, addrInfo_t *serverInfo, runtimeArgs_t *usrArgs, FILE 
 
                 /* Move the window to the packet after the received packet sequence */
                 moveWindow(packetWindow, recvSeq + 1);
+
+                /* Reset count */
+                count = 0;
 
                 /* Once the window moves, we can send another packet */
                 break;

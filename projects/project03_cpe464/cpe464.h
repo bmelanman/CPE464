@@ -4,9 +4,8 @@
  * Checksum declaration 
  * shadows@whitefang.com
  *
- * Simple call in_cksum with a memory location and it will calculate
- * the checksum over the requested length. The results are turned in 
- * a 16-bit, unsigned short
+ * Simply call in_cksum, and it will calculate the checksum over
+ * the requested length. The results are turned in a 16-bit, unsigned short
  */
 
 #ifdef __cplusplus
@@ -111,8 +110,14 @@ ssize_t sendtoErr(int s, void *msg, int len, unsigned int flags,
 ssize_t recvfromErr(int s, void *buf, size_t len, int flags,
                     struct sockaddr *from, socklen_t *fromlen);
 
+/* Needed because my Mac is dumb I guess? */
+#if __APPLE__
+// empty statement
+#else
+#define bind(...)     bindMod(__VA_ARGS__)
+#endif
+
 #define socket(...)      socketMod(__VA_ARGS__)
-//#define bind(...)     bindMod(__VA_ARGS__)
 #define select(...)   selectMod(__VA_ARGS__)
 #define fork          forkMod
 

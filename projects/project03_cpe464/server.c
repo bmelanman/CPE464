@@ -5,6 +5,8 @@
  *  */
 
 #include <signal.h>
+#include <sys/stat.h>
+#include <sys/fcntl.h>
 #include "server.h"
 
 static volatile int shutdownServer = 0;
@@ -94,22 +96,19 @@ int udpServerSetup(int port) {
     return sock;
 }
 
-FILE *recvSetupInfo(int childSocket, addrInfo_t *clientInfo, uint16_t *bufferLen, circularQueue_t **packetQueue) {
+FILE *recvSetupInfo(int childSocket, pollSet_t *pollSet, addrInfo_t *clientInfo, uint16_t *bufferLen,
+                    circularQueue_t **packetQueue) {
 
     uint16_t maxFileLen = 100, count = 0;
     size_t pktLen;
     uint32_t windSize;
     char to_filename[maxFileLen];
 
-    pollSet_t *pollSet = initPollSet();
     packet_t *rxPacket = initPacket();
     packet_t *txPacket = initPacket();
     FILE *fd = NULL;
 
     /** Connect the child process to the client **/
-
-    /* Add socket to the poll set */
-    addToPollSet(pollSet, childSocket);
 
     /* Send the packet and wait for an Ack */
     while (1) {
@@ -170,12 +169,14 @@ FILE *recvSetupInfo(int childSocket, addrInfo_t *clientInfo, uint16_t *bufferLen
         /* Send packet */
         safeSendTo(childSocket, txPacket, pktLen, clientInfo);
 
-        freePollSet(pollSet, TRUE);
         free(rxPacket);
         free(txPacket);
 
         return NULL;
     }
+
+    /* Modify the new file's permissions */
+    fchmodat(AT_FDCWD, to_filename, S_IRWXU | S_IRWXG | S_IRWXO, 0);
 
     /* Make an ACK packet */
     pktLen = buildPacket(txPacket, 0, INFO_ACK_PKT, NULL, 0);
@@ -210,7 +211,6 @@ FILE *recvSetupInfo(int childSocket, addrInfo_t *clientInfo, uint16_t *bufferLen
         }
     }
 
-    freePollSet(pollSet, FALSE);
     free(rxPacket);
     free(txPacket);
 
@@ -223,7 +223,7 @@ void teardown(addrInfo_t *addrInfo, circularQueue_t *queue, pollSet_t *pollSet) 
     /* Teardown/Clean up */
     freeAddrInfo(addrInfo);
 
-    freePollSet(pollSet, TRUE);
+    freePollSet(pollSet);
 
     freeQueue(queue);
 
@@ -236,7 +236,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
     uint16_t bufferLen, pktLen;
     uint32_t serverSeq = 0, nextPkt = 0, nextPkt_NO = 0;
 
-    FILE *newFd = NULL;
+    FILE *new_fd = NULL;
     packet_t *packet = NULL, *txPacket = NULL;
     circularQueue_t *packetQueue = NULL;
 
@@ -244,10 +244,10 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
     addToPollSet(pollSet, childSocket);
 
     /* Receive setup info from the client */
-    newFd = recvSetupInfo(childSocket, clientInfo, &bufferLen, &packetQueue);
+    new_fd = recvSetupInfo(childSocket, pollSet, clientInfo, &bufferLen, &packetQueue);
 
     /* Check for successful connection */
-    if (newFd == NULL) {
+    if (new_fd == NULL) {
         teardown(clientInfo, packetQueue, pollSet);
         return 1;
     }
@@ -259,7 +259,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
     while (1) {
 
         /* Check if the output of the queue has the packet we want */
-        if (peekNextSeq_NO(packetQueue, nextPkt_NO)) {
+        if (checkNextSeq_NO(packetQueue, nextPkt_NO)) {
 
             /* Grab the packet from the queue, and skip checksum as it has already been verified */
             pktLen = getQueuePacket(packetQueue, packet);
@@ -270,7 +270,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
             if (pollCall(pollSet, POLL_10_SEC) == POLL_TIMEOUT) {
                 teardown(clientInfo, packetQueue, pollSet);
                 free(packet);
-                fclose(newFd);
+                fclose(new_fd);
                 return 1;
             }
 
@@ -291,8 +291,26 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
                 buildPacket(packet, serverSeq++, DATA_ACK_PKT, (uint8_t *) &nextPkt_NO, sizeof(nextPkt_NO));
 
             } else if (ntohl(packet->seq_NO) > nextPkt) {
+
                 /* If it's a higher sequence, save it and send a SRej */
                 addQueuePacket(packetQueue, packet, pktLen);
+
+                /* We missed a packet, so we'll fill the queue until we have
+                 * all the extra packets before we send a SRej */
+                while (pollCall(pollSet, POLL_NON_BLOCK) != POLL_TIMEOUT) {
+
+                    /* Get the packet */
+                    pktLen = safeRecvFrom(childSocket, packet, bufferLen + PDU_HEADER_LEN, clientInfo);
+
+                    /* If there's an invalid checksum, we'll just ignore it */
+                    if (in_cksum((unsigned short *) packet, pktLen)) continue;
+
+                    /* Make sure the received packet seq is larger than the last */
+                    if (ntohl(packet->seq_NO) < peekLastSeq(packetQueue)) continue;
+
+                    /* Save for later */
+                    addQueuePacket(packetQueue, packet, pktLen);
+                }
 
                 /* SRej the missing packet */
                 buildPacket(packet, serverSeq++, DATA_REJ_PKT, (uint8_t *) &nextPkt_NO, sizeof(nextPkt_NO));
@@ -303,7 +321,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
         if (packet->flag == DATA_PKT) {
 
             /* Write the data to the file */
-            fwrite(packet->payload, sizeof(uint8_t), pktLen - PDU_HEADER_LEN, newFd);
+            fwrite(packet->payload, sizeof(uint8_t), pktLen - PDU_HEADER_LEN, new_fd);
 
             /* Create an ACK packet */
             buildPacket(packet, serverSeq++, DATA_ACK_PKT, (uint8_t *) &nextPkt_NO, sizeof(nextPkt_NO));
@@ -316,7 +334,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
         if (packet->flag == DATA_EOF_PKT) {
 
             /* Write the last of the data to the file */
-            fwrite(packet->payload, sizeof(uint8_t), pktLen - PDU_HEADER_LEN, newFd);
+            fwrite(packet->payload, sizeof(uint8_t), pktLen - PDU_HEADER_LEN, new_fd);
 
             /* Wrap things up */
             break;
@@ -326,7 +344,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
         nextPkt_NO = htonl(nextPkt);
 
         /* Don't ACK if the next packet is in the queue */
-        if (!peekNextSeq_NO(packetQueue, nextPkt_NO)) {
+        if (!checkNextSeq_NO(packetQueue, nextPkt_NO)) {
 
             /* Send the ACK/SRej/RR */
             safeSendTo(childSocket, packet, bufferLen + PDU_HEADER_LEN, clientInfo);
@@ -335,7 +353,9 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
     }
 
     /* Close new file */
-    fclose(newFd);
+    fclose(new_fd);
+
+    printf("File transfer has successfully completed!\n");
 
     txPacket = initPacket();
 
@@ -348,7 +368,7 @@ int runServer(int childSocket, addrInfo_t *clientInfo) {
         if (count > 9) {
             teardown(clientInfo, packetQueue, pollSet);
             free(packet);
-            fclose(newFd);
+            fclose(new_fd);
             return 1;
         }
 
@@ -420,17 +440,17 @@ void runServerController(int port, float errorRate) {
             /* Ignore packets that aren't setup packets */
             if (setupPacket->flag != SETUP_PKT) continue;
 
-//            /* Create a child to complete the transfer */
-//            pid = fork();
-//
-//            /* Error checking */
-//            if (pid < 0) {
-//                perror("fork");
-//                exit(EXIT_FAILURE);
-//            }
-//
-//            /* Split parent and child */
-//            if (pid == CHILD_PROCESS) {
+            /* Create a child to complete the transfer */
+            pid = fork();
+
+            /* Error checking */
+            if (pid < 0) {
+                perror("fork");
+                exit(EXIT_FAILURE);
+            }
+
+            /* Split parent and child */
+            if (pid == CHILD_PROCESS) {
 
                 printf("\nStarting child process...\n");
 
@@ -445,21 +465,20 @@ void runServerController(int port, float errorRate) {
 
                 /* Success/failure prompts */
                 if (stat != 0) printf("Client has disconnected! \n");
-                else printf("File transfer has successfully completed!\n");
 
-//                /* Terminate child process */
-//                exit(EXIT_SUCCESS);
-//
-//            } else {
-//
-//                /* Add the child to the list of child PIDs */
-//                children[numChildren] = pid;
-//
-//                /* Increase the list sizes */
-//                numChildren++;
-//                children = srealloc(children, sizeof(pid_t) * numChildren);
-//
-//            }
+                /* Terminate child process */
+                exit(EXIT_SUCCESS);
+
+            } else {
+
+                /* Add the child to the list of child PIDs */
+                children[numChildren] = pid;
+
+                /* Increase the list sizes */
+                numChildren++;
+                children = srealloc(children, sizeof(pid_t) * numChildren);
+
+            }
         }
     }
 
@@ -471,7 +490,7 @@ void runServerController(int port, float errorRate) {
     /* Clean up */
     free(children);
     free(setupPacket);
-    freePollSet(pollSet, TRUE);
+    freePollSet(pollSet);
     freeAddrInfo(clientInfo);
 
     printf("Clean exit!\n");

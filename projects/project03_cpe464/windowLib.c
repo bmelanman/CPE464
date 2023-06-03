@@ -71,7 +71,7 @@ uint16_t getQueuePacket(circularQueue_t *queue, packet_t *packet) {
     return len;
 }
 
-uint8_t peekNextSeq_NO(circularQueue_t *queue, uint32_t seq_NO) {
+uint8_t checkNextSeq_NO(circularQueue_t *queue, uint32_t seq_NO) {
 
     uint32_t start = queue->outputIdx % queue->size;
 
@@ -97,6 +97,14 @@ uint8_t peekNextSeq_NO(circularQueue_t *queue, uint32_t seq_NO) {
 
     /* The packet was not found, and all packets in the queue have been flushed */
     return 0;
+}
+
+uint32_t peekLastSeq(circularQueue_t *queue) {
+
+    /* Get the most recently added packet's location */
+    uint8_t idx = (queue->inputIdx - 1) % queue->size;
+
+    return ntohl(queue->pktQueue[idx]->seq_NO);
 }
 
 void freeQueue(circularQueue_t *queue) {
