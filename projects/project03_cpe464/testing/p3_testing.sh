@@ -13,8 +13,8 @@ function usage {
 
 function clean_up {
     echo "Ensuring Apps are closed"
-    kill -9 "$($PIDOF $APP_CLIENT)" &>/dev/null
-    kill -9 "$($PIDOF $APP_SERVER)" &>/dev/null
+    kill -9 "$($PIDOF $APP_CLIENT)" &>/dev/null || :
+    kill -9 "$($PIDOF $APP_SERVER)" &>/dev/null || :
 
     rm -f "$FILEOUT" "$APP_SERVER" "$APP_CLIENT"
 
@@ -58,7 +58,6 @@ done
 
 if [ "$PORT" -eq 0 ]; then
     echo "A port must be specified!"
-    echo "$PORT"
     exit 1
 fi
 
@@ -157,7 +156,7 @@ if [ $APP_CLIENT_RES -ne 0 ]; then
 fi
 
 # Check server status
-SERV_PID=$(/"$PIDOF" "$APP_SERVER")
+SERV_PID=$("$PIDOF" "$APP_SERVER")
 
 if [ "$(echo "$SERV_PID" | wc -w)" -eq 0 ]; then
 
@@ -172,7 +171,7 @@ elif [ "$(echo "$SERV_PID" | wc -w)" -gt 1 ]; then
         if [ "$(echo "$SERV_PID" | wc -w)" -gt 1 ]; then
             echo "."
             sleep 1
-            SERV_PID=$(/"$PIDOF" "$APP_SERVER")
+            SERV_PID=$("$PIDOF" "$APP_SERVER")
         else
             break
         fi
@@ -182,14 +181,14 @@ elif [ "$(echo "$SERV_PID" | wc -w)" -gt 1 ]; then
 
         echo "-- Children didn't close"
 
-        pgrep "$APP_SERVER"
+        kill -9 "$(pgrep "$APP_SERVER")" &>/dev/null || :
 
     fi
 fi
 
 if [ "$(echo "$SERV_PID" | wc -w)" -gt 0 ]; then
 
-    kill -9 "$SERV_PID"
+    kill -9 "$SERV_PID" &>/dev/null || :
     echo "- Waiting for Server to close"
 
     # shellcheck disable=SC2034
@@ -204,12 +203,15 @@ if [ "$(echo "$SERV_PID" | wc -w)" -gt 0 ]; then
     done
 
     if [ "$(echo "$SERV_PID" | wc -w)" -gt 0 ]; then
+
         echo "- Server Didn't Successfully Close"
-        kill -9 "$SERV_PID"
+        kill -9 "$SERV_PID" &>/dev/null || :
+
     fi
 fi
 
 echo "---------- DIFF (IN | OUT) ----------"
+
 diff -qs "$FILE" "$FILEOUT"
 RETVAL=$?
 
