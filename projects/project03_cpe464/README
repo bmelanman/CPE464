@@ -1,0 +1,8 @@
+Bryce Melander
+CPE 464-01 (12:10PM - 3:00PM)
+
+Project 3: rcopy & server
+Run:
+    $: make all
+    $: ./server <error-rate> [port]
+    $: ./rcopy <to-filename> <from-filename> <window-size> <buffer-size> <error-rate> <hostname> <port>
